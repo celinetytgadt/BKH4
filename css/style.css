@@ -1,0 +1,1920 @@
+/* ==========================================================================
+   Boekhoudapp 4e jaar — stijl
+   Kleuren en typografie staan hieronder als CSS-variabelen, opgemaakt
+   volgens de huisstijl van De MET (zie context/huisstijl_De_MET.md):
+   MET Blauw als basiskleur voor tekst en chrome, MET Rood voor fouten,
+   MET Groen voor "geboekt/oké". Open Sans als lettertype (Google Fonts,
+   ingeladen in index.html).
+   ========================================================================== */
+
+:root {
+  --kleur-primair: #000791;        /* MET Blauw */
+  --kleur-primair-donker: #000568; /* MET Blauw, donkerder voor titels */
+  --kleur-accent: #000791;         /* MET Blauw (geen vierde kleur toevoegen) */
+  --kleur-goed: #00d183;           /* MET Groen */
+  --kleur-fout: #ff4435;           /* MET Rood */
+  --kleur-achtergrond: #f4f5fa;
+  --kleur-paneel: #ffffff;
+  --kleur-rand: #d9dbee;
+  --kleur-tekst: #000791;          /* MET Blauw is de basiskleur voor tekst */
+  --kleur-tekst-zacht: #5c63a0;
+  --font: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --sidebar-breedte: 220px;
+  --tpanel-breedte: 300px;
+  --topbar-hoogte: 56px;
+  --voortgang-hoogte: 26px;
+  /* alles wat vastgeplakt bovenaan staat: topbar + voortgangsbalk */
+  --kop-hoogte: calc(var(--topbar-hoogte) + var(--voortgang-hoogte));
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font);
+  color: var(--kleur-tekst);
+  background: var(--kleur-achtergrond);
+  font-size: 14px;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Topbar ---------- */
+
+#topbar {
+  height: var(--topbar-hoogte);
+  background: var(--kleur-primair);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+#topbar-title {
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+#topbar-leerling {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+#topbar-leerling label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+#leerling-naam-input {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.4);
+  width: 160px;
+  max-width: 40vw;
+}
+
+/* De keuzelijst met de vestigingen, links van de naam. Ze staat er enkel
+   als er meer dan één vestiging in config-koppeling.js zit. */
+#vestiging-select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.4);
+  max-width: 40vw;
+}
+
+#opslaan-status {
+  font-size: 11px;
+  opacity: 0.85;
+  min-width: 90px;
+}
+
+#topbar-leerling button {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+#topbar-leerling button:hover { background: rgba(255,255,255,0.28); }
+
+/* De link naar de handleiding ziet eruit als de knoppen ernaast. */
+#topbar-leerling .topbar-link {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+#topbar-leerling .topbar-link:hover { background: rgba(255,255,255,0.28); }
+
+#btn-nav-toggle, #btn-tpanel-toggle {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 4px 8px;
+  display: none;
+}
+
+/* ---------- Layout ---------- */
+
+#layout {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100vh - var(--kop-hoogte));
+}
+
+#sidebar {
+  width: var(--sidebar-breedte);
+  flex-shrink: 0;
+  background: var(--kleur-paneel);
+  border-right: 1px solid var(--kleur-rand);
+  height: calc(100vh - var(--kop-hoogte));
+  overflow-y: auto;
+  position: sticky;
+  top: var(--kop-hoogte);
+}
+
+#nav-links { padding: 8px 0 40px 0; }
+
+.nav-categorie {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kleur-tekst-zacht);
+  padding: 12px 14px 4px 14px;
+  font-weight: 600;
+}
+
+/* Tussentitel per kwartaal in het menu, boven de categorieën. */
+.nav-groep {
+  margin: 14px 8px 0 8px;
+  padding: 6px 8px;
+  border-top: 2px solid var(--kleur-primair);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--kleur-primair-donker);
+  background: #e9eaf7;
+  border-radius: 0 0 4px 4px;
+}
+.nav-groep + .nav-categorie { padding-top: 8px; }
+
+.nav-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 14px 6px 20px;
+  color: var(--kleur-tekst);
+  text-decoration: none;
+  font-size: 13.5px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+.nav-link:hover { background: var(--kleur-achtergrond); }
+.nav-link.actief {
+  border-left-color: var(--kleur-accent);
+  background: var(--kleur-achtergrond);
+  font-weight: 600;
+}
+.nav-link .status-bolletje {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--kleur-rand);
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+.nav-link .status-bolletje.geboekt { background: var(--kleur-goed); }
+
+.nav-top-item {
+  padding: 8px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+.nav-top-item:hover { background: var(--kleur-achtergrond); }
+.nav-top-item.actief { border-left-color: var(--kleur-accent); background: var(--kleur-achtergrond); }
+
+/* ---------- Main content ---------- */
+
+#main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 20px 24px 60px 24px;
+}
+
+#pagina-inhoud { max-width: 1000px; }
+
+h1.pagina-titel {
+  font-size: 20px;
+  margin: 0 0 4px 0;
+  color: var(--kleur-primair-donker);
+}
+.pagina-subtitel {
+  color: var(--kleur-tekst-zacht);
+  font-size: 13px;
+  margin: 0 0 16px 0;
+}
+
+.paneel {
+  background: var(--kleur-paneel);
+  border: 1px solid var(--kleur-rand);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.paneel h2, .paneel h3 {
+  margin-top: 0;
+  font-size: 15px;
+  color: var(--kleur-primair-donker);
+}
+
+/* hulpdocument: tweede, inklapbaar document bij een opdracht
+   (bv. de aflossingstabel bij een bankafschrift) */
+details.paneel > summary.hulpdoc-titel {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--kleur-primair-donker);
+  list-style: none;
+  margin-bottom: 4px;
+}
+
+details.paneel > summary.hulpdoc-titel::-webkit-details-marker {
+  display: none;
+}
+
+details.paneel > summary.hulpdoc-titel::before {
+  content: "▸ ";
+  display: inline-block;
+  transition: transform 0.15s;
+}
+
+details.paneel[open] > summary.hulpdoc-titel::before {
+  content: "▾ ";
+}
+
+details.paneel > summary.hulpdoc-titel:hover {
+  text-decoration: underline;
+}
+
+/* documentafbeelding */
+.document-afbeelding {
+  max-width: 100%;
+  max-height: 480px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  display: block;
+  cursor: zoom-in;
+}
+
+/* schermvullende weergave na een klik op een document */
+.document-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.82);
+  padding: 24px;
+  cursor: zoom-out;
+}
+.document-overlay.open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.document-overlay-beeld {
+  max-width: 100%;
+  max-height: 100%;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+.document-overlay-sluiten {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  font-size: 28px;
+  line-height: 1;
+  color: #fff;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.document-ontbreekt {
+  padding: 30px;
+  text-align: center;
+  color: var(--kleur-tekst-zacht);
+  border: 1px dashed var(--kleur-rand);
+  border-radius: 6px;
+  font-size: 13px;
+}
+.document-klein {
+  max-width: 220px;
+  max-height: 220px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  display: block;
+}
+
+/* ---------- Redeneerschema tabel ---------- */
+
+table.redeneerschema {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  table-layout: fixed;
+}
+
+/* Kolombreedtes. De omschrijving van de rekening en de redenering krijgen
+   de meeste plaats (daar staat tekst in); A/P/K/O en D/C hebben aan een
+   enkele letter genoeg. */
+table.redeneerschema col.c-bedrag      { width: 9%; }
+table.redeneerschema col.c-redenering  { width: 24%; }
+table.redeneerschema col.c-apko        { width: 6.5%; }
+table.redeneerschema col.c-stijgtdaalt { width: 10%; }
+table.redeneerschema col.c-rekening    { width: 16%; }
+table.redeneerschema col.c-omschrijving{ width: 25%; }
+table.redeneerschema col.c-dc          { width: 6.5%; }
+table.redeneerschema col.c-verwijder   { width: 3%; }
+table.redeneerschema th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--kleur-tekst-zacht);
+  border-bottom: 2px solid var(--kleur-rand);
+  padding: 6px 4px;
+}
+table.redeneerschema td {
+  border-bottom: 1px solid var(--kleur-rand);
+  padding: 4px;
+  vertical-align: top;
+}
+table.redeneerschema input[type="text"],
+table.redeneerschema select {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-family: inherit;
+}
+table.redeneerschema input:disabled,
+table.redeneerschema select:disabled {
+  background: #f0f2f3;
+  color: var(--kleur-tekst-zacht);
+}
+td.kol-bedrag input { text-align: right; }
+td.kol-apko select,
+td.kol-dc select { padding-left: 3px; padding-right: 2px; text-align: center; }
+td.kol-verwijder { text-align: center; padding-left: 0; padding-right: 0; }
+
+/* De omschrijving is geen invulveld meer maar gewone tekst, zodat een lange
+   rekeningnaam gewoon over twee regels mag lopen in plaats van weggeknipt
+   te worden. */
+.omschrijving-veld {
+  padding: 5px 2px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  color: var(--kleur-tekst);
+}
+.omschrijving-veld.omschrijving-onbekend { color: var(--kleur-fout); }
+
+/* Een lijn die nog niet af is, valt op zonder alarmerend te zijn. */
+table.redeneerschema tr.rij-onvolledig td { background: #fffaf0; }
+table.redeneerschema tr.rij-onvolledig td.kol-bedrag { box-shadow: inset 3px 0 0 #f0b429; }
+
+.btn-verwijder-rij {
+  border: none; background: transparent; color: var(--kleur-tekst-zacht);
+  padding: 4px 3px; line-height: 0; border-radius: 4px;
+}
+.btn-verwijder-rij:hover { color: var(--kleur-fout); background: #ffece9; }
+.rekening-wrap { position: relative; display: flex; align-items: center; gap: 4px; }
+.rekening-wrap input { flex: 1; min-width: 0; }
+.btn-mar-zoeken {
+  border: 1px solid var(--kleur-rand);
+  background: var(--kleur-paneel);
+  border-radius: 4px;
+  padding: 4px 7px;
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.btn-mar-zoeken:hover { background: var(--kleur-achtergrond); }
+
+/* MAR-zoekpopup */
+/* Belangrijk: "display" staat hier bewust NIET rechtstreeks op de klasse
+   — een class-regel wint anders altijd van de standaard [hidden]-regel van
+   de browser, waardoor de popup nooit meer verdwijnt na het sluiten. */
+.mar-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 30, 33, 0.45);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+  display: none;
+}
+.mar-modal-overlay:not([hidden]) {
+  display: flex;
+}
+.mar-modal {
+  background: var(--kleur-paneel);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+.mar-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--kleur-rand);
+  font-size: 14px;
+}
+.mar-modal-header button {
+  border: none; background: transparent; font-size: 16px; color: var(--kleur-tekst-zacht);
+}
+.mar-modal-filters {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--kleur-rand);
+}
+.mar-modal-filters input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.filter-knoppen { display: flex; gap: 5px; flex-wrap: wrap; }
+.filter-knoppen button {
+  border: 1px solid var(--kleur-rand);
+  background: var(--kleur-paneel);
+  border-radius: 20px;
+  padding: 4px 11px;
+  font-size: 12px;
+  color: var(--kleur-tekst);
+}
+.filter-knoppen button.actief {
+  background: var(--kleur-primair);
+  color: white;
+  border-color: var(--kleur-primair);
+}
+.filter-rij { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-rij select {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 6px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-family: inherit;
+  background: var(--kleur-paneel);
+  color: var(--kleur-tekst);
+}
+.filter-rij select:disabled { color: var(--kleur-tekst-zacht); background: #f0f2f3; }
+.btn-filter-reset {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: var(--kleur-tekst-zacht);
+  font-size: 11px;
+  padding: 0;
+  text-decoration: underline;
+}
+.btn-filter-reset:hover { color: var(--kleur-primair); }
+.mar-modal-lijst {
+  overflow-y: auto;
+  flex: 1;
+}
+.mar-modal-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  font-size: 13.5px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f2f3;
+}
+.mar-modal-item:hover { background: var(--kleur-achtergrond); }
+.mar-modal-item-nr { font-weight: 600; width: 60px; flex-shrink: 0; }
+.mar-modal-item-naam { flex: 1; }
+.mar-modal-item-rubriek {
+  font-size: 11px;
+  color: var(--kleur-tekst-zacht);
+  flex-shrink: 0;
+}
+.mar-modal-item-apko {
+  font-size: 11px;
+  color: var(--kleur-tekst-zacht);
+  border: 1px solid var(--kleur-rand);
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+
+.relatie-input { margin-top: 4px; width: 100%; font-size: 12px; padding: 5px 6px; border: 1px solid var(--kleur-rand); border-radius: 4px; font-family: inherit; }
+/* Naamveld klant/leverancier met eigen keuzelijst (toont altijd alle namen). */
+.relatie-wrap { position: relative; display: flex; align-items: center; gap: 4px; }
+.relatie-wrap .relatie-input { flex: 1; min-width: 0; }
+.btn-relatie-keuzes {
+  margin-top: 4px;
+  border: 1px solid var(--kleur-rand);
+  background: var(--kleur-paneel);
+  color: var(--kleur-primair);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.relatie-keuzelijst {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 260px;
+  z-index: 20;
+  margin-top: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--kleur-paneel);
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 7, 145, 0.12);
+}
+.relatie-keuze {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--kleur-tekst);
+  cursor: pointer;
+}
+.relatie-keuze:hover { background: #e9eaf7; }
+.relatie-keuze-past { font-weight: 600; }
+.relatie-keuze-huidig { background: #e9eaf7; font-weight: 600; }
+.relatie-keuze-leeg { padding: 6px 8px; font-size: 12px; color: var(--kleur-tekst-zacht); font-style: italic; }
+
+.redeneerschema-acties {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.btn-rij-toevoegen {
+  border: 1px dashed var(--kleur-rand);
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: var(--kleur-primair);
+}
+.totalen {
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+  align-items: center;
+}
+.totalen .balans-ok { color: var(--kleur-goed); font-weight: 600; }
+.totalen .balans-fout { color: var(--kleur-fout); font-weight: 600; }
+
+.btn-boeken, .btn-heropenen {
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: white;
+  background: var(--kleur-primair);
+}
+.btn-boeken:disabled {
+  background: #b7c2c5;
+  cursor: not-allowed;
+}
+.btn-heropenen { background: var(--kleur-tekst-zacht); }
+
+.status-geboekt {
+  display: inline-block;
+  background: #e3faf1;
+  color: var(--kleur-goed);
+  border: 1px solid #a8ecd2;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---------- T-panel ---------- */
+
+#tpanel {
+  width: var(--tpanel-breedte);
+  flex-shrink: 0;
+  border-left: 1px solid var(--kleur-rand);
+  background: var(--kleur-paneel);
+  height: calc(100vh - var(--kop-hoogte));
+  position: sticky;
+  top: var(--kop-hoogte);
+  display: flex;
+  flex-direction: column;
+}
+#tpanel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--kleur-rand);
+  font-size: 13px;
+}
+#tpanel-collapse {
+  border: none; background: transparent; font-size: 14px; color: var(--kleur-tekst-zacht);
+}
+#tpanel-controls {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid var(--kleur-rand);
+}
+#tpanel-zoek {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  font-size: 12px;
+}
+.tpanel-vinkjes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.tpanel-detail-toggle {
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  color: var(--kleur-tekst-zacht);
+}
+#tpanel-lijst {
+  overflow-y: auto;
+  padding: 8px 10px 40px 10px;
+  flex: 1;
+}
+
+.trek-blok {
+  margin-bottom: 10px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.trek-titel {
+  background: var(--kleur-achtergrond);
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+}
+.trek-titel small { font-weight: 400; color: var(--kleur-tekst-zacht); }
+.trek-body {
+  display: flex;
+}
+.trek-kant {
+  width: 50%;
+  padding: 5px 6px;
+  font-size: 11px;
+}
+.trek-kant.debet { border-right: 1px solid var(--kleur-rand); }
+.trek-regel { display: flex; justify-content: space-between; padding: 1px 0; }
+.trek-regel .ref { color: var(--kleur-tekst-zacht); }
+.trek-saldo-rij {
+  font-weight: 700;
+  border-top: 1px dashed var(--kleur-rand);
+  margin-top: 3px;
+  padding-top: 2px;
+}
+.trek-leeg { color: var(--kleur-tekst-zacht); font-size: 10.5px; font-style: italic; }
+
+#layout.tpanel-verborgen #tpanel { display: none; }
+
+/* ---------- Saldibalans ---------- */
+
+table.saldibalans {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+table.saldibalans th, table.saldibalans td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--kleur-rand);
+  text-align: right;
+}
+table.saldibalans th:first-child, table.saldibalans td:first-child,
+table.saldibalans th:nth-child(2), table.saldibalans td:nth-child(2) {
+  text-align: left;
+}
+table.saldibalans tfoot td { font-weight: 700; border-top: 2px solid var(--kleur-tekst); }
+
+/* ---------- Controles ---------- */
+
+.controle-rij {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--kleur-rand);
+}
+.controle-rij:last-child { border-bottom: none; }
+.controle-vraag { flex: 1; font-size: 13px; }
+/* Meerdere documenten naast één controle (bv. de twee aflossingstabellen). */
+.controle-docs { display: flex; flex-direction: column; gap: 10px; }
+.controle-doc-titel { font-size: 11.5px; color: var(--kleur-tekst-zacht); margin-bottom: 3px; }
+.controle-status-auto {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  height: fit-content;
+}
+.controle-status-auto.ok { background: #e3faf1; color: var(--kleur-goed); }
+.controle-status-auto.fout { background: #ffece9; color: var(--kleur-fout); }
+.controle-lijst-fouten {
+  font-size: 12px;
+  color: var(--kleur-fout);
+  margin: 4px 0 0 0;
+  padding-left: 18px;
+}
+
+/* ---------- Resultaatverwerking stappen ---------- */
+
+.stap-rij { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.stap-rij label { flex: 1; font-size: 13px; }
+.stap-rij input[type="text"] {
+  width: 140px;
+  padding: 6px 8px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  text-align: right;
+  font-size: 13px;
+}
+
+.slotcontrole-terug {
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #fff6e5;
+  border: 1px solid #f7dfae;
+  color: #8a5a00;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.slotcontrole-terug p { margin: 0 0 8px 0; }
+
+.slotcontrole-blok {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--kleur-rand);
+}
+.slotcontrole-blok:last-of-type {
+  border-bottom: none;
+}
+.slotcontrole-vraag {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+.slotcontrole-detail {
+  margin: 4px 0 0 26px;
+  font-size: 12px;
+  color: var(--kleur-tekst-zacht);
+}
+.slotcontrole-melding {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.slotcontrole-melding.goed {
+  background: #e6fbf3;
+  color: var(--kleur-goed);
+  border: 1px solid var(--kleur-goed);
+}
+.slotcontrole-melding.fout {
+  background: #ffece9;
+  color: var(--kleur-fout);
+  border: 1px solid var(--kleur-fout);
+}
+
+/* ---------- Voortgangsbalk ---------- */
+
+#voortgang {
+  height: var(--voortgang-hoogte);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: var(--kleur-paneel);
+  border-bottom: 1px solid var(--kleur-rand);
+  position: sticky;
+  top: var(--topbar-hoogte);
+  z-index: 49;
+}
+#voortgang-balk {
+  flex: 1;
+  height: 8px;
+  background: var(--kleur-achtergrond);
+  border: 1px solid var(--kleur-rand);
+  border-radius: 20px;
+  overflow: hidden;
+}
+#voortgang-vulling {
+  height: 100%;
+  width: 0;
+  background: var(--kleur-primair);
+  border-radius: 20px;
+  transition: width 0.25s ease-out;
+}
+#voortgang-tekst {
+  font-size: 11px;
+  color: var(--kleur-tekst-zacht);
+  white-space: nowrap;
+}
+#voortgang.voortgang-af #voortgang-vulling { background: var(--kleur-goed); }
+#voortgang.voortgang-af #voortgang-tekst { color: var(--kleur-goed); font-weight: 600; }
+
+/* ---------- Uitleg (i-icoontje) ---------- */
+
+.btn-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--kleur-primair);
+  background: var(--kleur-paneel);
+  color: var(--kleur-primair);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  line-height: 1;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.btn-info:hover { background: var(--kleur-primair); color: white; }
+.btn-info-voorbeeld { cursor: default; }
+#tpanel-header .btn-info { width: 16px; height: 16px; font-size: 10px; }
+.tpanel-header-knoppen { display: inline-flex; align-items: center; gap: 6px; }
+
+.info-modal { max-width: 560px; }
+.info-modal-inhoud {
+  padding: 4px 18px 18px 18px;
+  overflow-y: auto;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.info-modal-inhoud h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--kleur-tekst-zacht);
+  margin: 16px 0 4px 0;
+}
+.info-modal-inhoud p { margin: 0 0 8px 0; }
+.info-modal-inhoud ol { margin: 0 0 8px 0; padding-left: 20px; }
+.info-modal-inhoud li { margin-bottom: 3px; }
+
+/* ---------- Waarom kan ik nog niet boeken? ---------- */
+
+.boeken-blok { margin-top: 12px; }
+.boeken-waarom {
+  margin: 8px 0 0 0;
+  padding: 8px 12px 8px 28px;
+  background: #fffaf0;
+  border: 1px solid #f7dfae;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: #8a5a00;
+}
+.boeken-waarom li { margin-bottom: 2px; }
+.paneel-hint { font-size: 12px; color: var(--kleur-tekst-zacht); margin-top: 0; }
+.paneel-tip { background: #e9eaf7; border-color: var(--kleur-primair); font-size: 13px; }
+.paneel-tip p:last-child { margin-bottom: 0; }
+
+/* Er is een boeking heropend nadat de controles van deze categorie al
+   afgevinkt waren. De vinkjes blijven staan; dit blokje vraagt om ze nog
+   eens na te lopen. */
+.paneel-herbekijken {
+  background: #fff8ef;
+  border-color: #e8890c;
+  border-left: 5px solid #e8890c;
+  font-size: 13px;
+}
+.paneel-herbekijken p { margin: 0 0 8px 0; }
+.lijst-leeg { padding: 10px; color: var(--kleur-tekst-zacht); font-size: 12.5px; }
+
+.link-knop {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: var(--kleur-primair);
+  text-decoration: underline;
+}
+/* ---------- Controles ---------- */
+
+.controle-rij.controle-af { opacity: 0.72; }
+.controle-vraag label { display: flex; gap: 7px; align-items: flex-start; }
+.controle-toelichting {
+  margin: 4px 0 0 24px;
+  font-size: 12px;
+  color: var(--kleur-tekst-zacht);
+}
+.controle-filtertip {
+  margin: 5px 0 0 24px;
+  font-size: 12px;
+  color: var(--kleur-primair);
+  font-style: italic;
+}
+
+/* ---------- Klanten & leveranciers ---------- */
+
+table.relatie-overzicht, table.relatie-detail {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  margin-top: 6px;
+}
+table.relatie-overzicht th, table.relatie-overzicht td,
+table.relatie-detail th, table.relatie-detail td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--kleur-rand);
+  text-align: right;
+}
+table.relatie-overzicht th:first-child, table.relatie-overzicht td:first-child,
+table.relatie-overzicht th:last-child, table.relatie-overzicht td:last-child,
+table.relatie-detail th:first-child, table.relatie-detail td:first-child,
+table.relatie-detail th:nth-child(3), table.relatie-detail td:nth-child(3) {
+  text-align: left;
+}
+table.relatie-overzicht tr.relatie-gekozen { background: #e9eaf7; }
+
+/* Detail: één regel per factuur, met de betaling(en) die erop volgden. */
+table.relatie-detail td { font-variant-numeric: tabular-nums; }
+table.relatie-detail td:first-child { font-weight: 600; }
+table.relatie-detail tr.factuur-open { background: #fffaf0; }
+table.relatie-detail tr.factuur-open td:last-child { font-weight: 600; color: #8a5a00; }
+.relatie-betaling { color: var(--kleur-tekst-zacht); }
+.relatie-niet-betaald { font-style: italic; }
+.relatie-leeg { color: var(--kleur-tekst-zacht); font-style: italic; text-align: left; }
+table.relatie-detail tfoot td {
+  border-top: 2px solid var(--kleur-rand);
+  border-bottom: none;
+  font-weight: 700;
+  padding-top: 7px;
+}
+/* Het label "Totaal nog open" staat rechts uitgelijnd, vlak naast het
+   bedrag, zodat dat cijfer niet los onder de tabel lijkt te zweven. */
+table.relatie-detail tfoot td:first-child { text-align: right; font-weight: 600; }
+table.relatie-detail tfoot td.totaal-open { color: #8a5a00; }
+table.relatie-detail tfoot td.totaal-fout { color: var(--kleur-fout); }
+.relatie-status {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.relatie-status.betaald { background: #e3faf1; color: var(--kleur-goed); }
+.relatie-status.openstaand { background: #fff6e5; color: #8a5a00; }
+.relatie-status.teveel { background: #ffece9; color: var(--kleur-fout); }
+.relatie-kiezer { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; flex-wrap: wrap; }
+.relatie-kiezer select {
+  padding: 6px 8px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  min-width: 220px;
+}
+.relatie-conclusie {
+  margin: 10px 0 0 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.relatie-conclusie.betaald { background: #e3faf1; color: var(--kleur-goed); }
+.relatie-conclusie.openstaand { background: #fff6e5; color: #8a5a00; }
+.relatie-conclusie.verkeerd { background: #ffece9; color: var(--kleur-fout); }
+
+/* ---------- Eindbalans: sleepoefening ---------- */
+
+.balans-voorraad {
+  border: 2px dashed var(--kleur-rand);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 18px;
+  background: var(--kleur-achtergrond);
+}
+.balans-voorraad-titel {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--kleur-tekst-zacht);
+  margin-bottom: 8px;
+}
+.balans-voorraad-inhoud { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.balans-kaart {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--kleur-paneel);
+  border: 1px solid var(--kleur-rand);
+  border-radius: 6px;
+  font-size: 11.5px;
+  cursor: grab;
+  user-select: none;
+  max-width: 100%;
+}
+.balans-kaart:hover { border-color: var(--kleur-primair); }
+.balans-kaart.gekozen {
+  border-color: var(--kleur-primair);
+  box-shadow: 0 0 0 2px rgba(0, 7, 145, 0.18);
+  background: #e9eaf7;
+}
+.balans-kaart.sleept { opacity: 0.45; }
+.kaart-nr { font-weight: 700; font-variant-numeric: tabular-nums; }
+.kaart-naam { color: var(--kleur-tekst-zacht); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px; }
+.kaart-saldo { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.kaart-terug {
+  border: none;
+  background: transparent;
+  color: var(--kleur-tekst-zacht);
+  font-size: 12px;
+  padding: 0 2px;
+  line-height: 1;
+}
+.kaart-terug:hover { color: var(--kleur-fout); }
+
+.balans-deel { margin-bottom: 22px; }
+.balans-deel h2 { margin-bottom: 8px; }
+.balans-kolommen { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.balans-kolom {
+  flex: 1;
+  min-width: 280px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.balans-kolom-titel {
+  background: var(--kleur-primair);
+  color: white;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.balans-groep { border-bottom: 1px solid var(--kleur-rand); }
+.balans-groep:last-child { border-bottom: none; }
+.balans-groep-titel {
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--kleur-tekst-zacht);
+  background: var(--kleur-achtergrond);
+}
+.balans-vak { padding: 5px 10px; border-top: 1px solid #eef0f7; }
+.balans-vak.sleep-over { background: #e9eaf7; box-shadow: inset 0 0 0 2px var(--kleur-primair); }
+.balans-vak-kop { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.balans-vak-naam { font-size: 12.5px; }
+.balans-vak.gevuld .balans-vak-naam { font-weight: 600; }
+.balans-vak:not(.gevuld) .balans-vak-naam { color: var(--kleur-tekst-zacht); }
+.balans-vak-totaal { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.balans-vak-inhoud { display: flex; flex-wrap: wrap; gap: 3px; }
+.balans-vak.gevuld .balans-vak-inhoud { margin-top: 3px; }
+.balans-vak-leeg { font-size: 11px; color: #a8adcf; font-style: italic; }
+
+/* Een geplaatst kaartje is ondergeschikt aan de vaknaam en het bedrag:
+   kleiner, grijs en zonder kader. Zo blijft de balans zelf leesbaar. */
+.balans-kaart.geplaatst {
+  padding: 1px 5px;
+  gap: 4px;
+  font-size: 10.5px;
+  background: var(--kleur-achtergrond);
+  border-color: transparent;
+  color: var(--kleur-tekst-zacht);
+  border-radius: 4px;
+}
+.balans-kaart.geplaatst .kaart-nr { font-weight: 600; color: var(--kleur-tekst-zacht); }
+.balans-kaart.geplaatst .kaart-naam { max-width: 120px; }
+.balans-kaart.geplaatst .kaart-saldo { font-weight: 400; }
+.balans-kaart.geplaatst:hover {
+  border-color: var(--kleur-rand);
+  background: var(--kleur-paneel);
+  color: var(--kleur-tekst);
+}
+.balans-kaart.geplaatst .kaart-terug { font-size: 10px; }
+.balans-kolom-totaal {
+  padding: 7px 10px;
+  border-top: 2px solid var(--kleur-tekst);
+  background: var(--kleur-achtergrond);
+  font-size: 12.5px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.balans-evenwicht {
+  margin-top: 8px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.balans-evenwicht.ok { background: #e3faf1; color: var(--kleur-goed); }
+.balans-evenwicht.nog-niet { background: #fff6e5; color: #8a5a00; }
+.balans-acties { margin-top: 6px; }
+.btn-secundair {
+  border: 1px solid var(--kleur-rand);
+  background: var(--kleur-paneel);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-family: inherit;
+  color: var(--kleur-tekst);
+}
+.btn-secundair:hover { border-color: var(--kleur-primair); }
+
+.trek-saldo-nul { color: var(--kleur-tekst-zacht); }
+.trek-blok-leeg { opacity: 0.6; }
+
+/* ---------- T-paneel terughalen na inklappen ---------- */
+
+#tpanel-heropen {
+  display: none;
+  position: sticky;
+  top: calc(var(--kop-hoogte) + 10px);
+  align-self: flex-start;
+  margin-left: -1px;
+  border: 1px solid var(--kleur-rand);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  background: var(--kleur-paneel);
+  color: var(--kleur-primair);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 4px;
+  writing-mode: vertical-rl;
+  z-index: 30;
+}
+#tpanel-heropen:hover { background: var(--kleur-achtergrond); }
+#layout.tpanel-verborgen #tpanel-heropen { display: block; }
+
+/* ---------- Tip boven een redeneerschema ---------- */
+
+.opdracht-tip {
+  margin: 0 0 12px 0;
+  padding: 8px 12px;
+  background: #e9eaf7;
+  border-left: 3px solid var(--kleur-primair);
+  border-radius: 0 6px 6px 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* ---------- Evenwichtsregel boven de eindbalans ---------- */
+
+.balans-regel {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  border: 1px solid transparent;
+}
+.balans-regel p { margin: 0 0 6px 0; }
+.balans-regel p:last-child { margin-bottom: 0; }
+.balans-regel.ok { background: #e3faf1; border-color: #a8ecd2; color: #00795c; }
+.balans-regel.nog-niet { background: #fff6e5; border-color: #f7dfae; color: #8a5a00; }
+.balans-deel-titel {
+  font-size: 14px;
+  color: var(--kleur-primair-donker);
+  margin: 0 0 8px 0;
+}
+
+/* ---------- Responsief (Chromebook / smal scherm) ---------- */
+
+@media (max-width: 1100px) {
+  table.redeneerschema { font-size: 12px; }
+  table.redeneerschema col.c-redenering { width: 21%; }
+  table.redeneerschema col.c-omschrijving { width: 26%; }
+  table.redeneerschema col.c-stijgtdaalt { width: 11%; }
+}
+
+@media (max-width: 900px) {
+  :root { --sidebar-breedte: 200px; --tpanel-breedte: 260px; }
+  #btn-nav-toggle, #btn-tpanel-toggle { display: inline-block; }
+  #sidebar, #tpanel { position: fixed; z-index: 40; }
+  #layout:not(.sidebar-open) #sidebar { display: none; }
+  #layout:not(.tpanel-open) #tpanel { display: none; }
+  #sidebar { height: calc(100vh - var(--kop-hoogte)); }
+  #main-content { padding: 14px; }
+  .balans-kolom { min-width: 100%; }
+  .kaart-naam { max-width: 130px; }
+  /* De topbar heeft een vaste hoogte (de zijbalken hangen eraan vast), dus
+     de inhoud moet op smalle schermen krimpen in plaats van te wikkelen. */
+  #topbar-leerling { flex-wrap: nowrap; overflow: hidden; }
+  #opslaan-status { display: none; }
+  #topbar-leerling button { padding: 4px 6px; font-size: 11px; white-space: nowrap; }
+  #topbar-leerling .topbar-link { padding: 4px 6px; font-size: 11px; }
+  #leerling-naam-input { width: 110px; }
+}
+
+@media (max-width: 620px) {
+  #topbar-title { display: none; }
+  #topbar-leerling label { display: none; }
+  /* Op een smal scherm is er geen plaats meer: de knoppen van de leerling
+     hebben voorrang op de link naar de handleiding. */
+  #topbar-leerling .topbar-link { display: none; }
+  #leerling-naam-input { width: 90px; }
+}
+
+/* ========================================================================
+   Zelf afpunten (tabblad Klanten & leveranciers)
+   ======================================================================== */
+
+/* De bak met nog af te punten betalingen en creditnota's. */
+.afpunt-bak {
+  margin-top: 12px;
+  border: 1px dashed var(--kleur-rand);
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: var(--kleur-achtergrond);
+}
+.afpunt-bak-titel {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kleur-tekst-zacht);
+  margin-bottom: 6px;
+}
+.afpunt-bak-inhoud { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Eén klikbare betaling/creditnota. */
+.afpunt-item {
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 5px 10px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 20px;
+  background: var(--kleur-paneel);
+  color: var(--kleur-tekst);
+  cursor: pointer;
+}
+.afpunt-item:hover { border-color: var(--kleur-primair); }
+.afpunt-item.gekozen {
+  background: var(--kleur-primair);
+  border-color: var(--kleur-primair);
+  color: #fff;
+}
+
+/* Zolang er een betaling/creditnota gekozen is, zijn de factuurregels het
+   doel: de cursor en een lichte tint maken dat duidelijk. */
+table.relatie-detail.afpunt-actief tbody tr[data-role="afpunt-doel"] { cursor: pointer; }
+table.relatie-detail.afpunt-actief tbody tr[data-role="afpunt-doel"]:hover { background: #e9eaf7; }
+
+/* Een gelegde koppeling in de kolom "Afgepunt met". */
+.afpunt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 20px;
+  background: var(--kleur-paneel);
+  white-space: nowrap;
+  margin: 1px 0;
+}
+.afpunt-chip.creditnota { border-style: dashed; }
+.afpunt-x {
+  border: none;
+  background: transparent;
+  color: var(--kleur-tekst-zacht);
+  font-size: 13px;
+  line-height: 1;
+  padding: 1px 4px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.afpunt-x:hover { color: var(--kleur-fout); background: #ffece9; }
+
+/* Waarschuwing onder het relatieveld in het redeneerschema: de naam lijkt
+   sterk op een eerder gebruikte naam. */
+.relatie-waarschuwing {
+  font-size: 11px;
+  color: #8a5a00;
+  background: #fff6e5;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-top: 3px;
+}
+
+/* Het compacte tabelletje bij de zelfcontrole van 400000/440000. */
+.controle-relatie-tabel { max-width: 420px; margin-top: 8px; }
+.controle-relatie-tabel tfoot td {
+  border-top: 2px solid var(--kleur-rand);
+  border-bottom: none;
+  font-weight: 700;
+  padding-top: 6px;
+}
+
+/* Bovenaan de eindbalans staat nooit een groene "het klopt"-melding: dat
+   oordeel hoort onderaan, ná de slotcontrole. Deze neutrale variant toont
+   enkel welke evenwichtsregel op dit moment geldt. */
+.balans-regel.neutraal {
+  background: var(--kleur-achtergrond);
+  border-color: var(--kleur-rand);
+  color: var(--kleur-tekst);
+}
+
+/* Zolang een relatie nog niet volledig afgepunt is, zegt de app niet of er
+   nog iets openstaat — enkel hoeveel er nog te koppelen valt. */
+.relatie-status.afpunten {
+  background: var(--kleur-achtergrond);
+  color: var(--kleur-tekst-zacht);
+  border: 1px solid var(--kleur-rand);
+}
+
+/* ==========================================================================
+   Koppeling met Google Sheets (indienen, feedback, bewaren op de server)
+   Zie js/koppeling.js en apps-script/Code.gs.
+   ========================================================================== */
+
+/* ---------- Topbar: aanmelden ---------- */
+
+#leerling-select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.4);
+  max-width: 40vw;
+  font-family: var(--font);
+  font-size: 13px;
+}
+
+#leerling-code {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.4);
+  width: 70px;
+  text-align: center;
+  letter-spacing: 2px;
+  font-family: var(--font);
+}
+
+/* De knop die er het meest toe doet, mag opvallen tussen de andere. */
+#topbar-leerling button.btn-primair-topbar {
+  background: white;
+  color: var(--kleur-primair);
+  font-weight: 700;
+  border-color: white;
+}
+#topbar-leerling button.btn-primair-topbar:hover { background: #eef0ff; }
+
+/* Korte meldingen ("Bewaard op de server om 14:03"). Bewust klein en
+   rustig: het mag de leerling niet uit het werk halen. */
+.koppeling-status {
+  font-size: 11px;
+  opacity: 0.9;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.koppeling-status.ok { color: #d6ffee; }
+.koppeling-status.fout { color: #ffd9d5; font-weight: 600; }
+
+/* ---------- Feedback bij een verrichting ---------- */
+
+.feedback-blok {
+  border: 1px solid var(--kleur-rand);
+  border-left: 5px solid var(--kleur-primair);
+  background: var(--kleur-paneel);
+  border-radius: 6px;
+  padding: 10px 14px 12px 14px;
+  margin-bottom: 14px;
+}
+
+.feedback-titel { font-size: 13px; margin-bottom: 6px; }
+
+.feedback-ronde p { margin: 5px 0 0 0; }
+.feedback-ronde + .feedback-ronde { margin-top: 10px; }
+
+.feedback-kop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.feedback-oordeel {
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 2px 10px;
+  background: var(--kleur-achtergrond);
+  border: 1px solid var(--kleur-rand);
+}
+
+.feedback-datum { font-size: 11.5px; color: var(--kleur-tekst-zacht); }
+
+/* De drie beoordelingen, zoals afgesproken met de collega's in Classroom.
+   De klassenamen komen uit de tekst zelf (zie beoordelingKlasse in app.js),
+   dus "Te remediëren" wordt "te-remedi-ren" — vandaar die schrijfwijze. */
+.feedback-in-orde { border-left-color: var(--kleur-goed); }
+.feedback-in-orde .feedback-oordeel { background: #ddfff2; border-color: var(--kleur-goed); }
+.feedback-te-remedi-ren { border-left-color: #e8890c; }
+.feedback-te-remedi-ren .feedback-oordeel { background: #fff0dc; border-color: #e8890c; }
+.feedback-niet-afgerond { border-left-color: var(--kleur-fout); }
+.feedback-niet-afgerond .feedback-oordeel { background: #ffe4e1; border-color: var(--kleur-fout); }
+
+/* Eerdere ronden: leesbaar, maar duidelijk ondergeschikt aan de nieuwste. */
+.feedback-historiek-titel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--kleur-tekst-zacht);
+  margin-bottom: 6px;
+}
+
+.feedback-historiek {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--kleur-rand);
+}
+.feedback-ronde.oud { opacity: 0.75; font-size: 13px; }
+
+/* ---------- Vergrendelde boeking ---------- */
+
+.boeking-vergrendeld {
+  border: 1px solid var(--kleur-goed);
+  background: #f2fffa;
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+.boeking-vergrendeld p { margin: 6px 0 0 0; font-size: 13px; }
+
+.status-in-orde {
+  font-weight: 700;
+  color: #00a366;
+}
+
+.vergrendeld-nota { font-size: 12px; color: var(--kleur-tekst-zacht); }
+
+/* ---------- Bolletjes in het menu ---------- */
+
+/* Zodra er een beoordeling is, neemt die kleur het over van het gewone
+   "geboekt"-groen: anders blijft een verrichting groen terwijl ze niet in
+   orde is. */
+.nav-link .status-bolletje.oordeel-in-orde,
+.nav-top-item .status-bolletje.oordeel-in-orde { background: var(--kleur-goed); }
+.nav-link .status-bolletje.oordeel-te-remedi-ren,
+.nav-top-item .status-bolletje.oordeel-te-remedi-ren { background: #e8890c; }
+.nav-link .status-bolletje.oordeel-niet-afgerond,
+.nav-top-item .status-bolletje.oordeel-niet-afgerond { background: var(--kleur-fout); }
+
+.nav-top-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.nav-top-item .status-bolletje {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--kleur-rand);
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+/* ---------- Open vragen bij klanten & leveranciers ---------- */
+
+.relatie-vragen .relatie-vraag {
+  display: block;
+  margin-top: 14px;
+}
+.relatie-vragen .relatie-vraag > span {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.relatie-vragen textarea {
+  width: 100%;
+  font-family: var(--font);
+  font-size: 13.5px;
+  padding: 8px 10px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 5px;
+  resize: vertical;
+}
+.relatie-vragen textarea:focus { outline: 2px solid var(--kleur-primair); border-color: var(--kleur-primair); }
+.relatie-vragen textarea:disabled { background: var(--kleur-achtergrond); color: var(--kleur-tekst-zacht); }
+
+/* ---------- Vensters van de koppeling ---------- */
+
+.koppeling-modal {
+  max-width: 520px;
+  width: min(520px, 94vw);
+  display: flex;
+  flex-direction: column;
+  /* Nooit hoger dan het scherm: op een Chromebook moet de knop onderaan
+     zichtbaar blijven zonder te scrollen buiten het venster. */
+  max-height: 88vh;
+}
+
+.koppeling-modal-inhoud {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Enkel dit deel schuift; de knopbalk blijft staan. */
+.modal-body {
+  padding: 14px 18px;
+  overflow-y: auto;
+  min-height: 0;
+}
+.modal-body > p:first-child { margin-top: 0; }
+
+.modal-voet {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--kleur-rand);
+  background: var(--kleur-achtergrond);
+  flex-shrink: 0;
+}
+
+.btn-primair {
+  background: var(--kleur-primair);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 18px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primair:disabled { background: var(--kleur-rand); cursor: default; }
+
+.keuze-blok { display: flex; gap: 10px; margin: 14px 0; flex-wrap: wrap; }
+
+.btn-keuze {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 12px 14px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 6px;
+  background: var(--kleur-paneel);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--kleur-tekst);
+  cursor: pointer;
+}
+.btn-keuze:hover { border-color: var(--kleur-primair); background: var(--kleur-achtergrond); }
+.btn-keuze span { font-size: 11.5px; color: var(--kleur-tekst-zacht); }
+
+.keuze-nota { font-size: 12px; color: var(--kleur-tekst-zacht); }
+
+/* ---------- Indienvenster ---------- */
+
+/* Bewust compact: de negen categorieën én de knop moeten samen op één
+   scherm passen, ook op een kleine Chromebook. */
+.indien-lijst { display: flex; flex-direction: column; gap: 2px; margin: 10px 0; }
+
+/* Naam links, daarnaast twee smalle kolommen: geboekt en in orde. De
+   kopregel gebruikt hetzelfde raster, zodat de cijfers eronder uitlijnen. */
+.indien-kop,
+.indien-rij {
+  display: grid;
+  grid-template-columns: 1fr 62px 62px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+}
+
+.indien-kop {
+  font-size: 11px;
+  color: var(--kleur-tekst-zacht);
+  text-transform: lowercase;
+  padding-bottom: 0;
+}
+.indien-kop span + span { text-align: center; }
+
+.indien-rij {
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.25;
+}
+.indien-rij:hover { background: var(--kleur-achtergrond); }
+.indien-rij.uit { opacity: 0.55; cursor: default; }
+.indien-rij.uit:hover { background: none; }
+.indien-naam { min-width: 0; }
+
+.indien-telling {
+  font-size: 11px;
+  color: var(--kleur-tekst-zacht);
+  white-space: nowrap;
+  text-align: center;
+}
+.indien-telling.volledig { color: #00a366; font-weight: 600; }
+
+/* ---------- Wachten en bevestigen ---------- */
+
+.modal-bezig { text-align: center; padding: 26px 18px; }
+.modal-bezig p { margin: 12px 0 0 0; font-weight: 600; }
+.modal-bezig .keuze-nota { font-weight: 400; }
+
+.spinner {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--kleur-rand);
+  border-top-color: var(--kleur-primair);
+  border-radius: 50%;
+  animation: draai 0.8s linear infinite;
+}
+@keyframes draai { to { transform: rotate(360deg); } }
+
+.modal-melding { text-align: center; padding: 22px 18px 18px 18px; }
+.modal-melding h3 { margin: 10px 0 0 0; font-size: 16px; }
+.modal-melding p { margin: 8px 0 0 0; }
+
+.melding-teken {
+  width: 42px; height: 42px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; color: white;
+  background: var(--kleur-primair);
+}
+.melding-ok .melding-teken { background: #00a366; }
+.melding-fout .melding-teken { background: var(--kleur-fout); }
+
+@media (max-width: 900px) {
+  #leerling-select { max-width: 30vw; }
+  .koppeling-status { display: none; }
+}
+
+/* ==========================================================================
+   Controles per categorie
+   ========================================================================== */
+
+/* De extra items onder een categorie in het menu: Klanten & leveranciers en
+   de controlepagina. Iets ingesprongen, zodat het duidelijk bij de
+   verrichtingen erboven hoort. */
+.nav-link.nav-extra,
+.nav-link.nav-controle {
+  font-size: 13px;
+  color: var(--kleur-tekst-zacht);
+}
+.nav-link.nav-extra:hover,
+.nav-link.nav-controle:hover { color: var(--kleur-tekst); }
+.nav-link.nav-controle.actief,
+.nav-link.nav-extra.actief { color: var(--kleur-tekst); }
+
+.nav-controle-stand {
+  font-size: 11px;
+  border-radius: 9px;
+  padding: 0 6px;
+  background: var(--kleur-achtergrond);
+  border: 1px solid var(--kleur-rand);
+  white-space: nowrap;
+  margin-left: 6px;
+}
+.nav-controle-stand.af {
+  background: #ddfff2;
+  border-color: var(--kleur-goed);
+  color: #00875a;
+  font-weight: 600;
+}
+
+/* In het indienvenster: hoeveel verrichtingen al in orde bevonden zijn. */
+.indien-inorde {
+  font-size: 11px;
+  color: var(--kleur-tekst-zacht);
+  white-space: nowrap;
+  text-align: center;
+}
+.indien-inorde.volledig { color: #00a366; font-weight: 600; }
+
+/* De bevestigingsstap vóór het verzenden. */
+.bevestig-waarschuwing {
+  border: 1px solid #e8890c;
+  border-left: 5px solid #e8890c;
+  background: #fff8ef;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 12px 0;
+}
+.bevestig-waarschuwing p { margin: 0 0 6px 0; }
+.bevestig-waarschuwing ul { margin: 0 0 6px 0; padding-left: 20px; }
+.bevestig-waarschuwing li { margin-bottom: 2px; }
+
+.bevestig-ok {
+  color: #00875a;
+  font-weight: 600;
+}
+
+.modal-voet .btn-secundair {
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   Mededeling, Classroom en het beheertabblad
+   ========================================================================== */
+
+/* De korte mededeling van de vakexpert, bovenaan elke pagina. Ze komt uit
+   het tabblad Instellingen van de Sheet; staat daar niets, dan is er geen
+   kader. */
+.mededeling {
+  background: #fff8ef;
+  border: 1px solid #e8890c;
+  border-left: 5px solid #e8890c;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+.mededeling p { margin: 0 0 6px 0; }
+.mededeling p:last-child { margin-bottom: 0; }
+
+/* Na het indienen: de herinnering dat de taak ook in Classroom moet. */
+.classroom-blok {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--kleur-primair);
+  border-radius: 8px;
+  background: #e9eaf7;
+  text-align: left;
+  font-size: 13px;
+}
+.classroom-blok p { margin: 0 0 8px 0; }
+.classroom-blok p:last-child { margin-bottom: 0; }
+.classroom-knoppen { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.btn-classroom {
+  display: inline-block;
+  background: var(--kleur-primair);
+  color: white;
+  text-decoration: none;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.btn-classroom:hover { background: var(--kleur-primair-donker); }
+
+/* De kleine ronde knop bovenaan om feedback nu op te halen. Feedback komt
+   vanzelf binnen; deze knop is voor wie niet wil wachten en mag dus niet
+   even hard roepen als Indienen. */
+#topbar-leerling button.btn-icoon {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* Het beheertabblad staat onderaan het menu, rustig weggezet: leerlingen
+   hebben er niets te zoeken. */
+.nav-beheer { font-size: 12.5px; opacity: 0.85; }
+
+.beheer-slot input[type="password"] {
+  padding: 7px 9px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 6px;
+  font: inherit;
+  width: 160px;
+}
+.beheer-rij { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.beheer-tabel { width: 100%; border-collapse: collapse; margin: 10px 0; }
+.beheer-tabel th, .beheer-tabel td {
+  border-bottom: 1px solid var(--kleur-rand);
+  padding: 5px 6px;
+  text-align: left;
+  vertical-align: middle;
+}
+.beheer-tabel thead th { font-size: 12px; color: var(--kleur-tekst-zacht); font-weight: 600; }
+.beheer-tabel input[type="text"] {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 5px;
+  font: inherit;
+}
+.beheer-klas td:nth-child(2) { width: 110px; }
+.beheer-klas td:nth-child(4) { width: 40px; }
+.beheer-taken th { width: 240px; font-weight: 600; font-size: 13px; }
+.beheer-code { font-variant-numeric: tabular-nums; font-weight: 600; }
+.beheer-nog { font-weight: 400; color: var(--kleur-tekst-zacht); font-size: 12px; }
+.beheer-weg td { opacity: 0.45; text-decoration: line-through; }
+.beheer-weg input { text-decoration: line-through; }
+
+.btn-mini {
+  border: 1px solid var(--kleur-rand);
+  background: white;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 12px;
+  color: var(--kleur-tekst);
+}
+.btn-mini:hover { border-color: var(--kleur-fout); color: var(--kleur-fout); }
+
+.beheer-veld { display: block; margin-bottom: 16px; }
+.beheer-label { display: block; font-weight: 600; margin-bottom: 4px; }
+.beheer-veld input[type="text"], .beheer-veld textarea, .beheer-slot textarea,
+.paneel textarea[data-role="klas-plak"] {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 6px;
+  font: inherit;
+  resize: vertical;
+}
+.beheer-uitleg {
+  display: block;
+  font-size: 12px;
+  color: var(--kleur-tekst-zacht);
+  margin-top: 4px;
+}
+.beheer-uitleg code, .paneel details code {
+  background: #eef0f8;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 11.5px;
+  word-break: break-all;
+}
+
+.beheer-voet {
+  position: sticky;
+  bottom: 0;
+  box-shadow: 0 -4px 14px rgba(0, 7, 145, 0.12);
+}
+.beheer-melding { margin: 10px 0 0 0; font-size: 13px; font-weight: 600; }
+.beheer-ok { color: #0f7a52; }
+.beheer-fout { color: var(--kleur-fout); }
+.beheer-info { color: var(--kleur-tekst-zacht); }

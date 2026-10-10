@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bkh4",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["hulpmiddelen/server.js"],
+      "port": 8080
+    }
+  ]
+}
