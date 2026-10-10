@@ -108,8 +108,13 @@
      1. State: aanmaken, laden, bewaren
      ======================================================================== */
 
-  var LAATSTE_LEERLING_KEY = "boekhoudapp_laatste_leerling";
-  var PREFIX_KEY = "boekhoudapp_vestiging";
+  /* Alle apps op celinetytgadt.github.io delen hetzelfde geheugen in de
+     browser (localStorage). Daarom begint elke sleutel van deze app met haar
+     eigen voorvoegsel (OPSLAG_APP in config-koppeling.js): anders leest ze de
+     aanmelding, het werk en de feedback van de app van kern 8. */
+  var APP_SLEUTEL = (typeof OPSLAG_APP !== "undefined" && OPSLAG_APP) ? OPSLAG_APP : "boekhoudapp";
+  var LAATSTE_LEERLING_KEY = APP_SLEUTEL + "_laatste_leerling";
+  var PREFIX_KEY = APP_SLEUTEL + "_vestiging";
 
   /* De code van de vestiging (LEU, SKW, TW) hoort mee in de bewaarsleutel:
      twee scholen kunnen een gelijknamige leerling hebben, en op een gedeelde
@@ -120,7 +125,7 @@
   try { opslagPrefix = localStorage.getItem(PREFIX_KEY) || ""; } catch (e) { opslagPrefix = ""; }
 
   function storageKeyVoor(student) {
-    return "boekhoudapp_data_" + (opslagPrefix ? opslagPrefix + "_" : "") + slug(student);
+    return APP_SLEUTEL + "_data_" + (opslagPrefix ? opslagPrefix + "_" : "") + slug(student);
   }
 
   function maakLegeRij() {

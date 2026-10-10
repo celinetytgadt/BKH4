@@ -43,8 +43,10 @@
   // De gekozen vestiging (een object uit de lijst hierboven).
   var vestiging = vestigingen.length === 1 ? vestigingen[0] : null;
 
-  var AANMELD_KEY = "boekhoudapp_aanmelding";
-  var FEEDBACK_KEY_PREFIX = "boekhoudapp_feedback_";
+  // Eigen voorvoegsel per app: zie OPSLAG_APP in config-koppeling.js.
+  var APP_SLEUTEL = (typeof OPSLAG_APP !== "undefined" && OPSLAG_APP) ? OPSLAG_APP : "boekhoudapp";
+  var AANMELD_KEY = APP_SLEUTEL + "_aanmelding";
+  var FEEDBACK_KEY_PREFIX = APP_SLEUTEL + "_feedback_";
 
   // Wat de vakexpert als "in orde" aanduidt, gaat op slot: het wordt niet
   // meer meegestuurd bij een volgende inzending. Deze tekst moet exact

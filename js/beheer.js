@@ -127,7 +127,7 @@
     return html +
       "<p>Je hebt de expertcode van " + esc(label) + " nodig. Ken je ze niet, vraag ze aan Céline.</p>" +
       '<p class="beheer-rij"><input type="password" data-role="expertcode" placeholder="expertcode" ' +
-      'autocomplete="off" value="' + esc(expertcode) + '"> ' +
+      'autocomplete="new-password" value="' + esc(expertcode) + '"> ' +
       '<button type="button" class="btn-primair" data-role="ontgrendel"' + (bezig ? " disabled" : "") + ">" +
       (bezig ? "Even geduld…" : "Openen") + "</button></p>" +
       htmlMelding() +

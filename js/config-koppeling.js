@@ -10,6 +10,12 @@
 // script zoekt daarmee de juiste klaslijst en de juiste Classroom-taken op.
 // Een wijziging aan het script gebeurt dus nog maar één keer.
 
+// Het voorvoegsel voor alles wat deze app in de browser onthoudt (aanmelding,
+// werk, feedback). Alle apps op celinetytgadt.github.io delen dat geheugen;
+// met een eigen voorvoegsel leest deze app nooit iets van de app van kern 8
+// of een andere app. Elke app moet hier een ander woord hebben.
+const OPSLAG_APP = "bkh4";
+
 const KOPPELING = {
   // De URL die Google geeft na "Implementeren → Nieuwe implementatie →
   // Web-app". Ze eindigt op /exec. Blijft ze leeg, dan werkt de app volledig

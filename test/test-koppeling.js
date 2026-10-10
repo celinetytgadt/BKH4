@@ -218,7 +218,7 @@ const post = (d) => server("https://fake/exec", { method: "POST", body: JSON.str
 
 /* ===================== de app in jsdom ===================== */
 
-async function start() {
+async function start(vooraf) {
   const html = fs.readFileSync(path.join(APP, "index.html"), "utf8");
   const bronnen = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
   const dom = new JSDOM(html.replace(/<script src="[^"]+"><\/script>/g, ""), {
@@ -227,18 +227,25 @@ async function start() {
   dom.window.fetch = server;
   dom.window.navigator.sendBeacon = () => true;
   dom.window.scrollTo = () => {};
+  // Wat een andere app op hetzelfde adres (celinetytgadt.github.io) al in de
+  // browser bewaarde, bv. de app van kern 8.
+  Object.keys(vooraf || {}).forEach((k) => dom.window.localStorage.setItem(k, vooraf[k]));
   const laad = (b) => {
     const s = dom.window.document.createElement("script");
     s.textContent = fs.readFileSync(path.join(APP, b), "utf8");
     dom.window.document.head.appendChild(s);
   };
-  bronnen.filter((b) => !/koppeling\.js$|beheer\.js$/.test(b)).forEach(laad);
+  // js/koppeling.js en js/beheer.js komen pas na het opstarten van app.js,
+  // zoals in de browser. js/config-koppeling.js hoort daar NIET bij: die
+  // moet vóór app.js geladen zijn, net als in index.html.
+  const laatst = (b) => /^js\/(koppeling|beheer)\.js$/.test(b);
+  bronnen.filter((b) => !laatst(b)).forEach(laad);
   if (dom.window.document.readyState === "loading") {
     await new Promise((res) => dom.window.document.addEventListener("DOMContentLoaded", res, { once: true }));
   } else {
     dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
   }
-  bronnen.filter((b) => /koppeling\.js$|beheer\.js$/.test(b)).forEach(laad);
+  bronnen.filter(laatst).forEach(laad);
   await wacht(60);
   return dom;
 }
@@ -319,8 +326,17 @@ function boekingVolgensSleutel(ref) {
   check("verzoek zonder vestiging geweigerd", !zonder.ok && /vestiging/.test(zonder.fout), zonder);
 
   console.log("\n4. Aanmelden in de app");
-  const dom = await start();
+  const dom = await start({
+    boekhoudapp_aanmelding: JSON.stringify({ vestiging: "LEU", naam: "test", code: "1234" }),
+    boekhoudapp_laatste_leerling: "test",
+    boekhoudapp_vestiging: "leu",
+    boekhoudapp_data_leu_test: JSON.stringify({ student: "test", boekingen: { AK01: { geboekt: true, rows: [] } } }),
+    boekhoudapp_feedback_LEU_test: JSON.stringify({ AK01: [{ beoordeling: "In orde" }] }),
+  });
   const w = dom.window;
+  check("negeert de aanmelding en het werk van een andere app",
+    w.APP.getState().student === "" && !w.APP.getState().boekingen.AK01 && w.document.getElementById("leerling-code").value === "",
+    [w.APP.getState().student, Object.keys(w.APP.getState().boekingen)]);
   const doc = w.document;
   check("beginbalans staat al geboekt", w.APP.getState().boekingen.BB && w.APP.getState().boekingen.BB.geboekt === true);
   check("beginbalans telt niet als eigen werk", w.APP.heeftEigenBoekingen() === false);
@@ -342,6 +358,11 @@ function boekingVolgensSleutel(ref) {
   await wacht(120);
   check("aangemeld als Lotte V. van Leuven", w.APP.getState().student === "Lotte V.", w.APP.getState().student);
   check("BB nog steeds aanwezig na aanmelden", !!w.APP.getState().boekingen.BB);
+  check("bewaart onder het eigen voorvoegsel bkh4_",
+    JSON.parse(w.localStorage.getItem("bkh4_aanmelding")).naam === "Lotte V." &&
+      Object.keys(w.localStorage).filter((k) => /^boekhoudapp_/.test(k)).length === 5,
+    Object.keys(w.localStorage));
+  check("kern 8-gegevens in de browser bleven onaangeroerd", JSON.parse(w.localStorage.getItem("boekhoudapp_aanmelding")).naam === "test");
 
   console.log("\n5. Boeken en indienen van K1 · Aankopen");
   const st = w.APP.getState();
