@@ -29,7 +29,9 @@ verwerking, eindbalans, indienen en feedback via Google Sheets.
 - **Resultaatverwerking zonder vennootschapsbelasting**: de volledige winst
   gaat naar de overgedragen winst (één boeking RESULTAAT, drie getallen).
   Instelbaar in `RESULTAAT_CONFIG` (`js/data-opdrachten.js`).
-- **Eén script en één Sheet voor de drie vestigingen** — zie
+- **Eén script en één Sheet voor de drie vestigingen**, met per vestiging
+  eigen tabbladen (*Klas LEU*, *Inzendingen LEU* …) en een eigen expertcode:
+  het tabblad Beheer in de app opent telkens maar één vestiging. Zie
   `HANDLEIDING-koppeling.md`.
 - **Zo weinig mogelijk toegang**: `apps-script/appsscript.json` legt vast dat
   het script enkel aan zijn eigen Sheet en aan de Drive-map die het zelf

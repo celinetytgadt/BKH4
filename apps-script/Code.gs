@@ -4,10 +4,13 @@
  *
  * ÉÉN SCRIPT EN ÉÉN SHEET VOOR DE DRIE VESTIGINGEN. In kern 8 had elke
  * vestiging een eigen Sheet met een eigen kopie van dit script, en moest
- * elke wijziging drie keer gebeuren. Hier is er nog maar één: de app stuurt
- * bij elk verzoek de code van de vestiging mee (LEU, SKW, TW), en in de
- * tabbladen Klas, Inzendingen en Detail staat die code in een eigen kolom.
- * Filter op die kolom om enkel je eigen vestiging te zien.
+ * elke wijziging drie keer gebeuren. Hier is er nog maar één script. De app
+ * stuurt bij elk verzoek de code van de vestiging mee (LEU, SKW, TW), en elke
+ * vestiging heeft in de Sheet haar EIGEN tabbladen: "Klas LEU",
+ * "Inzendingen LEU", "Detail LEU", "Instellingen LEU" en "Taken LEU" — en
+ * hetzelfde voor SKW en TW. Ook de expertcode is per vestiging: wie de code
+ * van Leuven kent, kan in de app enkel Leuven beheren. Enkel de Sleutel is
+ * gedeeld.
  *
  * Deze code hoort in het Apps Script-project dat vasthangt aan de Google
  * Sheet (Extensies → Apps Script), samen met SleutelCase.gs en het manifest
@@ -20,13 +23,12 @@
  * Zie HANDLEIDING-koppeling.md voor de installatie.
  *
  * ---------------------------------------------------------------------------
- * DE TABBLADEN
+ * DE TABBLADEN (per vestiging, met de code achter de naam: "Klas LEU" …)
  *
- *   Klas          vestiging | naam | code | opmerking
+ *   Klas          naam | code | opmerking
  *                 De namen die in de app in de keuzelijst staan, met hun
  *                 persoonlijke code. Alleen hier staan de codes — nooit in
- *                 de app-code, want die is publiek leesbaar. Een leerling
- *                 ziet enkel de namen van de gekozen vestiging.
+ *                 de app-code, want die is publiek leesbaar.
  *
  *   Inzendingen   één rij per verrichting per inzending. Hier kijk je na.
  *                 Er wordt NOOIT een rij overschreven of verwijderd, zodat
@@ -37,13 +39,14 @@
  *
  *   Instellingen  instelling | waarde | toelichting
  *                 De teksten en links die de app toont, en de expertcode
- *                 waarmee een vakexpert het beheertabblad in de app opent.
- *                 Deze gelden voor de drie vestigingen samen.
+ *                 waarmee een vakexpert van die vestiging het beheertabblad
+ *                 in de app opent.
  *
- *   Taken         categorie | LEU | SKW | TW | opmerking
- *                 De taak in Classroom die bij elke categorie hoort, per
- *                 vestiging (elke school heeft haar eigen Classroom-klas).
- *                 De app toont die link bij het indienen.
+ *   Taken         categorie | link naar de taak in Classroom | opmerking
+ *                 De taak in Classroom die bij elke categorie hoort. De app
+ *                 toont die link bij het indienen.
+ *
+ * GEDEELD
  *
  *   Sleutel       de oplossing, per verrichting. Wordt bij de installatie
  *                 automatisch ingevuld met de sleutel van de case
@@ -73,8 +76,8 @@ var SLEUTEL = "DEMET";
 //
 // De code komt vooraan in de bestandsnaam van het werkbestand
 // (werk_LEU_lotte.json), zodat de drie vestigingen samen in dezelfde map
-// staan zonder elkaars werk te overschrijven, en in een eigen kolom van de
-// tabbladen Klas, Inzendingen en Detail.
+// staan zonder elkaars werk te overschrijven, en achter de naam van de
+// tabbladen van die vestiging ("Inzendingen LEU").
 var VESTIGINGEN = {
   LEU: "Leuven",
   SKW: "Katelijne",
@@ -93,6 +96,43 @@ var BLAD_INSTELLINGEN = "Instellingen";
 var BLAD_TAKEN = "Taken";
 var BLAD_SLEUTEL = "Sleutel";
 
+// Deze tabbladen bestaan per vestiging: "Klas LEU", "Klas SKW", "Klas TW" …
+// Overal in de code staat gewoon BLAD_KLAS; blad_() zet er de code van de
+// vestiging achter waarvoor er op dat moment gewerkt wordt (zetVestiging_).
+// Het tabblad Sleutel is gedeeld.
+var PER_VESTIGING = [BLAD_KLAS, BLAD_INZENDINGEN, BLAD_DETAIL, BLAD_INSTELLINGEN, BLAD_TAKEN];
+
+var _vestiging = "";
+
+// Voor welke vestiging werken we nu? Bij een verzoek uit de app is dat de
+// vestiging die de app meestuurt; in de menu's die je zelf kiest of die uit
+// de naam van het tabblad volgt.
+function zetVestiging_(vest) {
+  _vestiging = vest;
+}
+
+function tabNaam_(naam) {
+  if (PER_VESTIGING.indexOf(naam) === -1) return naam;
+  if (!_vestiging) throw new Error("Geen vestiging gekozen voor het tabblad " + naam + ".");
+  return naam + " " + _vestiging;
+}
+
+// Uit de naam van een tabblad ("Inzendingen TW") de vestiging halen, of "".
+function vestigingVanTab_(tabNaam, basis) {
+  var m = String(tabNaam).match(new RegExp("^" + basis + " (\\w+)$"));
+  return m ? vestigingCode_(m[1]) : "";
+}
+
+// Doe iets voor elke vestiging na elkaar (installatie, menu's).
+function voorElkeVestiging_(fn) {
+  var vorige = _vestiging;
+  try {
+    Object.keys(VESTIGINGEN).forEach(function (v) { zetVestiging_(v); fn(v); });
+  } finally {
+    zetVestiging_(vorige);
+  }
+}
+
 var MAP_NAAM = "Boekhoudapp 4e jaar werkbestanden";
 var MAP_VERSIES = "versies";
 
@@ -102,15 +142,15 @@ var AANTAL_VERSIES = 5;
 var VERSIE_INTERVAL_MIN = 60;
 
 var KOP_INZENDINGEN = [
-  "tijdstip", "vestiging", "leerling", "categorie", "ref", "boeking", "status leerling",
+  "tijdstip", "leerling", "categorie", "ref", "boeking", "status leerling",
   "beoordeling", "feedback", "klaar", "is laatste", "inzending",
   "automatische controle",
 ];
 var KOP_DETAIL = [
-  "tijdstip", "vestiging", "leerling", "inzending", "ref", "lijn", "bedrag", "rekening",
+  "tijdstip", "leerling", "inzending", "ref", "lijn", "bedrag", "rekening",
   "omschrijving", "D/C", "relatie", "redenering", "A/P/K/O", "stijgt/daalt",
 ];
-var KOP_KLAS = ["vestiging", "naam", "code", "opmerking"];
+var KOP_KLAS = ["naam", "code", "opmerking"];
 var KOP_SLEUTEL = ["ref", "rekening of veld", "D/C", "bedrag of rubrieken", "opmerking"];
 
 // Van welke leerling de oplossingssleutel standaard overgenomen wordt (menu
@@ -119,13 +159,10 @@ var KOP_SLEUTEL = ["ref", "rekening of veld", "D/C", "bedrag of rubrieken", "opm
 var SLEUTEL_LEERLING = "test";
 
 var KOP_INSTELLINGEN = ["instelling", "waarde", "toelichting"];
-// Kolom A de categorie, dan één kolom per vestiging met de link naar de taak
-// in Classroom, en als laatste een opmerking. In de kolom van een vestiging
-// hoort de volledige link uit Classroom (taak openen -> de drie puntjes ->
-// Link kopiëren), dus iets als https://classroom.google.com/c/<klas>/a/<taak>/details
-function kopTaken_() {
-  return ["categorie"].concat(Object.keys(VESTIGINGEN)).concat(["opmerking"]);
-}
+var KOP_TAKEN = ["categorie", "link naar de taak in Classroom", "opmerking"];
+// In kolom B hoort de volledige link uit Classroom (taak openen -> de drie
+// puntjes -> Link kopiëren), dus iets als
+// https://classroom.google.com/c/<klas>/a/<taak>/details
 
 // De categorieën waarvoor er een taak in Classroom bestaat. Ze komen overeen
 // met wat de leerling in het indienvenster aanvinkt. Eindbalans en
@@ -168,9 +205,9 @@ var INSTELLINGEN_UITLEG = [
 ];
 
 // Kolomnummers in Inzendingen (1-gebaseerd), zodat de rest leesbaar blijft.
-var K_TIJDSTIP = 1, K_VESTIGING = 2, K_LEERLING = 3, K_CATEGORIE = 4, K_REF = 5,
-    K_BOEKING = 6, K_STATUS_LEERLING = 7, K_BEOORDELING = 8, K_FEEDBACK = 9,
-    K_KLAAR = 10, K_IS_LAATSTE = 11, K_INZENDING = 12, K_AUTOMATISCH = 13;
+var K_TIJDSTIP = 1, K_LEERLING = 2, K_CATEGORIE = 3, K_REF = 4, K_BOEKING = 5,
+    K_STATUS_LEERLING = 6, K_BEOORDELING = 7, K_FEEDBACK = 8, K_KLAAR = 9,
+    K_IS_LAATSTE = 10, K_INZENDING = 11, K_AUTOMATISCH = 12;
 
 // De drie beoordelingen, gelijk aan de afspraken met de collega's in
 // Classroom. "In orde" heeft een bijzondere betekenis in de app: zo'n
@@ -202,6 +239,7 @@ function doGet(e) {
     // welke taken en welke werkbestanden er gebruikt worden.
     var vest = vestigingCode_(p.vestiging);
     if (!vest) return antwoord({ ok: false, fout: "vestiging onbekend: " + (p.vestiging || "(geen)") });
+    zetVestiging_(vest);
 
     // De instellingen, de taken en de namen van de klaslijst. Bewust zonder
     // aanmelding: de app heeft de namen nodig vóór de leerling aangemeld is.
@@ -247,6 +285,7 @@ function doPost(e) {
     if (data.sleutel !== SLEUTEL) return antwoord({ ok: false, fout: "sleutel" });
     var vest = vestigingCode_(data.vestiging);
     if (!vest) return antwoord({ ok: false, fout: "vestiging onbekend: " + (data.vestiging || "(geen)") });
+    zetVestiging_(vest);
 
     /* Enkel wie in de Sheet schrijft, heeft het slot nodig: die rijen mogen
        niet door elkaar geschreven worden. Het gewone bewaren schrijft naar
@@ -266,7 +305,7 @@ function doPost(e) {
     // leerlingnaam. Daarom vóór de gewone aanmeldcontrole.
     if (data.actie === "beheerBewaren") {
       if (!neemSlot()) return antwoord({ ok: false, fout: "te druk, probeer opnieuw" });
-      return antwoord(bewaarBeheer_(data, vest));
+      return antwoord(bewaarBeheer_(data));
     }
 
     var check = controleerAanmelding(vest, data.naam, data.code);
@@ -307,17 +346,16 @@ function antwoord(obj) {
    ========================================================================== */
 
 /**
- * Vergelijkt naam en code met het tabblad Klas, enkel bij de leerlingen van
- * de gekozen vestiging. De naam wordt vergeleken zonder hoofdletters, spaties
+ * Vergelijkt naam en code met het tabblad Klas van de gekozen vestiging. De naam wordt vergeleken zonder hoofdletters, spaties
  * en leestekens: "Lotte V." en "lotte v" zijn dezelfde leerling. Zo raakt
  * niemand werk kwijt door een tikfout.
  */
 function controleerAanmelding(vest, naam, code) {
   if (!naam) return { ok: false, fout: "geen naam" };
   blad_(BLAD_KLAS);   // foutmelding als de installatie nog niet gebeurd is
-  var rijen = klasLezen_(vest);
+  var rijen = klasLezen_();
 
-  // Staat er voor deze vestiging nog geen enkele naam in het tabblad Klas,
+  // Staat er voor deze vestiging nog geen enkele naam in haar tabblad Klas,
   // dan werkt de app zonder codes verder. Zo kan je testen vóór de
   // klaslijst vastligt.
   if (!rijen.length) return { ok: true, leerling: String(naam).trim(), zonderCode: true };
@@ -579,7 +617,7 @@ function verwerkInzending(vest, leerling, data) {
 
   var rijen = items.map(function (it) {
     return [
-      nu, vest, leerling, it.categorie || "", it.ref || "", it.boeking || "",
+      nu, leerling, it.categorie || "", it.ref || "", it.boeking || "",
       it.status || "", "", "", false, "JA", inzendingId, "",
     ];
   });
@@ -588,8 +626,8 @@ function verwerkInzending(vest, leerling, data) {
   blad.getRange(eersteNieuweRij, K_BEOORDELING, rijen.length, 1)
     .setDataValidation(beoordelingValidatie_());
 
-  markeerOudereRijen_(blad, vest, leerling, items.map(function (it) { return it.ref; }), eersteNieuweRij);
-  schrijfDetail_(vest, leerling, data, inzendingId, nu);
+  markeerOudereRijen_(blad, leerling, items.map(function (it) { return it.ref; }), eersteNieuweRij);
+  schrijfDetail_(leerling, data, inzendingId, nu);
 
   // Meteen naast de sleutel leggen. Loopt daar iets mis, dan mag de
   // inzending zelf daar niet onder lijden: die staat er al.
@@ -611,12 +649,11 @@ function verwerkInzending(vest, leerling, data) {
  * tabblad heen en weer — kolom "boeking" met haar lange teksten incluis — en
  * dat tabblad groeit het hele schooljaar aan.
  */
-function markeerOudereRijen_(blad, vest, leerling, refs, vanafRij) {
+function markeerOudereRijen_(blad, leerling, refs, vanafRij) {
   if (vanafRij <= 2) return;
   var aantal = vanafRij - 2;
   if (aantal <= 0) return;
 
-  var vestigingen = blad.getRange(2, K_VESTIGING, aantal, 1).getValues();
   var leerlingen = blad.getRange(2, K_LEERLING, aantal, 1).getValues();
   var refKolom = blad.getRange(2, K_REF, aantal, 1).getValues();
   var laatsteBereik = blad.getRange(2, K_IS_LAATSTE, aantal, 1);
@@ -629,7 +666,6 @@ function markeerOudereRijen_(blad, vest, leerling, refs, vanafRij) {
   var gewijzigd = false;
   for (var i = 0; i < aantal; i++) {
     if (laatste[i][0] !== "JA") continue;
-    if (String(vestigingen[i][0]) !== vest) continue;
     if (normaliseerNaam_(leerlingen[i][0]) !== gezocht) continue;
     if (!refSet[String(refKolom[i][0])]) continue;
     laatste[i][0] = "";
@@ -638,12 +674,12 @@ function markeerOudereRijen_(blad, vest, leerling, refs, vanafRij) {
   if (gewijzigd) laatsteBereik.setValues(laatste);
 }
 
-function schrijfDetail_(vest, leerling, data, inzendingId, nu) {
+function schrijfDetail_(leerling, data, inzendingId, nu) {
   var lijnen = [];
   (data.items || []).forEach(function (it) {
     (it.lijnen || []).forEach(function (r, idx) {
       lijnen.push([
-        nu, vest, leerling, inzendingId, it.ref, idx + 1,
+        nu, leerling, inzendingId, it.ref, idx + 1,
         r.bedrag || "", r.rekening || "", r.omschrijving || "", r.dc || "",
         r.relatie || "", r.redenering || "", r.apko || "", r.stijgtDaalt || "",
       ]);
@@ -865,8 +901,8 @@ function zorgVoorKopAutomatisch_(blad) {
 // De leerling hoort mee in de sleutel: kopieer je in de Sheet rijen van de
 // ene leerling naar een andere (bv. om te testen), dan houden die hun oude
 // inzendingscode. Zonder de naam werden hun lijnen dan samengeteld.
-function detailSleutel_(vest, leerling, inzending, ref) {
-  return String(vest) + "|" + normaliseerNaam_(leerling) + "|" + String(inzending) + "|" + String(ref);
+function detailSleutel_(leerling, inzending, ref) {
+  return normaliseerNaam_(leerling) + "|" + String(inzending) + "|" + String(ref);
 }
 function detailPerInzending_(filterLeerling) {
   var blad = bladOfNiets_(BLAD_DETAIL);
@@ -875,14 +911,13 @@ function detailPerInzending_(filterLeerling) {
   var rijen = blad.getRange(2, 1, blad.getLastRow() - 1, KOP_DETAIL.length).getValues();
   var gezocht = filterLeerling ? normaliseerNaam_(filterLeerling) : null;
   rijen.forEach(function (r) {
-    // tijdstip, vestiging, leerling, inzending, ref, lijn, bedrag, rekening,
-    // omschrijving, D/C, relatie, redenering
-    if (gezocht && normaliseerNaam_(r[2]) !== gezocht) return;
-    var sleutel = detailSleutel_(r[1], r[2], r[3], r[4]);
+    // tijdstip, leerling, inzending, ref, lijn, bedrag, rekening, omschrijving, D/C, relatie, redenering
+    if (gezocht && normaliseerNaam_(r[1]) !== gezocht) return;
+    var sleutel = detailSleutel_(r[1], r[2], r[3]);
     if (!uit[sleutel]) uit[sleutel] = [];
     uit[sleutel].push({
-      tijdstip: r[0], inzending: String(r[3]), ref: String(r[4]), lijn: Number(r[5]) || 0,
-      bedrag: r[6], rekening: r[7], dc: r[9], redenering: r[11],
+      tijdstip: r[0], inzending: String(r[2]), ref: String(r[3]), lijn: Number(r[4]) || 0,
+      bedrag: r[5], rekening: r[6], dc: r[8], redenering: r[10],
     });
   });
   Object.keys(uit).forEach(function (k) { uit[k].sort(function (a, b) { return a.lijn - b.lijn; }); });
@@ -901,7 +936,13 @@ function sleutelOvernemen() {
   if (vraag.getSelectedButton() !== ui.Button.OK) return;
   var naam = String(vraag.getResponseText() || "").trim() || SLEUTEL_LEERLING;
 
-  var perInzending = detailPerInzending_(naam);
+  // In de tabbladen Detail van alle vestigingen samen: de testleerling mag
+  // in eender welke vestiging aangemeld geweest zijn.
+  var perInzending = {};
+  voorElkeVestiging_(function (v) {
+    var d = detailPerInzending_(naam);
+    Object.keys(d).forEach(function (k) { perInzending[v + "|" + k] = d[k]; });
+  });
   // Per ref de recentste inzending.
   var recentst = {};
   Object.keys(perInzending).forEach(function (k) {
@@ -911,7 +952,7 @@ function sleutelOvernemen() {
   });
   var refs = Object.keys(recentst).filter(function (ref) { return !REF_NIET_NAKIJKEN[ref]; });
   if (!refs.length) {
-    ui.alert("Geen inzendingen gevonden van '" + naam + "' in het tabblad Detail.");
+    ui.alert("Geen inzendingen gevonden van '" + naam + "' in de tabbladen Detail.");
     return;
   }
 
@@ -965,37 +1006,39 @@ function nakijkenOpenInzendingen() {
   var ui = SpreadsheetApp.getUi();
   var sleutel = sleutelLezen_();
   if (!Object.keys(sleutel).length) {
-    ui.alert("Het tabblad Sleutel is nog leeg. Kies eerst Boekhoudapp → Sleutel overnemen uit een inzending.");
+    ui.alert("Het tabblad Sleutel is nog leeg. Kies eerst Boekhoudapp → Sleutel van de case (opnieuw) invullen.");
     return;
   }
-  var blad = blad_(BLAD_INZENDINGEN);
-  if (blad.getLastRow() < 2) { ui.alert("Er zijn nog geen inzendingen."); return; }
-  zorgVoorKopAutomatisch_(blad);
-
-  var n = blad.getLastRow() - 1;
-  var rijen = blad.getRange(2, 1, n, K_AUTOMATISCH).getValues();
-  var detail = detailPerInzending_(null);
-  var beoordelingBereik = blad.getRange(2, K_BEOORDELING, n, 1);
-  var autoBereik = blad.getRange(2, K_AUTOMATISCH, n, 1);
-  var beoordelingen = beoordelingBereik.getValues();
-  var notities = autoBereik.getValues();
   var inOrde = 0, teRemedieren = 0;
+  voorElkeVestiging_(function () {
+    var blad = bladOfNiets_(BLAD_INZENDINGEN);
+    if (!blad || blad.getLastRow() < 2) return;
+    zorgVoorKopAutomatisch_(blad);
 
-  for (var i = 0; i < n; i++) {
-    var r = rijen[i];
-    if (r[K_IS_LAATSTE - 1] !== "JA") continue;
-    if (String(r[K_BEOORDELING - 1] || "").trim()) continue;
-    var ref = String(r[K_REF - 1]);
-    var lijnen = detail[detailSleutel_(r[K_VESTIGING - 1], r[K_LEERLING - 1], r[K_INZENDING - 1], ref)] || [];
-    var res = controleerItem_(ref, String(r[K_STATUS_LEERLING - 1] || ""), lijnen, sleutel);
-    if (!res) continue;
-    beoordelingen[i][0] = res.ok ? BEOORDELINGEN[0] : BEOORDELINGEN[1];
-    notities[i][0] = res.notitie;
-    if (res.ok) inOrde++; else teRemedieren++;
-  }
-  beoordelingBereik.setValues(beoordelingen);
-  autoBereik.setValues(notities);
-  ui.alert("Klaar: " + inOrde + " keer '" + BEOORDELINGEN[0] + "' en " + teRemedieren + " keer '" +
+    var n = blad.getLastRow() - 1;
+    var rijen = blad.getRange(2, 1, n, K_AUTOMATISCH).getValues();
+    var detail = detailPerInzending_(null);
+    var beoordelingBereik = blad.getRange(2, K_BEOORDELING, n, 1);
+    var autoBereik = blad.getRange(2, K_AUTOMATISCH, n, 1);
+    var beoordelingen = beoordelingBereik.getValues();
+    var notities = autoBereik.getValues();
+
+    for (var i = 0; i < n; i++) {
+      var r = rijen[i];
+      if (r[K_IS_LAATSTE - 1] !== "JA") continue;
+      if (String(r[K_BEOORDELING - 1] || "").trim()) continue;
+      var ref = String(r[K_REF - 1]);
+      var lijnen = detail[detailSleutel_(r[K_LEERLING - 1], r[K_INZENDING - 1], ref)] || [];
+      var res = controleerItem_(ref, String(r[K_STATUS_LEERLING - 1] || ""), lijnen, sleutel);
+      if (!res) continue;
+      beoordelingen[i][0] = res.ok ? BEOORDELINGEN[0] : BEOORDELINGEN[1];
+      notities[i][0] = res.notitie;
+      if (res.ok) inOrde++; else teRemedieren++;
+    }
+    beoordelingBereik.setValues(beoordelingen);
+    autoBereik.setValues(notities);
+  });
+  ui.alert("Klaar, voor de drie vestigingen: " + inOrde + " keer '" + BEOORDELINGEN[0] + "' en " + teRemedieren + " keer '" +
     BEOORDELINGEN[1] + "' ingevuld.\n\nNiets is vrijgegeven: zet zelf het vinkje 'klaar' aan.");
 }
 
@@ -1022,13 +1065,12 @@ function haalFeedbackOp(vest, naam) {
   // staat er tussenin en bevat de volledige boeking van elke leerling. Die
   // hier meelezen maakte het ophalen van feedback onnodig zwaar, en dat
   // gebeurt bij élke keer dat een leerling de app opent.
-  var links = blad.getRange(2, K_TIJDSTIP, n, K_REF).getValues();          // tijdstip, vestiging, leerling, categorie, ref
+  var links = blad.getRange(2, K_TIJDSTIP, n, K_REF).getValues();          // tijdstip … ref
   var rechts = blad.getRange(2, K_BEOORDELING, n, 3).getValues();          // beoordeling, feedback, klaar
   var gezocht = normaliseerNaam_(naam);
   var uit = [];
 
   for (var i = 0; i < n; i++) {
-    if (String(links[i][K_VESTIGING - 1]) !== vest) continue;
     if (normaliseerNaam_(links[i][K_LEERLING - 1]) !== gezocht) continue;
     if (rechts[i][2] !== true) continue;
     var beoordeling = String(rechts[i][0] || "").trim();
@@ -1082,17 +1124,18 @@ function trekInVoorLeerling() { zetKlaarVoorLeerling_(false); }
 
 function zetKlaarVoorLeerling_(waarde) {
   var ui = SpreadsheetApp.getUi();
-  var blad = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(BLAD_INZENDINGEN);
   var actief = SpreadsheetApp.getActiveSheet();
-  if (!blad || actief.getName() !== BLAD_INZENDINGEN) {
-    ui.alert("Zet je cursor eerst op een rij in het tabblad " + BLAD_INZENDINGEN + ".");
+  var vest = vestigingVanTab_(actief.getName(), BLAD_INZENDINGEN);
+  if (!vest) {
+    ui.alert("Zet je cursor eerst op een rij in het tabblad " + BLAD_INZENDINGEN + " van je vestiging (bv. '" +
+      BLAD_INZENDINGEN + " LEU').");
     return;
   }
+  var blad = actief;
   var rij = actief.getActiveCell().getRow();
   if (rij < 2) { ui.alert("Zet je cursor op de rij van een leerling."); return; }
 
   var leerling = blad.getRange(rij, K_LEERLING).getValue();
-  var vest = String(blad.getRange(rij, K_VESTIGING).getValue());
   if (!leerling) { ui.alert("Op deze rij staat geen leerling."); return; }
 
   var n = blad.getLastRow() - 1;
@@ -1107,8 +1150,6 @@ function zetKlaarVoorLeerling_(waarde) {
   var vinkjes = kolom.getValues();
 
   for (var i = 0; i < waarden.length; i++) {
-    // Twee vestigingen kunnen een gelijknamige leerling hebben.
-    if (String(waarden[i][K_VESTIGING - 1]) !== vest) continue;
     if (normaliseerNaam_(waarden[i][K_LEERLING - 1]) !== gezocht) continue;
     if (waarden[i][K_IS_LAATSTE - 1] !== "JA") continue;
     if (waarde) {
@@ -1177,6 +1218,7 @@ function zetVersieTerug() {
   if (vraagV.getSelectedButton() !== ui.Button.OK) return;
   var vest = vestigingCode_(vraagV.getResponseText());
   if (!vest) { ui.alert("Die vestiging ken ik niet. Kies uit: " + Object.keys(VESTIGINGEN).join(", ")); return; }
+  zetVestiging_(vest);
   var vraag = ui.prompt("Werk terugzetten",
     "Van welke leerling? Schrijf de naam zoals in het tabblad Klas.", ui.ButtonSet.OK_CANCEL);
   if (vraag.getSelectedButton() !== ui.Button.OK) return;
@@ -1231,30 +1273,27 @@ function zetVersieTerug() {
  * Klas die er nog geen heeft. Bestaande codes blijven ongemoeid.
  */
 function genereerCodes() {
-  var blad = blad_(BLAD_KLAS);
-  if (blad.getLastRow() < 2) {
-    SpreadsheetApp.getUi().alert("Vul eerst de vestiging (kolom A) en de namen van je leerlingen (kolom B) in.");
-    return;
-  }
-  // Kolom B = naam, kolom C = code.
-  var bereik = blad.getRange(2, 2, blad.getLastRow() - 1, 2);
-  var waarden = bereik.getValues();
-  var gebruikt = {};
-  waarden.forEach(function (r) { if (r[1]) gebruikt[String(r[1]).trim()] = true; });
-
   var nieuw = 0;
-  waarden.forEach(function (r) {
-    if (!String(r[0] || "").trim() || String(r[1] || "").trim()) return;
-    var code;
-    do { code = String(Math.floor(1000 + Math.random() * 9000)); } while (gebruikt[code]);
-    gebruikt[code] = true;
-    r[1] = code;
-    nieuw++;
+  voorElkeVestiging_(function () {
+    var blad = bladOfNiets_(BLAD_KLAS);
+    if (!blad || blad.getLastRow() < 2) return;
+    var bereik = blad.getRange(2, 1, blad.getLastRow() - 1, 2);
+    var waarden = bereik.getValues();
+    var gebruikt = {};
+    waarden.forEach(function (r) { if (r[1]) gebruikt[String(r[1]).trim()] = true; });
+    waarden.forEach(function (r) {
+      if (!String(r[0] || "").trim() || String(r[1] || "").trim()) return;
+      var code;
+      do { code = String(Math.floor(1000 + Math.random() * 9000)); } while (gebruikt[code]);
+      gebruikt[code] = true;
+      r[1] = code;
+      nieuw++;
+    });
+    // Als tekst opslaan, anders slikt Sheets een voorloopnul op.
+    blad.getRange(2, 2, blad.getLastRow() - 1, 1).setNumberFormat("@");
+    bereik.setValues(waarden);
   });
-  // Als tekst opslaan, anders slikt Sheets een voorloopnul op.
-  blad.getRange(2, 3, blad.getLastRow() - 1, 1).setNumberFormat("@");
-  bereik.setValues(waarden);
-  SpreadsheetApp.getUi().alert(nieuw + " nieuwe code(s) aangemaakt.");
+  SpreadsheetApp.getUi().alert(nieuw + " nieuwe code(s) aangemaakt, in de tabbladen Klas van de drie vestigingen.");
 }
 
 /* ==========================================================================
@@ -1262,7 +1301,8 @@ function genereerCodes() {
    ========================================================================== */
 
 /**
- * Maakt de drie tabbladen aan met de juiste koppen, opmaak en filter.
+ * Maakt de tabbladen aan (per vestiging, plus de gedeelde Sleutel) met de
+ * juiste koppen, opmaak en filter.
  * Bestaande gegevens blijven staan; deze functie mag je gerust opnieuw
  * uitvoeren.
  */
@@ -1277,68 +1317,59 @@ function installeer() {
     try { fn(); } catch (err) { opmerkingen.push("• " + wat + ": " + err.message); }
   };
 
-  var klas = maakBlad_(ss, BLAD_KLAS, KOP_KLAS);
-  stap("breedtes tabblad Klas", function () {
-    klas.setColumnWidth(1, 90).setColumnWidth(2, 200).setColumnWidth(3, 80).setColumnWidth(4, 300);
-    klas.getRange("C:C").setNumberFormat("@");
-    klas.getRange(2, 1, klas.getMaxRows() - 1, 1).setDataValidation(
-      SpreadsheetApp.newDataValidation().requireValueInList(Object.keys(VESTIGINGEN), true).setAllowInvalid(false).build());
-    if (!klas.getFilter()) klas.getRange(1, 1, 1, KOP_KLAS.length).createFilter();
-  });
+  // De tabbladen van elke vestiging.
+  voorElkeVestiging_(function (v) {
+    var klas = maakBlad_(ss, BLAD_KLAS, KOP_KLAS);
+    stap("tabblad Klas " + v, function () {
+      klas.setColumnWidth(1, 200).setColumnWidth(2, 80).setColumnWidth(3, 300);
+      klas.getRange("B:B").setNumberFormat("@");
+    });
 
-  var inz = maakBlad_(ss, BLAD_INZENDINGEN, KOP_INZENDINGEN);
-  stap("breedtes tabblad Inzendingen", function () {
-    inz.setColumnWidth(K_TIJDSTIP, 130);
-    inz.setColumnWidth(K_VESTIGING, 80);
-    inz.setColumnWidth(K_LEERLING, 140);
-    inz.setColumnWidth(K_CATEGORIE, 150);
-    inz.setColumnWidth(K_REF, 80);
-    inz.setColumnWidth(K_BOEKING, 420);
-    inz.setColumnWidth(K_STATUS_LEERLING, 110);
-    inz.setColumnWidth(K_BEOORDELING, 130);
-    inz.setColumnWidth(K_FEEDBACK, 380);
-    // De boeking staat met één lijn per regel in de cel (704000  22.000  C).
-    // Wrap én bovenaan uitlijnen, anders staat een boeking van vier lijnen
-    // in het midden van een hoge rij te zweven.
-    inz.getRange(2, K_BOEKING, inz.getMaxRows() - 1, 1).setWrap(true).setVerticalAlignment("top");
-    inz.getRange(2, K_FEEDBACK, inz.getMaxRows() - 1, 1).setWrap(true).setVerticalAlignment("top");
-  });
+    var inz = maakBlad_(ss, BLAD_INZENDINGEN, KOP_INZENDINGEN);
+    stap("tabblad Inzendingen " + v, function () {
+      inz.setColumnWidth(K_TIJDSTIP, 130);
+      inz.setColumnWidth(K_LEERLING, 140);
+      inz.setColumnWidth(K_CATEGORIE, 190);
+      inz.setColumnWidth(K_REF, 80);
+      inz.setColumnWidth(K_BOEKING, 420);
+      inz.setColumnWidth(K_STATUS_LEERLING, 110);
+      inz.setColumnWidth(K_BEOORDELING, 130);
+      inz.setColumnWidth(K_FEEDBACK, 380);
+      inz.setColumnWidth(K_AUTOMATISCH, 380);
+      // De boeking staat met één lijn per regel in de cel (704000  22.000  C).
+      inz.getRange(2, K_BOEKING, inz.getMaxRows() - 1, 1).setWrap(true).setVerticalAlignment("top");
+      inz.getRange(2, K_FEEDBACK, inz.getMaxRows() - 1, 1).setWrap(true).setVerticalAlignment("top");
+      inz.getRange(2, K_AUTOMATISCH, inz.getMaxRows() - 1, 1).setWrap(true).setVerticalAlignment("top");
+    });
+    // Staat er al een filter, dan blijft die gewoon staan.
+    stap("filter Inzendingen " + v, function () {
+      if (!inz.getFilter()) inz.getRange(1, 1, 1, KOP_INZENDINGEN.length).createFilter();
+    });
+    stap("kleuren van de beoordelingen " + v, function () { kleurBeoordelingen_(inz); });
+    stap("keuzelijst van de beoordelingen " + v, function () {
+      if (inz.getLastRow() > 1) {
+        inz.getRange(2, K_BEOORDELING, inz.getLastRow() - 1, 1).setDataValidation(beoordelingValidatie_());
+      }
+    });
 
-  // Staat er al een filter, dan blijft die gewoon staan: createFilter()
-  // gooit anders een fout en dat is het niet waard.
-  stap("filter", function () {
-    if (!inz.getFilter()) inz.getRange(1, 1, 1, KOP_INZENDINGEN.length).createFilter();
-  });
+    var inst = maakBlad_(ss, BLAD_INSTELLINGEN, KOP_INSTELLINGEN);
+    stap("tabblad Instellingen " + v, function () {
+      zorgVoorInstellingen_(inst);
+      inst.setColumnWidth(1, 160).setColumnWidth(2, 420).setColumnWidth(3, 520);
+      inst.getRange(2, 2, inst.getMaxRows() - 1, 2).setWrap(true).setVerticalAlignment("top");
+      inst.getRange("B:B").setNumberFormat("@");
+    });
 
-  stap("kleuren van de beoordelingen", function () { kleurBeoordelingen_(inz); });
+    var taken = maakBlad_(ss, BLAD_TAKEN, KOP_TAKEN);
+    stap("tabblad Taken " + v, function () {
+      zorgVoorTaken_(taken);
+      taken.setColumnWidth(1, 240).setColumnWidth(2, 520).setColumnWidth(3, 300);
+    });
 
-  // De keuzelijst op alle bestaande rijen bijwerken, zodat oude rijen na een
-  // update van de beoordelingen niet met de vorige lijst blijven zitten.
-  stap("keuzelijst van de beoordelingen", function () {
-    if (inz.getLastRow() > 1) {
-      inz.getRange(2, K_BEOORDELING, inz.getLastRow() - 1, 1).setDataValidation(beoordelingValidatie_());
-    }
-  });
-
-  var inst = maakBlad_(ss, BLAD_INSTELLINGEN, KOP_INSTELLINGEN);
-  stap("tabblad Instellingen", function () {
-    zorgVoorInstellingen_(inst);
-    inst.setColumnWidth(1, 160).setColumnWidth(2, 420).setColumnWidth(3, 520);
-    inst.getRange(2, 2, inst.getMaxRows() - 1, 2).setWrap(true).setVerticalAlignment("top");
-    inst.getRange("B:B").setNumberFormat("@");
-  });
-
-  var taken = maakBlad_(ss, BLAD_TAKEN, kopTaken_());
-  stap("tabblad Taken", function () {
-    zorgVoorTaken_(taken);
-    taken.setColumnWidth(1, 240);
-    for (var k = 2; k < kopTaken_().length; k++) taken.setColumnWidth(k, 300);
-    taken.setColumnWidth(kopTaken_().length, 240);
-  });
-
-  stap("breedte kolom automatische controle", function () {
-    inz.setColumnWidth(K_AUTOMATISCH, 380);
-    inz.getRange(2, K_AUTOMATISCH, inz.getMaxRows() - 1, 1).setWrap(true).setVerticalAlignment("top");
+    var det = maakBlad_(ss, BLAD_DETAIL, KOP_DETAIL);
+    stap("tabblad Detail " + v, function () {
+      det.setColumnWidth(1, 130).setColumnWidth(2, 140).setColumnWidth(3, 190);
+    });
   });
 
   var sl = maakBlad_(ss, BLAD_SLEUTEL, KOP_SLEUTEL);
@@ -1352,11 +1383,6 @@ function installeer() {
     if (sl.getLastRow() < 2) { schrijfSleutelCase_(sl); sleutelIngevuld = true; }
   });
 
-  var det = maakBlad_(ss, BLAD_DETAIL, KOP_DETAIL);
-  stap("breedtes tabblad Detail", function () {
-    det.setColumnWidth(1, 130).setColumnWidth(2, 80).setColumnWidth(3, 140).setColumnWidth(4, 190);
-  });
-
   // De mappen meteen aanmaken, zodat de eerste leerling niet moet wachten.
   stap("map in Drive", function () { werkMap_(); versieMap_(); });
 
@@ -1365,16 +1391,18 @@ function installeer() {
   // sleutelwoord, map) staan in HANDLEIDING-koppeling.md.
   SpreadsheetApp.getUi().alert(
     "Klaar.\n\n" +
-    "• Code voor Beheer aanpassen: menu Boekhoudapp → Expertcode instellen.\n" +
-    "• Nakijken doe je in het tabblad Inzendingen: filter op 'vestiging' en op 'is laatste' = JA.\n" +
+    "• Elke vestiging heeft haar eigen tabbladen: Klas, Inzendingen, Detail, Instellingen en Taken, met de code erachter (bv. 'Inzendingen LEU').\n" +
+    "• Expertcode per vestiging: menu Boekhoudapp → Expertcode instellen.\n" +
+    "• Nakijken doe je in het tabblad Inzendingen van je vestiging: filter op 'is laatste' = JA.\n" +
     "• Er wordt automatisch gecontroleerd of de inzending klopt met de sleutel" +
     (sleutelIngevuld ? " (de sleutel van de case staat al klaar)" : "") + ".\n" +
-    "• Feedback gegeven? Vink 'klaar' aan in kolom J." +
+    "• Feedback gegeven? Vink 'klaar' aan in kolom I." +
     (opmerkingen.length ? "\n\nNiet alles lukte, maar de installatie is wel doorgelopen:\n" + opmerkingen.join("\n") : "")
   );
 }
 
 function maakBlad_(ss, naam, koppen) {
+  naam = tabNaam_(naam);
   var blad = ss.getSheetByName(naam) || ss.insertSheet(naam);
   blad.getRange(1, 1, 1, koppen.length).setValues([koppen])
     .setFontWeight("bold").setBackground("#e9eaf7");
@@ -1402,6 +1430,7 @@ function kleurBeoordelingen_(blad) {
 }
 
 function blad_(naam) {
+  naam = tabNaam_(naam);
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var blad = ss.getSheetByName(naam);
   if (!blad) throw new Error("Tabblad '" + naam + "' bestaat niet. Voer eerst Boekhoudapp → Eerste installatie uit.");
@@ -1412,7 +1441,7 @@ function blad_(naam) {
    Instellingen, taken en klaslijst
 
    Alles wat de vakexpert vanuit het beheertabblad in de app aanpast, staat
-   in twee tabbladen van deze Sheet:
+   in de tabbladen van zijn of haar vestiging:
 
      Instellingen   instelling | waarde | toelichting
      Taken          categorie  | link naar de taak in Classroom | opmerking
@@ -1425,7 +1454,7 @@ function blad_(naam) {
 // Zoals blad_(), maar zonder foutmelding: een Sheet die nog niet opnieuw
 // geïnstalleerd is, mag de app niet doen vastlopen.
 function bladOfNiets_(naam) {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(naam) || null;
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(tabNaam_(naam)) || null;
 }
 
 /* Het tabblad Instellingen wordt binnen één verzoek meermaals gelezen: eerst
@@ -1433,10 +1462,10 @@ function bladOfNiets_(naam) {
    leesbeurt is een heen-en-weer met Google van een paar honderd milliseconden,
    dus het antwoord wordt onthouden zolang dít verzoek loopt. Wie schrijft,
    maakt het geheugen leeg met vergeetInstellingen_(). */
-var _instellingenCache = null;
+var _instellingenCache = {};
 
 function instellingenLezen_() {
-  if (_instellingenCache) return _instellingenCache;
+  if (_instellingenCache[_vestiging]) return _instellingenCache[_vestiging];
   var uit = {};
   var blad = bladOfNiets_(BLAD_INSTELLINGEN);
   if (blad && blad.getLastRow() >= 2) {
@@ -1446,74 +1475,36 @@ function instellingenLezen_() {
       if (sleutel) uit[sleutel] = String(r[1] === null || r[1] === undefined ? "" : r[1]);
     });
   }
-  _instellingenCache = uit;
+  _instellingenCache[_vestiging] = uit;
   return uit;
 }
 
-function vergeetInstellingen_() { _instellingenCache = null; }
+function vergeetInstellingen_() { _instellingenCache = {}; }
 
-/* In welke kolom van het tabblad Taken staan de links van deze vestiging?
-   Gezocht op de kop, zodat een kolom die verschoven werd niet stilletjes de
-   links van een andere school geeft. */
-function takenKolom_(blad, vest) {
-  var kop = blad.getRange(1, 1, 1, Math.max(blad.getLastColumn(), 1)).getValues()[0];
-  for (var i = 0; i < kop.length; i++) {
-    if (String(kop[i]).trim().toUpperCase() === vest) return i + 1;
-  }
-  return 0;
-}
-
-function takenKolomOpmerking_(blad) {
-  var kop = blad.getRange(1, 1, 1, Math.max(blad.getLastColumn(), 1)).getValues()[0];
-  for (var i = 0; i < kop.length; i++) {
-    if (String(kop[i]).trim().toLowerCase() === "opmerking") return i + 1;
-  }
-  return 0;
-}
-
-// De taken van één vestiging: [{ categorie, link, opmerking }].
-function takenLezen_(vest) {
+function takenLezen_() {
   var uit = [];
   var blad = bladOfNiets_(BLAD_TAKEN);
   if (!blad || blad.getLastRow() < 2) return uit;
-  var kol = takenKolom_(blad, vest);
-  var kolOpm = takenKolomOpmerking_(blad);
-  var breedte = blad.getLastColumn();
-  var rijen = blad.getRange(2, 1, blad.getLastRow() - 1, breedte).getValues();
+  var rijen = blad.getRange(2, 1, blad.getLastRow() - 1, 3).getValues();
   rijen.forEach(function (r) {
     var cat = String(r[0] || "").trim();
     if (!cat) return;
-    uit.push({
-      categorie: cat,
-      link: kol ? String(r[kol - 1] || "").trim() : "",
-      opmerking: kolOpm ? String(r[kolOpm - 1] || "").trim() : "",
-    });
+    uit.push({ categorie: cat, link: String(r[1] || "").trim(), opmerking: String(r[2] || "").trim() });
   });
   return uit;
 }
 
-// Alle leerlingen van het tabblad Klas, met hun vestiging en rijnummer.
-function klasAlles_() {
+function klasLezen_() {
   var uit = [];
   var blad = bladOfNiets_(BLAD_KLAS);
   if (!blad || blad.getLastRow() < 2) return uit;
-  var rijen = blad.getRange(2, 1, blad.getLastRow() - 1, 4).getValues();
-  rijen.forEach(function (r, i) {
-    var naam = String(r[1] || "").trim();
+  var rijen = blad.getRange(2, 1, blad.getLastRow() - 1, 3).getValues();
+  rijen.forEach(function (r) {
+    var naam = String(r[0] || "").trim();
     if (!naam) return;
-    uit.push({
-      vestiging: String(r[0] || "").trim().toUpperCase(), naam: naam,
-      code: String(r[2] || "").trim(), opmerking: String(r[3] || "").trim(), rij: i + 2,
-    });
+    uit.push({ naam: naam, code: String(r[1] || "").trim(), opmerking: String(r[2] || "").trim() });
   });
   return uit;
-}
-
-// De leerlingen van één vestiging: [{ naam, code, opmerking }].
-function klasLezen_(vest) {
-  return klasAlles_().filter(function (l) { return l.vestiging === vest; }).map(function (l) {
-    return { naam: l.naam, code: l.code, opmerking: l.opmerking };
-  });
 }
 
 /**
@@ -1538,19 +1529,21 @@ function publiekeInstellingen_(inst) {
 function instellingenPubliek_(vest) {
   var inst = instellingenLezen_();
   var taken = {};
-  takenLezen_(vest).forEach(function (t) { if (t.link) taken[t.categorie] = t.link; });
+  takenLezen_().forEach(function (t) { if (t.link) taken[t.categorie] = t.link; });
   return {
     ok: true,
     vestiging: vest,
     instellingen: publiekeInstellingen_(inst),
     taken: taken,
-    klas: klasLezen_(vest).map(function (l) { return l.naam; }),
+    klas: klasLezen_().map(function (l) { return l.naam; }),
     beheerMogelijk: !!String(inst.expertcode || "").trim(),
   };
 }
 
 /**
- * De expertcode. Ze staat in het tabblad Instellingen en niet in deze code:
+ * De expertcode van de vestiging. Ze staat in het tabblad Instellingen van
+ * die vestiging en niet in deze code. Wie de code van Leuven kent, kan dus
+ * enkel Leuven beheren. Zo hoeft ze ook niet in deze code:
  * zo kan ze gewijzigd worden zonder het script opnieuw te publiceren.
  * Is er nog geen code ingevuld, dan blijft het beheertabblad dicht — anders
  * zou een lege code toegang geven.
@@ -1559,7 +1552,8 @@ function controleerExpert_(code) {
   var juiste = String(instellingenLezen_().expertcode || "").trim();
   if (!juiste) {
     return { ok: false, fout: "geen expertcode",
-      uitleg: "Er is nog geen expertcode ingesteld. Zet er een in het tabblad Instellingen van de Google Sheet (menu Boekhoudapp → Expertcode instellen)." };
+      uitleg: "Er is voor " + (VESTIGINGEN[_vestiging] || _vestiging) + " nog geen expertcode ingesteld. Zet er een in het tabblad " +
+        tabNaam_(BLAD_INSTELLINGEN) + " van de Google Sheet (menu Boekhoudapp → Expertcode instellen)." };
   }
   if (String(code || "").trim() !== juiste) return { ok: false, fout: "expertcode" };
   return { ok: true };
@@ -1577,8 +1571,8 @@ function haalBeheerOp_(code, vest) {
     ok: true,
     vestiging: vest,
     instellingen: publiekeInstellingen_(inst),
-    taken: takenLezen_(vest),
-    klas: klasLezen_(vest),
+    taken: takenLezen_(),
+    klas: klasLezen_(),
   };
 }
 
@@ -1597,7 +1591,7 @@ function haalBeheerOp_(code, vest) {
  * zonder code krijgen er een; bestaande codes blijven ongemoeid, zodat een
  * leerling niet plots niet meer binnen raakt.
  */
-function bewaarBeheer_(data, vest) {
+function bewaarBeheer_(data) {
   var check = controleerExpert_(data && data.expertcode);
   if (!check.ok) return check;
 
@@ -1633,55 +1627,38 @@ function bewaarBeheer_(data, vest) {
     gedaan.push("instellingen");
   }
 
-  // Enkel de kolom van déze vestiging wordt herschreven: de links van de
-  // andere scholen blijven staan. Een categorie die er nog niet stond, komt
-  // er onderaan bij.
+  // Alles in de tabbladen van déze vestiging; de andere vestigingen blijven
+  // ongemoeid.
   if (data.taken) {
     var bt = blad_(BLAD_TAKEN);
-    zorgVoorTaken_(bt);
-    var kol = takenKolom_(bt, vest);
-    if (!kol) throw new Error("In het tabblad Taken staat geen kolom " + vest + ". Voer Boekhoudapp → Eerste installatie opnieuw uit.");
-    var nT = Math.max(bt.getLastRow() - 1, 0);
-    var cats = nT ? bt.getRange(2, 1, nT, 1).getValues() : [];
-    var links = nT ? bt.getRange(2, kol, nT, 1).getValues() : [];
-    var opRij = {};
-    cats.forEach(function (c, i) { var t = String(c[0] || "").trim(); if (t) opRij[t] = i; });
+    var oudT = Math.max(bt.getLastRow() - 1, 0);
+    var rijenT = [];
     data.taken.forEach(function (t) {
       var cat = String(t.categorie || "").trim();
       if (!cat) return;
-      if (opRij[cat] === undefined) {
-        cats.push([cat]);
-        links.push([""]);
-        opRij[cat] = cats.length - 1;
-      }
-      links[opRij[cat]][0] = String(t.link || "");
+      rijenT.push([cat, String(t.link || ""), String(t.opmerking || "")]);
     });
-    if (cats.length) {
-      bt.getRange(2, 1, cats.length, 1).setValues(cats);
-      bt.getRange(2, kol, links.length, 1).setValues(links);
-    }
-    nieuweTaken = null;   // hieronder opnieuw gelezen, met de opmerkingen erbij
+    nieuweTaken = rijenT.map(function (r) {
+      return { categorie: r[0], link: r[1], opmerking: r[2] };
+    });
+    // Wat er vroeger meer stond, wordt in hetzelfde blok leeggemaakt.
+    while (rijenT.length < oudT) rijenT.push(["", "", ""]);
+    if (rijenT.length) bt.getRange(2, 1, rijenT.length, 3).setValues(rijenT);
     gedaan.push("taken");
   }
 
-  // De klaslijst van déze vestiging wordt vervangen door wat de app stuurt;
-  // de leerlingen van de andere vestigingen blijven ongemoeid. Alles wordt
-  // in één blok teruggeschreven: eerst de andere scholen, dan deze.
   if (data.klas) {
     var bk = blad_(BLAD_KLAS);
-    var alles = klasAlles_();
     var bestaand = {};
     var gebruikt = {};
-    alles.forEach(function (l) {
+    klasLezen_().forEach(function (l) {
       if (!l.code) return;
+      bestaand[normaliseerNaam_(l.naam)] = l.code;
       gebruikt[l.code] = true;
-      if (l.vestiging === vest) bestaand[normaliseerNaam_(l.naam)] = l.code;
     });
 
     var oudK = Math.max(bk.getLastRow() - 1, 0);
-    var rijenK = alles.filter(function (l) { return l.vestiging !== vest; })
-      .map(function (l) { return [l.vestiging, l.naam, l.code, l.opmerking]; });
-    var eigen = [];
+    var rijenK = [];
     data.klas.forEach(function (l) {
       var naam = String(l.naam || "").trim();
       if (!naam) return;
@@ -1690,19 +1667,19 @@ function bewaarBeheer_(data, vest) {
         do { code = String(Math.floor(1000 + Math.random() * 9000)); } while (gebruikt[code]);
       }
       gebruikt[code] = true;
-      eigen.push([vest, naam, code, String(l.opmerking || "")]);
+      rijenK.push([naam, code, String(l.opmerking || "")]);
     });
-    rijenK = rijenK.concat(eigen);
-    nieuweKlas = eigen.map(function (r) {
-      return { naam: r[1], code: r[2], opmerking: r[3] };
+    var echteRijen = rijenK.length;
+    nieuweKlas = rijenK.map(function (r) {
+      return { naam: r[0], code: r[1], opmerking: r[2] };
     });
-    while (rijenK.length < oudK) rijenK.push(["", "", "", ""]);
+    while (rijenK.length < oudK) rijenK.push(["", "", ""]);
     if (rijenK.length) {
       // Codes als tekst, anders slikt Sheets een voorloopnul op.
-      bk.getRange(2, 3, rijenK.length, 1).setNumberFormat("@");
-      bk.getRange(2, 1, rijenK.length, 4).setValues(rijenK);
+      bk.getRange(2, 2, rijenK.length, 1).setNumberFormat("@");
+      bk.getRange(2, 1, rijenK.length, 3).setValues(rijenK);
     }
-    gedaan.push("klaslijst " + vest + " (" + eigen.length + ")");
+    gedaan.push("klaslijst (" + echteRijen + ")");
   }
 
   // Zeker weten dat alles in de Sheet staat vóór we ja zeggen.
@@ -1716,8 +1693,8 @@ function bewaarBeheer_(data, vest) {
     ok: true,
     bewaard: gedaan,
     instellingen: publiekeInstellingen_(instellingenLezen_()),
-    taken: nieuweTaken !== null ? nieuweTaken : takenLezen_(vest),
-    klas: nieuweKlas !== null ? nieuweKlas : klasLezen_(vest),
+    taken: nieuweTaken !== null ? nieuweTaken : takenLezen_(),
+    klas: nieuweKlas !== null ? nieuweKlas : klasLezen_(),
   };
 }
 
@@ -1762,18 +1739,8 @@ function zorgVoorInstellingen_(blad) {
  * links blijven staan.
  */
 function zorgVoorTaken_(blad) {
-  // Ontbreekt de kolom van een vestiging (bv. er kwam er één bij), dan
-  // wordt ze vóór de kolom opmerking ingevoegd.
-  Object.keys(VESTIGINGEN).forEach(function (v) {
-    if (takenKolom_(blad, v)) return;
-    var opm = takenKolomOpmerking_(blad);
-    if (opm) blad.insertColumnBefore(opm);
-    var kol = opm || Math.max(blad.getLastColumn(), 1) + 1;
-    blad.getRange(1, kol).setValue(v).setFontWeight("bold").setBackground("#e9eaf7");
-  });
-
   var n = Math.max(blad.getLastRow() - 1, 0);
-  var waarden = n ? blad.getRange(2, 1, n, 1).getValues() : [];
+  var waarden = n ? blad.getRange(2, 1, n, 3).getValues() : [];
   var aanwezig = {};
   waarden.forEach(function (r) {
     var s = String(r[0] || "").trim();
@@ -1782,23 +1749,30 @@ function zorgVoorTaken_(blad) {
   var iets = false;
   TAAK_CATEGORIEEN.forEach(function (cat) {
     if (aanwezig[cat]) return;
-    waarden.push([cat]);
+    waarden.push([cat, "", ""]);
     iets = true;
   });
-  if (iets && waarden.length) blad.getRange(2, 1, waarden.length, 1).setValues(waarden);
+  if (iets && waarden.length) blad.getRange(2, 1, waarden.length, 3).setValues(waarden);
 }
 
 /**
- * Menu Boekhoudapp -> Expertcode instellen. Vraagt de code en zet ze in het
- * tabblad Instellingen. Er is één code voor de drie vestigingen samen.
+ * Menu Boekhoudapp -> Expertcode instellen. Vraagt eerst de vestiging, dan de
+ * code, en zet ze in het tabblad Instellingen van die vestiging. Elke
+ * vestiging heeft zo haar eigen code.
  */
 function zetExpertcode() {
   var ui = SpreadsheetApp.getUi();
+  var vraagV = ui.prompt("Expertcode",
+    "Voor welke vestiging? (" + Object.keys(VESTIGINGEN).join(", ") + ")", ui.ButtonSet.OK_CANCEL);
+  if (vraagV.getSelectedButton() !== ui.Button.OK) return;
+  var vest = vestigingCode_(vraagV.getResponseText());
+  if (!vest) { ui.alert("Die vestiging ken ik niet. Kies uit: " + Object.keys(VESTIGINGEN).join(", ")); return; }
+  zetVestiging_(vest);
   var blad = blad_(BLAD_INSTELLINGEN);
   zorgVoorInstellingen_(blad);
   var antw = ui.prompt(
     "Expertcode",
-    "Met deze code openen jij en je collega-experten het tabblad Beheer in de app.\n" +
+    "Met deze code openen de vakexperten van " + VESTIGINGEN[vest] + " het tabblad Beheer in de app. Ze geeft enkel toegang tot " + VESTIGINGEN[vest] + ".\n" +
     "Geef ze niet aan de leerlingen.\n\nHuidige code: " + (instellingenLezen_().expertcode || "(nog geen)"),
     ui.ButtonSet.OK_CANCEL);
   if (antw.getSelectedButton() !== ui.Button.OK) return;
@@ -1809,7 +1783,7 @@ function zetExpertcode() {
     if (String(rijen[i][0] || "").trim() === "expertcode") {
       blad.getRange(i + 2, 2).setValue(code).setNumberFormat("@");
       vergeetInstellingen_();
-      ui.alert("De expertcode staat op: " + code + "\n\nZe geldt voor de drie vestigingen samen.");
+      ui.alert("De expertcode van " + VESTIGINGEN[vest] + " staat op: " + code);
       return;
     }
   }

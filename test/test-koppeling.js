@@ -154,12 +154,13 @@ const props = {};
 let laatsteAlert = "";
 let prompts = [];          // wat de "leerkracht" na elkaar in prompts tikt
 let actieveRij = 2;
+let actiefBlad = "Inzendingen LEU";
 
 const omgeving = {
   console, JSON, Date, Math, String, Number, Object, Array, Error, isNaN, parseInt, parseFloat,
   SpreadsheetApp: {
     getActiveSpreadsheet: () => ss,
-    getActiveSheet: () => { const s = sheets.Inzendingen; s.actieveRij = actieveRij; return s; },
+    getActiveSheet: () => { const s = sheets[actiefBlad]; s.actieveRij = actieveRij; return s; },
     flush: () => {},
     getUi: () => ({
       alert: (t, b, c) => { laatsteAlert = c === undefined ? t : t + "\n" + b; return "YES"; },
@@ -258,42 +259,57 @@ function boekingVolgensSleutel(ref) {
 (async () => {
   console.log("\n1. Installatie van de ene Sheet");
   omgeving.installeer();
-  check("tabbladen aangemaakt", ["Klas", "Inzendingen", "Detail", "Instellingen", "Taken", "Sleutel"].every((n) => sheets[n]));
-  check("Klas heeft een kolom vestiging", sheets.Klas.cel(1, 1) === "vestiging" && sheets.Klas.cel(1, 2) === "naam", sheets.Klas.rijen[0]);
-  check("Inzendingen heeft een kolom vestiging", sheets.Inzendingen.cel(1, 2) === "vestiging", sheets.Inzendingen.rijen[0]);
-  check("Taken heeft een kolom per vestiging", ["LEU", "SKW", "TW"].every((v, i) => sheets.Taken.cel(1, i + 2) === v), sheets.Taken.rijen[0]);
-  check("Taken bevat de categorieën per kwartaal", sheets.Taken.rijen.some((r) => r[0] === "K3 · Aankopen en verkopen"));
+  const TABS = ["Klas", "Inzendingen", "Detail", "Instellingen", "Taken"];
+  check("eigen tabbladen per vestiging", ["LEU", "SKW", "TW"].every((v) => TABS.every((t) => sheets[t + " " + v])),
+    Object.keys(sheets));
+  check("geen gedeelde tabbladen Klas of Inzendingen", !sheets.Klas && !sheets.Inzendingen, Object.keys(sheets));
+  check("Klas: naam | code | opmerking", sheets["Klas LEU"].cel(1, 1) === "naam", sheets["Klas LEU"].rijen[0]);
+  check("Inzendingen zonder kolom vestiging", sheets["Inzendingen LEU"].cel(1, 2) === "leerling", sheets["Inzendingen LEU"].rijen[0]);
+  check("Taken bevat de categorieën per kwartaal", sheets["Taken TW"].rijen.some((r) => r[0] === "K3 · Aankopen en verkopen"));
   check("sleutel van de case ingevuld", sheets.Sleutel.getLastRow() - 1 === SLEUTEL.length, sheets.Sleutel.getLastRow());
   check("melding vermeldt de sleutel", /sleutel van de case staat al klaar/.test(laatsteAlert), laatsteAlert.slice(0, 200));
 
-  // Expertcode rechtstreeks in de Sheet, zoals via het menu.
-  const instRij = sheets.Instellingen.rijen.findIndex((r) => r[0] === "expertcode") + 1;
-  sheets.Instellingen.zet(instRij, 2, "9999");
-  omgeving.vergeetInstellingen_();
+  // Een expertcode per vestiging, via het menu.
+  [["LEU", "1111"], ["SKW", "2222"], ["TW", "3333"]].forEach(([v, c]) => { prompts = [v, c]; omgeving.zetExpertcode(); });
+  const expert = (v) => sheets["Instellingen " + v].rijen.find((x) => x[0] === "expertcode")[1];
+  check("expertcode per vestiging", expert("LEU") === "1111" && expert("SKW") === "2222" && expert("TW") === "3333",
+    [expert("LEU"), expert("SKW"), expert("TW")]);
 
   console.log("\n2. Beheer per vestiging");
-  let r = await post({ actie: "beheerBewaren", vestiging: "LEU", expertcode: "9999",
+  let r = await post({ actie: "beheerBewaren", vestiging: "LEU", expertcode: "1111",
     klas: [{ naam: "Lotte V." }, { naam: "Youssef B." }],
     taken: [{ categorie: "K1 · Aankopen", link: "https://classroom.google.com/c/LEU/a/1/details" }] });
   check("bewaren voor Leuven lukt", r.ok === true, r);
-  r = await post({ actie: "beheerBewaren", vestiging: "TW", expertcode: "9999",
-    klas: [{ naam: "Lotte V." }], taken: [{ categorie: "K1 · Aankopen", link: "https://classroom.google.com/c/TW/a/9/details" }] });
+  r = await post({ actie: "beheerBewaren", vestiging: "TW", expertcode: "1111", klas: [] });
+  check("code van Leuven geeft geen toegang tot Tielt-Winge", !r.ok, r);
+  r = await post({ actie: "beheerBewaren", vestiging: "TW", expertcode: "3333",
+    klas: [{ naam: "Lotte V." }], taken: [{ categorie: "K1 · Aankopen", link: "https://classroom.google.com/c/TW/a/9/details" }],
+    instellingen: { mededeling: "Indienen tot vrijdag (TW)" } });
   check("bewaren voor Tielt-Winge lukt", r.ok === true, r);
-  const klas = sheets.Klas.rijen.slice(1).filter((x) => x[1]);
-  check("drie leerlingen in één tabblad", klas.length === 3, klas);
-  check("Leuven bleef staan na bewaren van Tielt-Winge", klas.filter((x) => x[0] === "LEU").length === 2, klas);
-  const codeLeu = String(klas.find((x) => x[0] === "LEU" && x[1] === "Lotte V.")[2]);
-  const codeTw = String(klas.find((x) => x[0] === "TW")[2]);
-  check("codes aangemaakt en verschillend", /^\d{4}$/.test(codeLeu) && /^\d{4}$/.test(codeTw) && codeLeu !== codeTw, [codeLeu, codeTw]);
-  check("taken in de juiste kolom", sheets.Taken.rijen.some((x) => x[0] === "K1 · Aankopen" && /LEU/.test(x[1]) && /TW/.test(x[3])),
-    sheets.Taken.rijen.find((x) => x[0] === "K1 · Aankopen"));
+  const klasLeu = sheets["Klas LEU"].rijen.slice(1).filter((x) => x[0]);
+  const klasTw = sheets["Klas TW"].rijen.slice(1).filter((x) => x[0]);
+  check("Leuven in Klas LEU, Tielt-Winge in Klas TW", klasLeu.length === 2 && klasTw.length === 1, [klasLeu, klasTw]);
+  const codeLeu = String(klasLeu.find((x) => x[0] === "Lotte V.")[1]);
+  const codeTw = String(klasTw[0][1]);
+  check("codes aangemaakt", /^\d{4}$/.test(codeLeu) && /^\d{4}$/.test(codeTw), [codeLeu, codeTw]);
+  check("taken in het eigen tabblad", sheets["Taken LEU"].rijen.some((x) => x[0] === "K1 · Aankopen" && /LEU/.test(x[1])) &&
+    sheets["Taken TW"].rijen.some((x) => x[0] === "K1 · Aankopen" && /TW/.test(x[1])));
+  check("mededeling enkel bij Tielt-Winge",
+    sheets["Instellingen TW"].rijen.some((x) => x[0] === "mededeling" && /TW/.test(x[1])) &&
+    !sheets["Instellingen LEU"].rijen.some((x) => x[0] === "mededeling" && x[1]));
   r = await post({ actie: "beheerBewaren", vestiging: "LEU", expertcode: "fout", klas: [] });
-  check("verkeerde expertcode geweigerd, klas onaangeroerd", !r.ok && sheets.Klas.rijen.slice(1).filter((x) => x[1]).length === 3, r);
+  check("verkeerde expertcode geweigerd, klas onaangeroerd", !r.ok && sheets["Klas LEU"].rijen.slice(1).filter((x) => x[0]).length === 2, r);
+  sheets["Klas SKW"].zet(2, 1, "Amal T.");
+  omgeving.genereerCodes();
+  check("codes genereren werkt in elke Klas", /^\d{4}$/.test(String(sheets["Klas SKW"].cel(2, 2))), sheets["Klas SKW"].rijen);
+  sheets["Klas SKW"].zet(2, 1, ""); sheets["Klas SKW"].zet(2, 2, "");
 
   console.log("\n3. Instellingen per vestiging");
   let iLeu = await get({ actie: "instellingen", vestiging: "LEU" });
   let iTw = await get({ actie: "instellingen", vestiging: "TW" });
   let iSkw = await get({ actie: "instellingen", vestiging: "SKW" });
+  check("mededeling per vestiging", iTw.instellingen.mededeling === "Indienen tot vrijdag (TW)" && !iLeu.instellingen.mededeling,
+    [iLeu.instellingen.mededeling, iTw.instellingen.mededeling]);
   check("Leuven ziet enkel haar leerlingen", JSON.stringify(iLeu.klas) === JSON.stringify(["Lotte V.", "Youssef B."]), iLeu.klas);
   check("Tielt-Winge ziet enkel haar leerling", JSON.stringify(iTw.klas) === JSON.stringify(["Lotte V."]), iTw.klas);
   check("Katelijne heeft nog niemand", iSkw.klas.length === 0, iSkw.klas);
@@ -350,14 +366,15 @@ function boekingVolgensSleutel(ref) {
   check("ingediend", !!venster.querySelector(".melding-ok"), venster.textContent.slice(0, 120));
   check("Classroom-knop met de link van Leuven", /c\/LEU\//.test(venster.innerHTML), venster.innerHTML.match(/classroom[^"]*/));
 
-  const inz = sheets.Inzendingen;
-  const rij = (ref) => inz.rijen.find((x) => x[4] === ref);
-  check("zeven rijen in Inzendingen", inz.getLastRow() === 8, inz.getLastRow());
-  check("vestiging LEU bij elke rij", inz.rijen.slice(1).every((x) => x[1] === "LEU"));
-  check("AK01 automatisch In orde", rij("AK01")[7] === "In orde", rij("AK01")[12]);
-  check("AK05 (financiële korting) automatisch In orde", rij("AK05")[7] === "In orde", rij("AK05")[12]);
-  check("AK03 automatisch Te remediëren", rij("AK03")[7] === "Te remediëren" && /604030/.test(rij("AK03")[12]), rij("AK03")[12]);
-  check("Detail heeft de vestiging", sheets.Detail.rijen.slice(1).every((x) => x[1] === "LEU"));
+  const inz = sheets["Inzendingen LEU"];
+  const inzTw = sheets["Inzendingen TW"];
+  const rij = (ref) => inz.rijen.find((x) => x[3] === ref);
+  check("zeven rijen in Inzendingen LEU", inz.getLastRow() === 8, inz.getLastRow());
+  check("Inzendingen TW is nog leeg", inzTw.getLastRow() === 1, inzTw.getLastRow());
+  check("AK01 automatisch In orde", rij("AK01")[6] === "In orde", rij("AK01")[11]);
+  check("AK05 (financiële korting) automatisch In orde", rij("AK05")[6] === "In orde", rij("AK05")[11]);
+  check("AK03 automatisch Te remediëren", rij("AK03")[6] === "Te remediëren" && /604030/.test(rij("AK03")[11]), rij("AK03")[11]);
+  check("Detail LEU gevuld, Detail TW leeg", sheets["Detail LEU"].getLastRow() > 1 && sheets["Detail TW"].getLastRow() === 1);
   check("werkbestand met vestiging in de naam", !!bestandMet("werk_LEU_lottev.json"),
     Object.values(drive).map((f) => f.name));
   const eigenMap = Object.values(drive).find((f) => f.name === "Boekhoudapp 4e jaar werkbestanden" && f.vanScript);
@@ -376,14 +393,18 @@ function boekingVolgensSleutel(ref) {
   a = await post({ actie: "indienen", vestiging: "TW", naam: "Lotte V.", code: codeTw,
     items: [{ ref: "AK01", categorie: "K1 · Aankopen", status: "niet begonnen", boeking: "", lijnen: [] }] });
   check("inzending Tielt-Winge aanvaard", a.ok === true, a);
-  check("Leuven-rij AK01 blijft de laatste van Leuven", rij("AK01")[10] === "JA", rij("AK01"));
+  check("inzending van Tielt-Winge in Inzendingen TW", inzTw.getLastRow() === 2 && inzTw.cel(2, 4) === "AK01", inzTw.rijen);
+  check("Leuven-rij AK01 blijft de laatste van Leuven", rij("AK01")[9] === "JA", rij("AK01"));
 
   console.log("\n7. Feedback vrijgeven");
-  actieveRij = inz.rijen.findIndex((x) => x[4] === "AK01" && x[1] === "LEU") + 1;
+  actiefBlad = "Klas LEU";
+  omgeving.geefVrijVoorLeerling();
+  check("vrijgeven vraagt een tabblad Inzendingen", /Inzendingen LEU/.test(laatsteAlert), laatsteAlert);
+  actiefBlad = "Inzendingen LEU";
+  actieveRij = inz.rijen.findIndex((x) => x[3] === "AK01") + 1;
   omgeving.geefVrijVoorLeerling();
   check("melding noemt de vestiging", /\(LEU\)/.test(laatsteAlert), laatsteAlert);
-  const twRij = inz.rijen.find((x) => x[1] === "TW");
-  check("rij van Tielt-Winge niet vrijgegeven", twRij[9] !== true, twRij);
+  check("rij van Tielt-Winge niet vrijgegeven", inzTw.cel(2, 9) !== true, inzTw.rijen[1]);
   const fbLeu = await get({ actie: "feedback", vestiging: "LEU", naam: "Lotte V.", code: codeLeu });
   const fbTw = await get({ actie: "feedback", vestiging: "TW", naam: "Lotte V.", code: codeTw });
   check("Leuven krijgt 7 beoordelingen", fbLeu.ok && fbLeu.feedback.length === 7, fbLeu.feedback && fbLeu.feedback.length);
@@ -421,11 +442,11 @@ function boekingVolgensSleutel(ref) {
   await wacht(40);
   v2.querySelector('[data-role="bevestig-ja"]').click();
   await wacht(150);
-  const rv = inz.rijen.filter((x) => x[1] === "LEU" && x[4] === "RESULTAATVERWERKING").pop();
-  const rr = inz.rijen.filter((x) => x[1] === "LEU" && x[4] === "RESULTAAT").pop();
-  check("berekening automatisch In orde", rv && rv[7] === "In orde", rv);
-  check("boeking RESULTAAT automatisch In orde", rr && rr[7] === "In orde", rr);
-  check("geen rij BELASTING meer", !inz.rijen.some((x) => x[4] === "BELASTING"));
+  const rv = inz.rijen.filter((x) => x[3] === "RESULTAATVERWERKING").pop();
+  const rr = inz.rijen.filter((x) => x[3] === "RESULTAAT").pop();
+  check("berekening automatisch In orde", rv && rv[6] === "In orde", rv);
+  check("boeking RESULTAAT automatisch In orde", rr && rr[6] === "In orde", rr);
+  check("geen rij BELASTING meer", !inz.rijen.some((x) => x[3] === "BELASTING"));
 
   console.log("\n9. Beperkte toegang (appsscript.json)");
   const manifest = JSON.parse(fs.readFileSync(path.join(BRON, "apps-script/appsscript.json"), "utf8"));
@@ -454,6 +475,30 @@ function boekingVolgensSleutel(ref) {
   sheets.Sleutel.zet(2, 4, "999");
   omgeving.sleutelCaseInvullen();
   check("sleutel opnieuw invullen herstelt de case", sheets.Sleutel.cel(2, 4) === SLEUTEL[0][3], sheets.Sleutel.cel(2, 4));
+
+  console.log("\n11. Beheer in de app is per vestiging");
+  doc.querySelector('[data-page-type="beheer"]').click();
+  await wacht(30);
+  const pagina = () => doc.getElementById("pagina-inhoud");
+  check("beheer vraagt de expertcode van Leuven", /expertcode van Leuven/.test(pagina().textContent), pagina().textContent.slice(0, 200));
+  const veld = () => pagina().querySelector('[data-role="expertcode"]');
+  veld().value = "3333";
+  veld().dispatchEvent(new w.Event("input", { bubbles: true }));
+  pagina().querySelector('[data-role="ontgrendel"]').click();
+  await wacht(80);
+  check("code van Tielt-Winge opent Leuven niet", !!veld() && /klopt niet/.test(pagina().textContent), pagina().textContent.slice(0, 300));
+  veld().value = "1111";
+  veld().dispatchEvent(new w.Event("input", { bubbles: true }));
+  pagina().querySelector('[data-role="ontgrendel"]').click();
+  await wacht(80);
+  check("Leuven open met de code van Leuven", /Leerlingen/.test(pagina().textContent) && /Youssef/.test(pagina().innerHTML),
+    pagina().textContent.slice(0, 300));
+  vestSel.value = "TW";
+  vestSel.dispatchEvent(new w.Event("change"));
+  await wacht(80);
+  w.APP.renderAlles();
+  check("andere school gekozen: beheer weer op slot", !!veld() && /expertcode van Tielt-Winge/.test(pagina().textContent) &&
+    !/Youssef/.test(pagina().innerHTML), pagina().textContent.slice(0, 300));
 
   console.log(fouten ? "\n" + fouten + " controle(s) mislukt." : "\nAlle controles geslaagd.");
   process.exit(fouten ? 1 : 0);

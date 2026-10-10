@@ -478,7 +478,7 @@
      Instellingen uit de Sheet
 
      De teksten, de links, de taken in Classroom en de namen van de klaslijst
-     staan sinds deze versie in de gemeenschappelijke Google Sheet (per vestiging), en niet
+     staan sinds deze versie in de tabbladen van de vestiging in de Google Sheet, en niet
      meer in de bestanden op GitHub. De vakexpert past ze aan in het
      beheertabblad van de app; hier worden ze opgehaald.
 
@@ -1162,6 +1162,9 @@
     actief: actief,
     ingesteld: ingesteld,
     vestigingLabel: function () { return vestigingLabel(vestiging); },
+    // De code van de gekozen vestiging, of "". Het beheertabblad gaat op slot
+    // zodra die verandert: een expertcode geldt maar voor één vestiging.
+    vestigingCode: function () { return vestiging ? vestiging.code : ""; },
     haal: function (params) { return haal(params); },
     stuur: function (data) { return stuur(data); },
     sleutel: sleutelwoord,

@@ -8,10 +8,11 @@
  *   • de welkomsttekst, een mededeling, en de links naar de cursus en de
  *     handleiding
  *
- * Alles komt terecht in de ene Google Sheet van de drie vestigingen samen
- * (tabbladen Klas, Taken en Instellingen). De namenlijst en de taken in
- * Classroom staan per vestiging apart: wie in Leuven een leerling toevoegt,
- * verandert niets in Tielt-Winge. De teksten en links gelden voor alle drie.
+ * Alles komt terecht in de tabbladen van díé vestiging in de Google Sheet
+ * ("Klas LEU", "Taken LEU", "Instellingen LEU" …). Alles is per vestiging:
+ * wie in Leuven een leerling toevoegt of een welkomsttekst zet, verandert
+ * niets in Tielt-Winge. Ook de expertcode is per vestiging, en het tabblad
+ * gaat weer op slot zodra er bovenaan een andere school gekozen wordt.
  *
  * Het tabblad gaat pas open met de expertcode. Die wordt op de server
  * gecontroleerd — een controle in dit bestand zou niets waard zijn, want het
@@ -31,6 +32,10 @@
   var SAMEN = "Resultaatverwerking & Eindbalans";
 
   var ontgrendeld = false;
+  // Voor welke vestiging het tabblad open staat. Een expertcode geldt maar
+  // voor één vestiging: wordt bovenaan een andere school gekozen, dan gaat
+  // het tabblad weer op slot (zie opSlotAlsAndereVestiging).
+  var ontgrendeldVoor = "";
   var expertcode = "";
   var bezig = false;
   var melding = null;     // { soort: "ok" | "fout" | "info", tekst: "…" (platte tekst) }
@@ -110,17 +115,17 @@
     var html = '<h1 class="pagina-titel">Beheer</h1>' +
       '<p class="pagina-subtitel">' + (label ? esc(label) + " — " : "") + "voor vakexperten</p>" +
       '<div class="paneel beheer-slot">' +
-      "<p>Hier stel je in wat de leerlingen te zien krijgen: de namenlijst en de taken in Classroom van jouw vestiging, " +
-      "en de welkomsttekst en de links naar de cursus en de handleiding (die gelden voor de drie vestigingen samen).</p>";
+      "<p>Hier stel je in wat de leerlingen van jouw vestiging te zien krijgen: " +
+      "de namenlijst, de taken in Classroom, de welkomsttekst en de links naar de cursus en de handleiding.</p>";
 
-    // De namenlijst en de taken staan per vestiging apart.
-    // Zolang er geen school gekozen is, weet de app niet waar ze moet zijn.
+    // Alles staat per vestiging apart. Zolang er geen school gekozen is,
+    // weet de app niet welke ze moet openen.
     if (!a || !a.actief()) {
-      return html + "<p><strong>Kies eerst bovenaan je school.</strong> De namenlijst en de taken staan per vestiging apart.</p></div>";
+      return html + "<p><strong>Kies eerst bovenaan je school.</strong> Elke vestiging heeft haar eigen instellingen en haar eigen expertcode.</p></div>";
     }
 
     return html +
-      "<p>Je hebt er de expertcode voor nodig. Ken je ze niet, vraag ze aan Céline.</p>" +
+      "<p>Je hebt de expertcode van " + esc(label) + " nodig. Ken je ze niet, vraag ze aan Céline.</p>" +
       '<p class="beheer-rij"><input type="password" data-role="expertcode" placeholder="expertcode" ' +
       'autocomplete="off" value="' + esc(expertcode) + '"> ' +
       '<button type="button" class="btn-primair" data-role="ontgrendel"' + (bezig ? " disabled" : "") + ">" +
@@ -200,7 +205,6 @@
   function htmlTeksten() {
     return '<div class="paneel">' +
       "<h2>Teksten en links</h2>" +
-      '<p class="keuze-nota">Deze teksten en links gelden voor de drie vestigingen samen.</p>' +
       '<label class="beheer-veld"><span class="beheer-label">Welkomsttekst op de startpagina</span>' +
       '<textarea data-role="inst" data-sleutel="welkomsttekst" rows="10" ' +
       'placeholder="Laat leeg voor de standaardtekst van de app.">' +
@@ -227,16 +231,16 @@
     var a = api();
     return '<h1 class="pagina-titel">Beheer</h1>' +
       '<p class="pagina-subtitel">' + esc(a ? a.vestigingLabel() : "") +
-      " — de leerlingen en de taken gelden enkel voor deze vestiging</p>" +
+      " — deze instellingen gelden enkel voor deze vestiging</p>" +
       htmlKlas() + htmlTaken() + htmlTeksten() +
       '<div class="paneel beheer-voet">' +
       '<button type="button" class="btn-primair" data-role="bewaren"' + (bezig ? " disabled" : "") + ">" +
       (bezig ? "Bezig met bewaren…" : "Bewaren") + "</button> " +
       '<button type="button" data-role="opnieuw"' + (bezig ? " disabled" : "") + ">Wijzigingen ongedaan maken</button>" +
       htmlMelding() +
-      '<p class="keuze-nota">Alles komt in de gemeenschappelijke Google Sheet terecht, in de tabbladen Klas, ' +
-      "Taken en Instellingen. Je kan het daar ook rechtstreeks aanpassen. De leerlingen zien de wijziging zodra " +
-      "ze de app opnieuw openen.</p>" +
+      '<p class="keuze-nota">Alles komt in de Google Sheet terecht, in de tabbladen Klas, Taken en Instellingen ' +
+      "van deze vestiging (bv. <em>Klas " + esc(a ? a.vestigingCode() : "") + "</em>). Je kan het daar ook rechtstreeks " +
+      "aanpassen. De leerlingen zien de wijziging zodra ze de app opnieuw openen.</p>" +
       "</div>";
   }
 
@@ -255,16 +259,21 @@
     bezig = true;
     zegBezig("Even geduld — het script van Google moet eerst wakker worden. De eerste keer duurt dat vlot tien seconden.");
     herteken();
+    var voorVestiging = a.vestigingCode();
     a.haal({ actie: "beheer", sleutel: a.sleutel(), expertcode: code })
       .then(function (r) {
         bezig = false;
         if (!r || !r.ok) {
-          zegFout(r && r.uitleg ? r.uitleg : "Die code klopt niet.");
+          zegFout(r && r.uitleg ? r.uitleg : "Die code klopt niet voor deze vestiging.");
           herteken();
           return;
         }
+        // Intussen een andere school gekozen? Dan hoort dit antwoord niet
+        // meer bij wat er bovenaan staat.
+        if (a.vestigingCode() !== voorVestiging) { herteken(); return; }
         expertcode = code;
         ontgrendeld = true;
+        ontgrendeldVoor = voorVestiging;
         neemOver(r);
         herteken();
       })
@@ -286,9 +295,24 @@
     });
   }
 
+  // Wordt bovenaan een andere school gekozen, dan gaat het tabblad op slot
+  // en wordt alles vergeten: anders zou de lijst van Leuven bewaard worden
+  // in de tabbladen van Tielt-Winge.
+  function opSlotAlsAndereVestiging() {
+    var a = api();
+    if (!ontgrendeld || !a || a.vestigingCode() === ontgrendeldVoor) return;
+    ontgrendeld = false;
+    ontgrendeldVoor = "";
+    expertcode = "";
+    model = { instellingen: {}, taken: [], klas: [] };
+    zegBezig("Je koos een andere school. Geef de expertcode van die vestiging in.");
+  }
+
   function bewaar() {
     var a = api();
     if (!a || bezig) return;                 // één keer tegelijk, nooit meer
+    opSlotAlsAndereVestiging();
+    if (!ontgrendeld) { herteken(); return; }
     bezig = true;
     zegBezig("Bezig met bewaren…");
     herteken();
@@ -400,6 +424,7 @@
     },
 
     html: function () {
+      opSlotAlsAndereVestiging();
       return ontgrendeld ? htmlOpen() : htmlSlot();
     },
 

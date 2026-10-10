@@ -7,20 +7,23 @@ met één groot verschil:
 > vestiging een eigen Sheet met een eigen kopie van `Code.gs`, en moest elke
 > wijziging drie keer gebeuren. Hier is er nog maar één Sheet, één script en
 > één web-app-URL. De app stuurt bij elk verzoek de code van de vestiging mee
-> (LEU, SKW, TW). In de tabbladen Klas, Inzendingen en Detail staat die code
-> in een eigen kolom: filter erop om enkel je eigen vestiging te zien.
-
-Wat per vestiging apart blijft:
+> (LEU, SKW, TW). **Elke vestiging heeft in die Sheet haar eigen
+> tabbladen**, met de code achter de naam: *Klas LEU*, *Inzendingen LEU*,
+> *Detail LEU*, *Instellingen LEU*, *Taken LEU* — en hetzelfde voor SKW en TW.
 
 | | per vestiging | voor de drie samen |
 |---|---|---|
-| namenlijst en codes (tabblad Klas) | ✓ | |
-| links naar de taken in Classroom (tabblad Taken) | ✓ — één kolom per vestiging | |
-| inzendingen en feedback | ✓ — kolom *vestiging* | |
+| namenlijst en codes | ✓ — *Klas LEU* … | |
+| inzendingen en feedback | ✓ — *Inzendingen LEU*, *Detail LEU* … | |
+| links naar de taken in Classroom | ✓ — *Taken LEU* … | |
+| welkomsttekst, mededeling, links cursus/handleiding | ✓ — *Instellingen LEU* … | |
+| expertcode voor het tabblad Beheer | ✓ — *Instellingen LEU* … | |
 | werkbestanden in Drive | ✓ — `werk_LEU_lottev.json` | één map, die het script zelf aanmaakt |
-| welkomsttekst, mededeling, links cursus/handleiding | | ✓ |
-| expertcode voor het tabblad Beheer | | ✓ |
-| oplossingssleutel | | ✓ |
+| oplossingssleutel | | ✓ — tabblad *Sleutel* |
+
+**Beheer per vestiging.** Elke vestiging heeft haar eigen expertcode. Met de
+code van Leuven opent het tabblad Beheer in de app enkel Leuven; kiest
+iemand bovenaan een andere school, dan gaat het tabblad meteen weer op slot.
 
 Twee leerlingen met dezelfde naam in twee scholen zijn geen probleem: de
 vestiging hoort overal mee bij de naam.
@@ -99,20 +102,22 @@ De installatie maakt ook de map *Boekhoudapp 4e jaar werkbestanden* aan in de
 Drive van dit account. Via **Boekhoudapp → Waar staan de werkbestanden?**
 vind je de link.
 
-Je krijgt de tabbladen **Klas**, **Inzendingen**, **Detail**, **Instellingen**,
-**Taken** en **Sleutel**. Het tabblad Sleutel is meteen gevuld met de oplossing
-van de case: het automatisch nakijken werkt vanaf de eerste inzending.
+Je krijgt per vestiging de tabbladen **Klas**, **Inzendingen**, **Detail**,
+**Instellingen** en **Taken** (bv. *Klas LEU*, *Klas SKW*, *Klas TW*), en één
+gedeeld tabblad **Sleutel**. Dat is meteen gevuld met de oplossing van de case:
+het automatisch nakijken werkt vanaf de eerste inzending.
 
 ### 4. Expertcode en klaslijsten
 
-- **Boekhoudapp → Expertcode instellen…** — met die code openen de vakexperten
-  het tabblad *Beheer* in de app. Eén code voor de drie vestigingen.
-- De klaslijsten vullen de vakexperten het makkelijkst zelf in, elk voor de
-  eigen vestiging, via het tabblad **Beheer** in de app (school kiezen →
-  Beheer → expertcode). De codes worden dan automatisch aangemaakt.
-- Rechtstreeks in de Sheet kan ook: tabblad **Klas**, kolom A de vestiging
-  (LEU, SKW of TW), kolom B de naam. Daarna **Boekhoudapp → Codes genereren
-  voor lege vakjes**.
+- **Boekhoudapp → Expertcode instellen…** — het script vraagt eerst de
+  vestiging, dan de code. Doe het drie keer, met drie verschillende codes, en
+  geef elke code enkel aan de vakexperten van die vestiging.
+- De klaslijsten vullen de vakexperten het makkelijkst zelf in via het tabblad
+  **Beheer** in de app (school kiezen → Beheer → expertcode van die school).
+  De codes van de leerlingen worden dan automatisch aangemaakt.
+- Rechtstreeks in de Sheet kan ook: tabblad **Klas LEU** (of SKW, TW), kolom A
+  de naam. Daarna **Boekhoudapp → Codes genereren voor lege vakjes** (dat doet
+  het voor de drie tabbladen Klas).
 
 ### 5. Publiceer het script als web-app
 
@@ -171,9 +176,9 @@ verrichtingen*.
 
 ## Deel 3 — Nakijken
 
-In het tabblad **Inzendingen** zet je twee filters:
+Je werkt in het tabblad **Inzendingen** van je eigen vestiging (bv.
+*Inzendingen LEU*) en zet één filter:
 
-- **vestiging** = jouw vestiging
 - **is laatste** = `JA`
 
 De kolom *boeking* toont de boeking zoals in een dagboek (rekening, bedrag,
@@ -186,9 +191,9 @@ controle* welke rekeningen afwijken (die kolom ziet de leerling niet). Bij de
 resultaatverwerking worden opbrengsten, kosten en winst vergeleken, bij de
 eindbalans in welk vak elke rubriek ligt.
 
-**Vrijgeven.** Cursor op een rij van de leerling → **Boekhoudapp → Feedback
-vrijgeven voor deze leerling**. Enkel de rijen van die leerling van díé
-vestiging worden vrijgegeven. *In orde* zet de verrichting op slot in de app.
+**Vrijgeven.** Cursor op een rij van de leerling in *Inzendingen* van je
+vestiging → **Boekhoudapp → Feedback vrijgeven voor deze leerling**. Enkel de
+rijen van die leerling in dát tabblad worden vrijgegeven. *In orde* zet de verrichting op slot in de app.
 
 **Sleutel aanpassen.** Wijzig het tabblad Sleutel gerust zelf. Alles kwijt of
 de case gewijzigd? **Boekhoudapp → Sleutel van de case (opnieuw) invullen**.
@@ -238,5 +243,5 @@ wachtwoord.
 | `js/config-koppeling.js` | de web-app-URL, het sleutelwoord en de drie vestigingen |
 | `js/data-klas.js` | noodlijst met namen per vestiging, normaal leeg |
 | `js/koppeling.js` | alles wat de app met de Sheet doet |
-| `js/beheer.js` | het tabblad Beheer voor de vakexperten |
+| `js/beheer.js` | het tabblad Beheer voor de vakexperten, telkens voor één vestiging |
 | `test/test-koppeling.js` | automatische test van dit alles |
