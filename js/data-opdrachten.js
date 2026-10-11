@@ -47,13 +47,15 @@ const OPDRACHTEN = [
   { ref: "VK06", categorie: "K1 · Verkopen", titel: "Verkoop VK06", doc: "VK06" },
   { ref: "VK07", categorie: "K1 · Verkopen", titel: "Verkoop VK07", doc: "VK07" },
   { ref: "ONTV01", categorie: "K1 · Verkopen", titel: "Dagontvangsten ONTV01", doc: "ONTV01" },
-  { ref: "KAS01", categorie: "K1 · Verkopen", titel: "Kasstuk KAS01", doc: "KAS01", betaalstuk: true },
+
+  // K1 · Financiële verrichtingen
+  { ref: "BANK01", categorie: "K1 · Financiële verrichtingen", titel: "Bankafschrift BANK01", doc: "BANK01", betaalstuk: true, hulpdocs: [{"doc":"BBVK","titel":"Openstaande verkoopfactuur 2026-018 (van vorig jaar)"},{"doc":"BBAK","titel":"Openstaande aankoopfactuur 2026-1288 (van vorig jaar)"}] },
 
   // K1 · Btw-verwerking
   { ref: "BTW1", categorie: "K1 · Btw-verwerking", titel: "Btw-verwerking BTW1 (1e kwartaal)", geenDocument: true, instructie: "Kijk in de T-rekeningen rechts naar het saldo van de tussentijdse btw-rekeningen (de 411- en 451-rekeningen die niet op 000 eindigen). Na de btw-aangifte van het kwartaal worden die rekeningen leeggemaakt: de btw komt samen op 411000 Terug te vorderen btw-saldo (een tegoed) of op 451000 Te betalen btw-saldo (een schuld). Staat er van het vorige kwartaal nog een tegoed op 411000, verreken dat dan mee. Boek je in volgorde, dan staat in de T-rekeningen precies de btw van dit kwartaal." },
 
   // K1 · Financiële verrichtingen
-  { ref: "BANK01", categorie: "K1 · Financiële verrichtingen", titel: "Bankafschrift BANK01", doc: "BANK01", betaalstuk: true, hulpdocs: [{"doc":"BBVK","titel":"Openstaande verkoopfactuur 2026-018 (van vorig jaar)"},{"doc":"BBAK","titel":"Openstaande aankoopfactuur 2026-1288 (van vorig jaar)"}] },
+  { ref: "KAS01", categorie: "K1 · Financiële verrichtingen", titel: "Kasstuk KAS01", doc: "KAS01", betaalstuk: true },
   { ref: "KAS02", categorie: "K1 · Financiële verrichtingen", titel: "Kasstuk KAS02", doc: "KAS02", betaalstuk: true },
   { ref: "BANK02", categorie: "K1 · Financiële verrichtingen", titel: "Bankafschrift BANK02", doc: "BANK02", betaalstuk: true },
   { ref: "BANK03", categorie: "K1 · Financiële verrichtingen", titel: "Bankafschrift BANK03", doc: "BANK03", betaalstuk: true },
@@ -80,7 +82,11 @@ const OPDRACHTEN = [
   { ref: "VK11", categorie: "K2 · Verkopen", titel: "Verkoop VK11", doc: "VK11" },
   { ref: "VK12", categorie: "K2 · Verkopen", titel: "Verkoop VK12", doc: "VK12" },
   { ref: "ONTV02", categorie: "K2 · Verkopen", titel: "Dagontvangsten ONTV02", doc: "ONTV02" },
-  { ref: "KAS04", categorie: "K2 · Verkopen", titel: "Kasstuk KAS04", doc: "KAS04", betaalstuk: true },
+
+  // K2 · Financiële verrichtingen
+  { ref: "BANK09", categorie: "K2 · Financiële verrichtingen", titel: "Bankafschrift BANK09", doc: "BANK09", betaalstuk: true },
+
+  // K2 · Verkopen
   { ref: "VK13", categorie: "K2 · Verkopen", titel: "Verkoop VK13", doc: "VK13" },
   { ref: "VK14", categorie: "K2 · Verkopen", titel: "Verkoop VK14", doc: "VK14" },
 
@@ -88,9 +94,9 @@ const OPDRACHTEN = [
   { ref: "BTW2", categorie: "K2 · Btw-verwerking", titel: "Btw-verwerking BTW2 (2e kwartaal)", geenDocument: true, instructie: "Kijk in de T-rekeningen rechts naar het saldo van de tussentijdse btw-rekeningen (de 411- en 451-rekeningen die niet op 000 eindigen). Na de btw-aangifte van het kwartaal worden die rekeningen leeggemaakt: de btw komt samen op 411000 Terug te vorderen btw-saldo (een tegoed) of op 451000 Te betalen btw-saldo (een schuld). Staat er van het vorige kwartaal nog een tegoed op 411000, verreken dat dan mee. Boek je in volgorde, dan staat in de T-rekeningen precies de btw van dit kwartaal." },
 
   // K2 · Financiële verrichtingen
-  { ref: "BANK09", categorie: "K2 · Financiële verrichtingen", titel: "Bankafschrift BANK09", doc: "BANK09", betaalstuk: true },
   { ref: "BANK10", categorie: "K2 · Financiële verrichtingen", titel: "Bankafschrift BANK10", doc: "BANK10", betaalstuk: true, hulpdoc: "LENING", hulpdocTitel: "Kredietovereenkomst en aflossingstabel" },
   { ref: "BANK11", categorie: "K2 · Financiële verrichtingen", titel: "Bankafschrift BANK11", doc: "BANK11", betaalstuk: true },
+  { ref: "KAS04", categorie: "K2 · Financiële verrichtingen", titel: "Kasstuk KAS04", doc: "KAS04", betaalstuk: true },
   { ref: "BANK12", categorie: "K2 · Financiële verrichtingen", titel: "Bankafschrift BANK12", doc: "BANK12", betaalstuk: true },
   { ref: "KAS05", categorie: "K2 · Financiële verrichtingen", titel: "Kasstuk KAS05", doc: "KAS05", betaalstuk: true },
   { ref: "BANK13", categorie: "K2 · Financiële verrichtingen", titel: "Bankafschrift BANK13", doc: "BANK13", betaalstuk: true },

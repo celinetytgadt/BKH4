@@ -22,13 +22,15 @@ const KWARTALEN = ["K1", "K2", "K3", "K4"];
 // De categorieën zoals ze in het menu staan. De naam begint met het kwartaal,
 // zodat ze ook in de Sheet (kolom categorie) meteen te plaatsen zijn.
 function categorieVoor(kw, soort) {
-  const fin = soort === "BANK" || soort === "KAS-FIN";
+  // Alle kasstukken horen bij de financiële verrichtingen, ook het contante
+  // deel van een dagontvangst: dat is een betaling, net als een uittreksel.
+  const fin = soort === "BANK" || soort === "KAS-FIN" || soort === "KAS-DO";
   if (kw === "K4") return "K4 · Alle verrichtingen";
   if (soort === "MEMO") return kw + " · Btw-verwerking";
   if (fin) return kw + " · Financiële verrichtingen";
   if (kw === "K3") return "K3 · Aankopen en verkopen";
   if (soort === "AK" || soort === "CN-AK") return kw + " · Aankopen";
-  return kw + " · Verkopen";   // VK, CN-VK, DO en het kasstuk van een dagontvangst
+  return kw + " · Verkopen";   // VK, CN-VK en DO
 }
 
 const CATEGORIE_VOLGORDE = [
@@ -50,6 +52,7 @@ function opdrachten() {
   let btwNr = 0;
 
   KWARTALEN.forEach((kw) => {
+    const begin = lijst.length;
     const items = [];
     docs.filter((d) => d.set === kw).forEach((d) => items.push({ volgorde: d.volgorde, doc: d }));
     const nrs = [...new Set(utr.filter((u) => u.set === kw).map((u) => u.nr))];
@@ -81,13 +84,27 @@ function opdrachten() {
       else if (d.soort === "DO") ref = "ONTV" + twee(++teller.ONTV);
       else if (d.soort === "KAS") {
         ref = "KAS" + twee(++teller.KAS);
-        // Het kasstuk van een dagontvangst hoort bij de verkopen (zelfde
-        // blok in de Excel); stortingen en afhalingen bij het financiële.
+        // Het contante deel van een dagontvangst (KAS-DO) en een storting of
+        // afhaling (KAS-FIN) komen allebei bij de financiële verrichtingen.
         soort = d.subsoort === "ontvangst" ? "KAS-DO" : "KAS-FIN";
       } else if (d.soort === "MEMO") ref = "BTW" + (++btwNr);
       else throw new Error("Onbekende soort " + d.soort + " bij " + d.id);
       lijst.push({ ref, kwartaal: kw, soort, categorie: categorieVoor(kw, soort), doc: d, journaalDocs: [d.id] });
     });
+
+    // Binnen de financiële verrichtingen in volgorde van de datum: het
+    // kasstuk van een dagontvangst stond in de Excel in het verkoopblok en
+    // komt zo op zijn plaats tussen de uittreksels (KAS01 na BANK01). Bij
+    // dezelfde datum blijft de volgorde van de Excel.
+    const fin = kw + " · Financiële verrichtingen";
+    const plaatsen = [];
+    for (let i = begin; i < lijst.length; i++) if (lijst[i].categorie === fin) plaatsen.push(i);
+    const datum = (o) => (o.regels ? o.regels[0].datum : o.doc.datum);
+    const gesorteerd = plaatsen.map((i) => lijst[i])
+      .map((o, n) => ({ o, n }))
+      .sort((a, b) => (datum(a.o) < datum(b.o) ? -1 : datum(a.o) > datum(b.o) ? 1 : a.n - b.n))
+      .map((x) => x.o);
+    plaatsen.forEach((i, n) => { lijst[i] = gesorteerd[n]; });
   });
 
   // De afsluiting: btw van het 4e kwartaal, voorraad, afschrijvingen. Het

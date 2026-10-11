@@ -150,6 +150,15 @@ function controleRelaties(cat, id, soort) {
     filterTip: "Filter in het T-paneel op " + (klant ? "400000" : "440000") + ".",
   };
 }
+function controleDagontvangstWeg(cat, id, ontv, kas, bank) {
+  return {
+    id: id, categorie: cat, type: "check-met-document", doc: ontv,
+    vraag: "Is de dagontvangst " + ontv + " volledig weggeboekt van 400000?",
+    toelichting: "Het contante deel gaat eraf met het kasstuk " + kas + ", het bancontact-deel met het bankafschrift " + bank +
+      ". Samen moeten ze precies het totaal van het dagontvangstenblad zijn.",
+    filterTip: "Filter in het T-paneel op 400000.",
+  };
+}
 function controleLening(cat, id) {
   return {
     id: id, categorie: cat, type: "check-met-document", doc: "LENING",
@@ -187,13 +196,13 @@ const HANDMATIGE_CONTROLES = [
   controleLeveranciers("K1 · Aankopen", "k1-aankopen-op-leveranciers", "BB en AK01 tot en met AK07"),
   controleKortingen("K1 · Aankopen", "k1-aankopen-kortingen"),
   controleVerpakking("K1 · Aankopen", "k1-aankopen-verpakking"),
-  controleKlanten("K1 · Verkopen", "k1-verkopen-op-klanten", "BB, VK01 tot en met VK07, ONTV01 en het kasstuk KAS01 (het contante deel)"),
+  controleKlanten("K1 · Verkopen", "k1-verkopen-op-klanten", "BB, VK01 tot en met VK07 en ONTV01"),
   {
     id: "k1-dagontvangst-open",
     categorie: "K1 · Verkopen",
     type: "check-met-document", doc: "ONTV01",
-    vraag: "Staat het bancontact-deel van de dagontvangst nog open op 400000?",
-    toelichting: "Het dagontvangstenblad zet het volledige bedrag op 400000. Het kasstuk haalt het contante deel eraf. Het bancontact-deel komt pas later op een bankafschrift binnen — tot dan blijft het open.",
+    vraag: "Staat het volledige bedrag van de dagontvangst op 400000 (contant én bancontact samen)?",
+    toelichting: "Het dagontvangstenblad zet het volledige bedrag, inclusief btw, op 400000: de klanten moeten nog betalen. Het contante deel en het bancontact-deel boek je pas weg bij de financiële verrichtingen, met het kasstuk en het bankafschrift.",
     filterTip: "Filter in het T-paneel op 400000.",
   },
   controleBtwLeeg("K1 · Btw-verwerking", "k1-btw-leeg", "1e kwartaal"),
@@ -209,6 +218,7 @@ const HANDMATIGE_CONTROLES = [
     toelichting: "Fietsatelier Noor leent het geld om in de zomer een bestelwagen te kopen. Bij de opname stijgt de bank én de schuld aan de bank.",
     filterTip: "Filter in het T-paneel op 173000.",
   },
+  controleDagontvangstWeg("K1 · Financiële verrichtingen", "k1-dagontvangst-weg", "ONTV01", "KAS01", "BANK03"),
   controleRelaties("K1 · Financiële verrichtingen", "k1-klanten-open", "klanten"),
   controleRelaties("K1 · Financiële verrichtingen", "k1-leveranciers-open", "leveranciers"),
 
@@ -216,13 +226,14 @@ const HANDMATIGE_CONTROLES = [
   controleLeveranciers("K2 · Aankopen", "k2-aankopen-op-leveranciers", "AK08 tot en met AK14"),
   controleKortingen("K2 · Aankopen", "k2-aankopen-kortingen"),
   controleVerpakking("K2 · Aankopen", "k2-aankopen-verpakking"),
-  controleKlanten("K2 · Verkopen", "k2-verkopen-op-klanten", "VK08 tot en met VK14, ONTV02 en het kasstuk KAS04"),
+  controleKlanten("K2 · Verkopen", "k2-verkopen-op-klanten", "VK08 tot en met VK14 en ONTV02"),
   controleBtwLeeg("K2 · Btw-verwerking", "k2-btw-leeg", "2e kwartaal"),
   controleBtwSaldo("K2 · Btw-verwerking", "k2-btw-saldo"),
   controleBank("K2 · Financiële verrichtingen", "k2-bank", "BANK13"),
   controleKas("K2 · Financiële verrichtingen", "k2-kas", "KAS05"),
   controle580("K2 · Financiële verrichtingen", "k2-580"),
   controleLening("K2 · Financiële verrichtingen", "k2-lening"),
+  controleDagontvangstWeg("K2 · Financiële verrichtingen", "k2-dagontvangst-weg", "ONTV02", "KAS04", "BANK12"),
   controleRelaties("K2 · Financiële verrichtingen", "k2-klanten-open", "klanten"),
   controleRelaties("K2 · Financiële verrichtingen", "k2-leveranciers-open", "leveranciers"),
 
