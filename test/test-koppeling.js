@@ -521,6 +521,36 @@ function boekingVolgensSleutel(ref) {
   check("andere school gekozen: beheer weer op slot", !!veld() && /expertcode van Tielt-Winge/.test(pagina().textContent) &&
     !/Youssef/.test(pagina().innerHTML), pagina().textContent.slice(0, 300));
 
+
+  console.log("\n12. Afmelden");
+  const domA = await start({
+    bkh4_aanmelding: JSON.stringify({ vestiging: "LEU", naam: "Lotte V.", code: codeLeu }),
+    bkh4_vestiging: "leu",
+    bkh4_laatste_leerling: "Lotte V.",
+  });
+  await wacht(150);
+  const wa = domA.window;
+  const knopA = wa.document.getElementById("btn-afmelden");
+  check("afmeldknop zichtbaar voor wie aangemeld is", !!knopA && knopA.hidden === false && wa.APP.getState().student === "Lotte V.",
+    wa.APP.getState().student);
+  wa.APP.getState().boekingen.VK01 = { geboekt: true, rows: [{ bedrag: "4321", rekening: "700000", dc: "C" }] };
+  wa.APP.saveState();
+  wa.confirm = () => true;
+  knopA.click();
+  await wacht(200);
+  check("aanmelding en laatste leerling vergeten",
+    !wa.localStorage.getItem("bkh4_aanmelding") && !wa.localStorage.getItem("bkh4_laatste_leerling"), Object.keys(wa.localStorage));
+  check("laatste werk vóór het afmelden op de server bewaard", /4321/.test(bestandMet("werk_LEU_lottev.json").inhoud || ""));
+  check("werk blijft in de browser staan", /4321/.test(Object.keys(wa.localStorage).filter((k) => /^bkh4_data_/.test(k))
+    .map((k) => wa.localStorage.getItem(k)).join("")));
+  const naAfmelden = {};
+  Object.keys(wa.localStorage).forEach((k) => { naAfmelden[k] = wa.localStorage.getItem(k); });
+  const domB = await start(naAfmelden);
+  await wacht(100);
+  check("na herladen: niemand aangemeld, knop verborgen",
+    domB.window.APP.getState().student === "" && domB.window.document.getElementById("btn-afmelden").hidden === true,
+    domB.window.APP.getState().student);
+
   console.log(fouten ? "\n" + fouten + " controle(s) mislukt." : "\nAlle controles geslaagd.");
   process.exit(fouten ? 1 : 0);
 })().catch((e) => { console.error(e); process.exit(1); });
