@@ -614,6 +614,43 @@ function boekingVolgensSleutel(ref) {
   const dT = omgeving.alsDatum_("17/10/2026 15:35:51");
   check("tekst-tijdstip wordt gelezen", dT && dT.getTime() === new Date(2026, 9, 17, 15, 35, 51).getTime(), dT);
 
+  console.log("\n18. Vergeten op Boeken te drukken");
+  // In wi (sectie 14): VK01 begonnen maar niet geboekt, de aankopen van K1 geboekt.
+  const stV = wi.APP.getState();
+  wi.eval("OPDRACHTEN").filter((o) => o.categorie === "K1 · Aankopen").forEach((o) => { stV.boekingen[o.ref] = boekingVolgensSleutel(o.ref); });
+  wi.APP.renderAlles();
+  const bolV = (ref) => [...wi.document.querySelectorAll(".nav-link")].find((n) => n.dataset.pageRef === ref).querySelector(".status-bolletje").className;
+  check("menu: open oranje ringetje bij VK01", /begonnen/.test(bolV("VK01")), bolV("VK01"));
+  wi.document.querySelector('.nav-link[data-page-ref="VK03"]').click();
+  await wacht(30);
+  stV.boekingen.VK03 = { geboekt: false, rows: [
+    { bedrag: "100", rekening: "400000", dc: "D", relatie: "" }, { bedrag: "100", rekening: "700000", dc: "C", relatie: "" }] };
+  wi.APP.renderAlles();
+  check("klaar om te boeken: herinnering bij de knop", !!wi.document.querySelector(".btn-boeken-klaar.btn-boeken") &&
+    !!wi.document.querySelector(".boeken-herinnering"));
+  const indienV = async (cat) => {
+    wi.document.querySelectorAll(".koppeling-overlay").forEach((o) => o.remove());   // vensters van sectie 14
+    wi.document.getElementById("btn-indienen").click();
+    await wacht(30);
+    const v = wi.document.querySelector(".koppeling-overlay");
+    const vk = v.querySelector('[data-cat="' + cat + '"]');
+    vk.checked = true;
+    vk.dispatchEvent(new wi.Event("change"));
+    v.querySelector("#btn-indienen-bevestig").click();
+    await wacht(30);
+    return v;
+  };
+  let vV = await indienV("K1 · Aankopen");
+  check("K1 · Aankopen indienen: geen melding over VK01", !/Nog niet geboekt/.test(vV.textContent));
+  vV.remove();
+  vV = await indienV("K1 · Verkopen");
+  check("K1 · Verkopen indienen: melding met VK01 en VK03",
+    !!vV.querySelector('[data-ref="VK01"]') && !!vV.querySelector('[data-ref="VK03"]'), vV.textContent.slice(0, 300));
+  vV.querySelector('[data-ref="VK01"]').click();
+  await wacht(30);
+  check("klik: naar VK01", !wi.document.querySelector(".koppeling-overlay") &&
+    /VK01/.test(wi.document.querySelector(".pagina-titel").textContent));
+
   console.log(fouten ? "\n" + fouten + " controle(s) mislukt." : "\nAlle controles geslaagd.");
   process.exit(fouten ? 1 : 0);
 })().catch((e) => { console.error(e); process.exit(1); });
