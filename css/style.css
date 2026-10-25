@@ -155,6 +155,44 @@ button {
 
 #nav-links { padding: 8px 0 40px 0; }
 
+/* Het menu inklappen geeft het redeneerschema meer plaats. De
+   T-rekeningen blijven staan: die heeft de leerling nodig tijdens het
+   boeken. */
+#sidebar-collapse {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--kleur-tekst-zacht);
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 1;
+}
+#sidebar-collapse:hover { background: var(--kleur-achtergrond); color: var(--kleur-tekst); }
+#layout.sidebar-verborgen #sidebar { display: none; }
+
+#sidebar-heropen {
+  display: none;
+  position: sticky;
+  top: calc(var(--kop-hoogte) + 10px);
+  align-self: flex-start;
+  flex-shrink: 0;
+  border: 1px solid var(--kleur-rand);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  background: var(--kleur-paneel);
+  color: var(--kleur-primair);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 4px;
+  writing-mode: vertical-rl;
+  z-index: 30;
+}
+#sidebar-heropen:hover { background: var(--kleur-achtergrond); }
+#layout.sidebar-verborgen #sidebar-heropen { display: block; }
+
 .nav-categorie {
   font-size: 11px;
   text-transform: uppercase;
@@ -1258,6 +1296,9 @@ table.relatie-detail tfoot td.totaal-fout { color: var(--kleur-fout); }
   #btn-nav-toggle, #btn-tpanel-toggle { display: inline-block; }
   #sidebar, #tpanel { position: fixed; z-index: 40; }
   #layout:not(.sidebar-open) #sidebar { display: none; }
+  /* Op een smal scherm opent en sluit de knop ☰ bovenaan het menu. */
+  #layout.sidebar-open #sidebar { display: block; }
+  #sidebar-collapse, #layout.sidebar-verborgen #sidebar-heropen { display: none; }
   #layout:not(.tpanel-open) #tpanel { display: none; }
   #sidebar { height: calc(100vh - var(--kop-hoogte)); }
   #main-content { padding: 14px; }

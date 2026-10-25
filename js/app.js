@@ -796,7 +796,7 @@
       "<th>Bedrag</th>" +
       '<th title="Denkhulp — niet verplicht">Redenering</th>' +
       '<th title="Denkhulp — niet verplicht">A/P/K/O</th>' +
-      '<th title="Denkhulp — niet verplicht">Stijgt/daalt</th>' +
+      '<th title="Denkhulp — niet verplicht">Stijgt/<wbr>daalt</th>' +
       "<th>Rekeningnr.</th><th>Omschrijving</th><th>D/C</th><th></th>" +
       "</tr></thead><tbody>";
     boeking.rows.forEach(function (row, idx) { html += htmlRedeneerschemaRij(ref, row, idx, geboekt, inOrde); });
@@ -836,7 +836,13 @@
       html += '<button type="button" class="btn-heropenen" data-scope="' + escapeAttr(ref) + '" data-role="heropenen">Heropenen om te wijzigen</button>';
     } else {
       html += '<button type="button" class="btn-boeken" data-scope="' + escapeAttr(ref) + '" data-role="boeken" ' + (klaar ? "" : "disabled") + ">Boeken</button>";
-      if (!klaar) {
+      // Een schema waar nog niets in staat, krijgt nog geen lijst met wat er
+      // ontbreekt: die gele kaders vóór de leerling iets deed, zijn enkel
+      // ruis (op een pagina met veel schema's onder elkaar zelfs veel ruis).
+      var begonnen = boeking.rows.some(function (r) {
+        return r.auto ? !!String(r.relatie || "").trim() : !rijLeeg(r);
+      });
+      if (!klaar && begonnen) {
         // Concreet zeggen wát er nog ontbreekt, per lijn. Anders blijft de
         // knop grijs zonder dat de leerling weet waarom.
         var punten = [];
@@ -2200,14 +2206,50 @@
     return { klaar: klaar, totaal: totaal, percent: totaal ? Math.round((klaar / totaal) * 100) : 0 };
   }
 
+  /* De voortgang van het deel waar de leerling nu mee bezig is: het eerste
+     kwartaal (K1 … K4, daarna de afsluiting) dat nog niet volledig geboekt
+     is. "5 van 22" in het eigen kwartaal motiveert meer dan "5 van 95" voor
+     het hele jaar; het totaal staat er klein achter. */
+  function deelVan(cat) {
+    var m = /^K(\d)\s*·/.exec(String(cat));
+    return m ? "K" + m[1] : "Afsluiting";
+  }
+
+  function voortgangHuidigDeel() {
+    var delen = [], perDeel = {};
+    OPDRACHTEN.forEach(function (o) {
+      if (o.vasteBoeking) return;
+      var d = deelVan(o.categorie);
+      if (!perDeel[d]) { perDeel[d] = { naam: d, klaar: 0, totaal: 0 }; delen.push(perDeel[d]); }
+      perDeel[d].totaal++;
+      if (state.boekingen[o.ref] && state.boekingen[o.ref].geboekt) perDeel[d].klaar++;
+    });
+    for (var i = 0; i < delen.length; i++) {
+      if (delen[i].klaar < delen[i].totaal) return delen[i];
+    }
+    return null;   // alles geboekt
+  }
+
   function renderVoortgang() {
     var v = voortgang();
+    var deel = voortgangHuidigDeel();
     var vulling = document.getElementById("voortgang-vulling");
     var tekst = document.getElementById("voortgang-tekst");
-    if (vulling) vulling.style.width = v.percent + "%";
-    if (tekst) tekst.textContent = v.klaar + " van " + v.totaal + " geboekt";
+    var pct = deel ? Math.round((deel.klaar / deel.totaal) * 100) : v.percent;
+    if (vulling) vulling.style.width = pct + "%";
+    if (tekst) {
+      tekst.textContent = deel
+        ? deel.naam + ": " + deel.klaar + " van " + deel.totaal + " geboekt · jaar: " + v.klaar + " van " + v.totaal
+        : v.klaar + " van " + v.totaal + " geboekt";
+    }
     var balk = document.getElementById("voortgang");
-    if (balk) balk.classList.toggle("voortgang-af", v.klaar === v.totaal && v.totaal > 0);
+    if (balk) {
+      balk.classList.toggle("voortgang-af", v.klaar === v.totaal && v.totaal > 0);
+      balk.title = deel
+        ? "Hoeveel stukken van " + (deel.naam === "Afsluiting" ? "de afsluiting" : "het " + deel.naam.slice(1) + "e kwartaal") +
+          " heb je al geboekt? Achteraan: het hele jaar."
+        : "Alles geboekt.";
+    }
   }
 
   /* Het bolletje rechts van een verrichting in het menu. Zolang er geen
@@ -2402,13 +2444,16 @@
      staan: wie zich opnieuw aanmeldt, vindt alles terug. */
   function afmelden() {
     if (!state.student) return;
-    if (!window.confirm("Afmelden als " + state.student + "?\n\nJe werk blijft bewaard. " +
-        "Daarna kan iemand anders zich op deze computer aanmelden.")) return;
+    if (!window.confirm("Afmelden als " + state.student + "?\n\nJe werk wordt eerst op de server bewaard en daarna " +
+        "uit deze browser gewist, zodat de volgende leerling er niet aan kan. Je kan je later gewoon opnieuw aanmelden.")) return;
     var hooks = window.KOPPELING_HOOKS;
     var klaar = hooks && hooks.afmelden ? hooks.afmelden() : Promise.resolve(true);
     klaar.then(function (ok) {
       if (!ok) return;
+      // Het werk staat veilig op de server (koppeling.js wachtte daarop):
+      // nu mag het weg uit deze browser, voor een gedeelde computer.
       try {
+        localStorage.removeItem(storageKeyVoor(state.student));
         localStorage.removeItem(LAATSTE_LEERLING_KEY);
       } catch (e) { /* geblokkeerde opslag: dan valt er niets te vergeten */ }
       window.location.reload();
@@ -2825,6 +2870,17 @@
       document.getElementById("layout").classList.remove("tpanel-verborgen");
     });
 
+    // Het menu links inklappen. De keuze blijft bewaard in deze browser,
+    // zodat het menu bij een volgend bezoek niet opnieuw openspringt.
+    var MENU_KEY = APP_SLEUTEL + "_menu_ingeklapt";
+    function zetMenuIngeklapt(dicht) {
+      document.getElementById("layout").classList.toggle("sidebar-verborgen", dicht);
+      try { if (dicht) localStorage.setItem(MENU_KEY, "1"); else localStorage.removeItem(MENU_KEY); } catch (e) {}
+    }
+    try { if (localStorage.getItem(MENU_KEY) === "1") document.getElementById("layout").classList.add("sidebar-verborgen"); } catch (e) {}
+    document.getElementById("sidebar-collapse").addEventListener("click", function () { zetMenuIngeklapt(true); });
+    document.getElementById("sidebar-heropen").addEventListener("click", function () { zetMenuIngeklapt(false); });
+
     // Topbar: leerlingnaam
     var naamInput = document.getElementById("leerling-naam-input");
     naamInput.addEventListener("keydown", function (e) { if (e.key === "Enter") naamInput.blur(); });
@@ -2907,6 +2963,12 @@
     slug: slug,
     opmaakTekst: opmaakTekst,
     huidigePagina: function () { return uiState.huidigePagina.type; },
+    // Voor het indienen: heeft elke rubriek met een saldo een plaats op de
+    // eindbalans? Zo niet, dan is die nog niet af en gaat ze niet mee.
+    eindbalansVolledig: function () {
+      var kaarten = balansKaarten();
+      return kaarten.length > 0 && kaarten.every(function (k) { return !!state.eindbalans[k.id]; });
+    },
     // Voor koppeling.js: de vaste beginboeking gaat niet mee bij het indienen
     // en telt niet als eigen werk van de leerling.
     isVasteBoeking: isVasteBoeking,

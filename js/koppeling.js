@@ -46,6 +46,10 @@
   // Eigen voorvoegsel per app: zie OPSLAG_APP in config-koppeling.js.
   var APP_SLEUTEL = (typeof OPSLAG_APP !== "undefined" && OPSLAG_APP) ? OPSLAG_APP : "boekhoudapp";
   var AANMELD_KEY = APP_SLEUTEL + "_aanmelding";
+  // De laatst gekende namenlijsten van alle vestigingen (enkel namen, geen
+  // codes). Zo staat de keuzelijst er meteen bij het openen van de app,
+  // terwijl op de achtergrond de verse lijst opgehaald wordt.
+  var NAMEN_KEY = APP_SLEUTEL + "_namen";
   var FEEDBACK_KEY_PREFIX = APP_SLEUTEL + "_feedback_";
 
   // Wat de vakexpert als "in orde" aanduidt, gaat op slot: het wordt niet
@@ -55,6 +59,8 @@
 
   // Aanmelding van deze browser: { vestiging, naam, code }
   var aanmelding = null;
+  // Stand van het werk in de browser bij het aanmelden (zie naAanmelding).
+  var lokaalBijAanmelding = null;
   // Feedback per verrichting, nieuwste eerst:
   // { REF: [ { beoordeling, feedback, ingediend }, … ] }
   var feedback = {};
@@ -72,6 +78,8 @@
   var vulNamenFn = null;        // bouwAanmeldUI zet die hier klaar
   var laatsteFeedbackTijd = 0;
   var instellingenBezig = false;   // er loopt al een ophaalronde
+  var namenCache = {};             // { LEU: [...], SKW: [...], TW: [...] }
+  var namenBezig = false;          // de namen worden nog opgehaald
 
   /* ======================================================================
      Kleine hulpjes
@@ -111,6 +119,7 @@
     if (klasServer && klasServer.code === code && klasServer.namen.length) {
       return klasServer.namen;
     }
+    if (namenCache[code] && namenCache[code].length) return namenCache[code];
     if (typeof KLASLIJSTEN !== "undefined" && KLASLIJSTEN && KLASLIJSTEN[code]) {
       return KLASLIJSTEN[code] || [];
     }
@@ -320,6 +329,22 @@
       var lijst = vestiging ? klaslijstVoor(vestiging.code) : [];
       var metLijst = lijst.length > 0;
 
+      // Nog aan het laden: een keuzelijst die dat zegt, en niet het vrije
+      // naamveld dat daarna plots verspringt naar een keuzelijst. Het vrije
+      // veld komt er pas als de server echt geen namen gaf.
+      var laden = !metLijst && actief() && (namenBezig || instellingenBezig);
+      if (laden) {
+        select.hidden = false;
+        select.disabled = true;
+        select.innerHTML = '<option value="">Namen laden…</option>';
+        codeVeld.hidden = false;
+        knop.hidden = false;
+        naamInput.hidden = true;
+        var lbl = document.querySelector('label[for="leerling-naam-input"], label[for="leerling-select"]');
+        if (lbl) lbl.setAttribute("for", "leerling-select");
+        return;
+      }
+
       select.hidden = !metLijst;
       codeVeld.hidden = !metLijst;
       knop.hidden = !metLijst;
@@ -328,10 +353,18 @@
       if (label) label.setAttribute("for", metLijst ? "leerling-select" : "leerling-naam-input");
       if (!metLijst) { select.innerHTML = ""; return; }
 
+      // Komt de verse lijst binnen terwijl de leerling al een naam koos (uit
+      // de bewaarde lijst), dan blijven die naam en de code gewoon staan.
+      var gekozen = select.disabled ? "" : select.value;
+      var zelfdeSchool = select.getAttribute("data-vestiging") === (vestiging ? vestiging.code : "");
+      select.disabled = false;
       select.innerHTML = '<option value="">— kies je naam —</option>' +
         lijst.map(function (n) { return '<option value="' + esc(n) + '">' + esc(n) + "</option>"; }).join("");
+      select.setAttribute("data-vestiging", vestiging ? vestiging.code : "");
 
-      if (aanmelding && vestiging && aanmelding.vestiging === vestiging.code) {
+      if (gekozen && zelfdeSchool && lijst.indexOf(gekozen) !== -1) {
+        select.value = gekozen;
+      } else if (aanmelding && vestiging && aanmelding.vestiging === vestiging.code) {
         select.value = aanmelding.naam;
         codeVeld.value = aanmelding.code;
       } else {
@@ -377,6 +410,12 @@
     // erbij, zodat ze op een gedeelde computer niet in elkaars werk komen.
     if (APP.zetOpslagPrefix) APP.zetOpslagPrefix(aanmelding.vestiging || "");
     APP.laadStudent(aanmelding.naam);
+    // Hoe het werk in deze browser eruitzag op het moment van aanmelden. Het
+    // antwoord van Google kan seconden op zich laten wachten; typt de
+    // leerling intussen al iets, dan is de lokale versie plots "nieuwer" en
+    // zou ze het volledige werk op de Drive overschrijven. Daarom wordt
+    // vergeleken met deze momentopname, niet met de stand bij het antwoord.
+    lokaalBijAanmelding = { leeg: APP.heeftEigenBoekingen ? !APP.heeftEigenBoekingen() : !Object.keys(APP.getState().boekingen || {}).length, gewijzigd: APP.getState().gewijzigd || null };
     laadFeedbackUitBrowser();
     APP.renderAlles();
 
@@ -387,12 +426,9 @@
         // en "Aangemeld." blijft staan.
         if (!r.gevonden) { startAutoBewaren(); return; }
 
-        var lokaal = APP.getState();
         // De vaste beginboeking staat er altijd; die telt niet als eigen werk.
-        var lokaalLeeg = APP.heeftEigenBoekingen
-          ? !APP.heeftEigenBoekingen()
-          : !Object.keys(lokaal.boekingen || {}).length;
-        var lokaalGewijzigd = lokaal.gewijzigd || null;
+        var lokaalLeeg = lokaalBijAanmelding.leeg;
+        var lokaalGewijzigd = lokaalBijAanmelding.gewijzigd;
 
         if (lokaalLeeg) { neemOver(r); return; }
         if (lokaalGewijzigd && r.gewijzigd && new Date(lokaalGewijzigd) >= new Date(r.gewijzigd)) {
@@ -488,24 +524,62 @@
      aangemeld is: de namenlijst is er nu net voor nodig.
      ====================================================================== */
 
+  /* De namen van alle vestigingen in één verzoek, zodra de app opent. Het
+     opstarten van het script bij Google duurt soms enkele seconden; zo
+     gebeurt dat terwijl de leerling nog een school kiest. */
+  function haalNamen() {
+    var perUrl = {};
+    vestigingen.forEach(function (v) {
+      var url = v.webAppUrl || cfg.webAppUrl;
+      if (url && !perUrl[url]) perUrl[url] = v.sleutel || cfg.sleutel || "";
+    });
+    var urls = Object.keys(perUrl);
+    if (!urls.length) return;
+    var open = urls.length;
+    namenBezig = true;
+    if (vulNamenFn) vulNamenFn();
+    function klaar() {
+      open--;
+      if (open > 0) return;
+      namenBezig = false;
+      if (vulNamenFn) vulNamenFn();
+    }
+    urls.forEach(function (url) {
+      verzoek(url + "?actie=namen&sleutel=" + encodeURIComponent(perUrl[url]), { method: "GET" })
+        .then(function (r) {
+          if (r && r.ok && r.klas) {
+            Object.keys(r.klas).forEach(function (code) {
+              if (!vestigingMet(code)) return;
+              namenCache[code] = (r.klas[code] || []).map(String).filter(Boolean);
+            });
+            schrijf(NAMEN_KEY, JSON.stringify(namenCache));
+          }
+          klaar();
+        })
+        .catch(function (err) { console.error(err); klaar(); });
+    });
+  }
+
   function haalInstellingen(daarna) {
     if (!actief()) { if (daarna) daarna(); return; }
     // Loopt er al een ronde, dan is een tweede verspilling: Google krijgt
     // twee keer dezelfde vraag en de app moet twee keer wachten.
     if (instellingenBezig) { if (daarna) daarna(); return; }
     instellingenBezig = true;
+    if (vulNamenFn) vulNamenFn();
     var voorVestiging = vestiging.code;
     haal({ actie: "instellingen", sleutel: sleutelwoord() })
       .then(function (r) {
         instellingenBezig = false;
         // Intussen een andere school gekozen? Dan is dit antwoord verouderd.
         if (!vestiging || vestiging.code !== voorVestiging) return;
-        if (!r || !r.ok) { if (daarna) daarna(); return; }
+        if (!r || !r.ok) { if (vulNamenFn) vulNamenFn(); if (daarna) daarna(); return; }
         zetInstellingen(voorVestiging, r.instellingen, r.taken, r.klas);
         if (daarna) daarna();
       })
       .catch(function (err) {
         instellingenBezig = false;
+        if (vulNamenFn) vulNamenFn();
         // Onbereikbaar? Dan valt de app terug op js/data-klas.js en op de
         // standaardteksten. Geen foutmelding: de leerling kan hier niets aan
         // doen en de app werkt gewoon verder.
@@ -530,6 +604,10 @@
     klasServer = { code: code, namen: (nieuweKlas || []).map(function (l) {
       return typeof l === "string" ? l : String((l && l.naam) || "");
     }).filter(Boolean) };
+    if (klasServer.namen.length) {
+      namenCache[code] = klasServer.namen;
+      schrijf(NAMEN_KEY, JSON.stringify(namenCache));
+    }
     window.INSTELLINGEN = instellingen;
     zetTopbarLinks();
     if (vulNamenFn) vulNamenFn();
@@ -613,7 +691,9 @@
   function maakCategorie(naam, refs, geboekt, telRefs) {
     // Verrichtingen die al in orde bevonden zijn, gaan niet meer mee. Zo
     // hoeft de vakexpert niet telkens hetzelfde opnieuw na te kijken.
-    var teSturen = refs.filter(function (r) { return !isInOrde(r); });
+    // Wat nog niet afgerond is (niet geboekt, half ingevuld), gaat ook niet
+    // mee: de vakexpert krijgt enkel wat de leerling zelf af vond.
+    var teSturen = refs.filter(function (r) { return !isInOrde(r) && isAfgerond(r); });
     var stand = typeof window.controleStandVoor === "function"
       ? window.controleStandVoor(naam)
       : { totaal: 0, af: 0, ok: true };
@@ -626,6 +706,13 @@
       refs: teSturen,
       controles: stand,
     };
+  }
+
+  // Afgerond = geboekt (een verrichting) of volledig ingevuld (de open
+  // vragen, de berekening van de resultaatverwerking, de eindbalans).
+  function isAfgerond(ref) {
+    var st = maakItem(ref, "").status;
+    return st === "geboekt" || st === "ingevuld";
   }
 
   function categorieOverzicht() {
@@ -713,8 +800,8 @@
           "</label>";
       }).join("") +
       "</div>" +
-      '<p class="keuze-nota">Wat je nog niet geboekt hebt, gaat mee als <em>onafgewerkt</em>: zo ziet je ' +
-      "vakexpert waar je vastloopt. Wat al in orde is, gaat niet meer mee.</p>" +
+      '<p class="keuze-nota">Enkel wat je geboekt of volledig ingevuld hebt, gaat mee. ' +
+      "Wat nog niet af is, of al in orde bevonden werd, blijft hier.</p>" +
       "</div>" +
       '<div class="modal-voet">' +
       '<button type="button" id="btn-indienen-bevestig" class="btn-primair" disabled>Indienen</button>' +
@@ -817,7 +904,7 @@
 
     if (!items.length) {
       zetModalInhoud(venster, htmlMelding("info", "Niets te versturen",
-        "In de categorieën die je aanvinkte staat niets meer dat nagekeken moet worden."));
+        "In de categorieën die je aanvinkte staat niets dat af is en nog nagekeken moet worden."));
       return;
     }
 
@@ -949,7 +1036,7 @@
       ref: "RESULTAATVERWERKING",
       categorie: categorie,
       titel: "Resultaatverwerking",
-      status: velden.length ? "ingevuld" : "niet begonnen",
+      status: velden.length === Object.keys(namen).length ? "ingevuld" : (velden.length ? "onafgewerkt" : "niet begonnen"),
       boeking: velden.map(function (v) { return v[0] + ": " + v[1]; }).join("\n"),
       lijnen: velden.map(function (v) { return { redenering: v[0], bedrag: v[1] }; }),
     };
@@ -972,7 +1059,8 @@
       ref: "EINDBALANS",
       categorie: categorie,
       titel: "Eindbalans",
-      status: stukken.length ? "ingevuld" : "niet begonnen",
+      // Pas ingevuld als elke rubriek een plaats kreeg.
+      status: stukken.length ? (APP.eindbalansVolledig && !APP.eindbalansVolledig() ? "onafgewerkt" : "ingevuld") : "niet begonnen",
       boeking: stukken.join("\n"),
       lijnen: Object.keys(perVak).map(function (vak) {
         return { rekening: namen[vak] || vak, redenering: perVak[vak].sort().join(", ") };
@@ -1011,9 +1099,36 @@
       // Vroeger stond er per verrichting één enkele beoordeling in plaats van
       // een lijst met alle ronden. Oud bewaard werk mag daar niet op vastlopen.
       Object.keys(bewaard).forEach(function (ref) {
-        feedback[ref] = Array.isArray(bewaard[ref]) ? bewaard[ref] : [bewaard[ref]];
+        feedback[ref] = sorteerNieuwsteEerst(Array.isArray(bewaard[ref]) ? bewaard[ref] : [bewaard[ref]]);
       });
     } catch (e) { feedback = {}; }
+  }
+
+  /* Nieuwste ronde eerst. De server sorteert ook al, maar daar niet blind op
+     vertrouwen: de eerste ronde bepaalt de kleur in het menu en of een
+     verrichting op slot gaat. Staat ze verkeerd, dan blijft een verbeterde
+     boeking op "Te remediëren" staan.
+     Volgorde: tijdstip van de inzending, dan de rij in de Sheet (lager =
+     later ingediend), en anders de volgorde waarin ze binnenkwamen — het
+     tabblad Inzendingen groeit van boven naar onder, dus later = nieuwer. */
+  function sorteerNieuwsteEerst(lijst) {
+    return lijst
+      .map(function (f, i) { return { f: f, i: i, t: tijdVan(f) }; })
+      .sort(function (a, b) {
+        if (a.t !== b.t) return b.t - a.t;
+        var ra = Number(a.f.rij) || 0, rb = Number(b.f.rij) || 0;
+        if (ra !== rb) return rb - ra;
+        return b.i - a.i;
+      })
+      .map(function (x) { return x.f; });
+  }
+
+  function tijdVan(f) {
+    var t = Number(f && f.tijdstip);
+    if (t > 0) return t;
+    // Oudere antwoorden hadden enkel de datum, als d/MM/yyyy.
+    var m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String((f && f.ingediend) || "").trim());
+    return m ? new Date(+m[3], +m[2] - 1, +m[1]).getTime() : 0;
   }
 
   function haalFeedback(stil) {
@@ -1041,8 +1156,9 @@
         var nieuw = {};
         (r.feedback || []).forEach(function (f) {
           if (!nieuw[f.ref]) nieuw[f.ref] = [];
-          nieuw[f.ref].push(f);   // de server stuurt ze al nieuwste eerst
+          nieuw[f.ref].push(f);
         });
+        Object.keys(nieuw).forEach(function (ref) { nieuw[ref] = sorteerNieuwsteEerst(nieuw[ref]); });
         feedback = nieuw;
         schrijf(feedbackKey(), JSON.stringify(feedback));
         APP.renderAlles();
@@ -1160,8 +1276,14 @@
     afmelden: function () {
       var bewaren = (actief() && aanmelding) ? bewaarVoorAfmelden(20) : Promise.resolve(true);
       return bewaren.then(function (ok) {
-        if (!ok && !window.confirm("Je werk kon niet op de server bewaard worden. " +
-            "Het blijft wel in deze browser staan.\n\nToch afmelden?")) return false;
+        // Niet bewaard? Dan niet afmelden: anders zou het werk mee gewist
+        // worden. Liever aangemeld blijven dan werk kwijtspelen.
+        if (!ok) {
+          window.alert("Je werk kon niet op de server bewaard worden. Je blijft aangemeld en je werk blijft in deze browser staan.\n\n" +
+            "Controleer je internetverbinding en probeer het opnieuw.");
+          return false;
+        }
+        try { localStorage.removeItem(feedbackKey()); } catch (e) { /* geblokkeerd */ }
         aanmelding = null;
         teBewaren = false;
         try { localStorage.removeItem(AANMELD_KEY); } catch (e) { /* geblokkeerd */ }
@@ -1209,6 +1331,11 @@
       var ruw = lees(AANMELD_KEY);
       if (ruw) aanmelding = JSON.parse(ruw);
     } catch (e) { aanmelding = null; }
+    try {
+      var ruwNamen = lees(NAMEN_KEY);
+      var bewaard = ruwNamen ? JSON.parse(ruwNamen) : null;
+      if (bewaard && typeof bewaard === "object") namenCache = bewaard;
+    } catch (e) { namenCache = {}; }
 
     // De vestiging van de vorige keer terughalen. Staat ze er niet meer in
     // config-koppeling.js, dan begint de leerling opnieuw met kiezen.
@@ -1236,6 +1363,7 @@
     // De instellingen (teksten, links, klaslijst, taken) horen bij de
     // vestiging en worden dus opgehaald zodra die bekend is — nog vóór de
     // leerling aangemeld is, want de namenlijst komt er ook uit.
+    haalNamen();
     haalInstellingen();
 
     // Feedback stil verversen als de leerling terugkomt naar dit tabblad.

@@ -201,6 +201,7 @@ const omgeving = {
 vm.createContext(omgeving);
 vm.runInContext(CODE_GS + "\n" + SLEUTEL_GS, omgeving);
 
+let werkVertraging = 0;   // ms: het werk komt traag terug van de server
 function server(url, opts) {
   const u = new URL(url);
   let r;
@@ -211,7 +212,11 @@ function server(url, opts) {
   } else {
     r = omgeving.doPost({ postData: { contents: opts.body } });
   }
-  return Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve(r.tekst) });
+  const antwoord = { ok: true, status: 200, text: () => Promise.resolve(r.tekst) };
+  if (werkVertraging && u.searchParams.get("actie") === "werk") {
+    return new Promise((klaar) => setTimeout(() => klaar(antwoord), werkVertraging));
+  }
+  return Promise.resolve(antwoord);
 }
 const get = (p) => server("https://fake/exec?" + new URLSearchParams(Object.assign({ sleutel: "TEST" }, p))).then((r) => r.text()).then(JSON.parse);
 const post = (d) => server("https://fake/exec", { method: "POST", body: JSON.stringify(Object.assign({ sleutel: "TEST" }, d)) }).then((r) => r.text()).then(JSON.parse);
@@ -232,13 +237,14 @@ async function start(vooraf) {
   Object.keys(vooraf || {}).forEach((k) => dom.window.localStorage.setItem(k, vooraf[k]));
   const laad = (b) => {
     const s = dom.window.document.createElement("script");
-    s.textContent = fs.readFileSync(path.join(APP, b), "utf8");
+    // Zonder het versienummer (?v=…) dat achter elk script staat.
+    s.textContent = fs.readFileSync(path.join(APP, b.split("?")[0]), "utf8");
     dom.window.document.head.appendChild(s);
   };
   // js/koppeling.js en js/beheer.js komen pas na het opstarten van app.js,
   // zoals in de browser. js/config-koppeling.js hoort daar NIET bij: die
   // moet vóór app.js geladen zijn, net als in index.html.
-  const laatst = (b) => /^js\/(koppeling|beheer)\.js$/.test(b);
+  const laatst = (b) => /^js\/(koppeling|beheer)\.js(\?|$)/.test(b);
   bronnen.filter((b) => !laatst(b)).forEach(laad);
   if (dom.window.document.readyState === "loading") {
     await new Promise((res) => dom.window.document.addEventListener("DOMContentLoaded", res, { once: true }));
@@ -541,8 +547,8 @@ function boekingVolgensSleutel(ref) {
   check("aanmelding en laatste leerling vergeten",
     !wa.localStorage.getItem("bkh4_aanmelding") && !wa.localStorage.getItem("bkh4_laatste_leerling"), Object.keys(wa.localStorage));
   check("laatste werk vóór het afmelden op de server bewaard", /4321/.test(bestandMet("werk_LEU_lottev.json").inhoud || ""));
-  check("werk blijft in de browser staan", /4321/.test(Object.keys(wa.localStorage).filter((k) => /^bkh4_data_/.test(k))
-    .map((k) => wa.localStorage.getItem(k)).join("")));
+  check("werk daarna gewist uit de browser (gedeelde computer)",
+    !Object.keys(wa.localStorage).some((k) => /^bkh4_data_/.test(k) || /^bkh4_feedback_/.test(k)), Object.keys(wa.localStorage));
   const naAfmelden = {};
   Object.keys(wa.localStorage).forEach((k) => { naAfmelden[k] = wa.localStorage.getItem(k); });
   const domB = await start(naAfmelden);
@@ -550,6 +556,63 @@ function boekingVolgensSleutel(ref) {
   check("na herladen: niemand aangemeld, knop verborgen",
     domB.window.APP.getState().student === "" && domB.window.document.getElementById("btn-afmelden").hidden === true,
     domB.window.APP.getState().student);
+
+  console.log("\n13. Namen meteen klaar");
+  const nm = await get({ actie: "namen" });
+  check("actie namen: de namen van elke vestiging, zonder codes",
+    nm.ok && (nm.klas.LEU || []).includes("Lotte V.") && (nm.klas.TW || []).includes("Lotte V.") && !/\d{4}/.test(JSON.stringify(nm)), nm);
+  const domN = await start({});
+  await wacht(100);
+  const bewaardeNamen = JSON.parse(domN.window.localStorage.getItem("bkh4_namen") || "{}");
+  check("de browser onthoudt de namen", (bewaardeNamen.LEU || []).includes("Lotte V."), bewaardeNamen);
+
+  console.log("\n14. Enkel afgerond werk gaat naar de Sheet");
+  const domI = await start({
+    bkh4_aanmelding: JSON.stringify({ vestiging: "LEU", naam: "Lotte V.", code: codeLeu }),
+    bkh4_vestiging: "leu",
+  });
+  await wacht(150);
+  const wi = domI.window;
+  const stI = wi.APP.getState();
+  stI.boekingen.VK01 = { geboekt: false, rows: [{ bedrag: "100", rekening: "", dc: "" }] };   // half af
+  stI.boekingen.VK02 = boekingVolgensSleutel("VK02");
+  wi.APP.saveState();
+  wi.document.getElementById("btn-indienen").click();
+  await wacht(40);
+  const vI = wi.document.querySelector(".koppeling-overlay");
+  check("een categorie zonder iets afgerond kan je niet aanvinken",
+    vI.querySelector('[data-cat="K2 · Aankopen"]').disabled === true);
+  const vinkI = vI.querySelector('[data-cat="K1 · Verkopen"]');
+  vinkI.checked = true;
+  vinkI.dispatchEvent(new wi.Event("change"));
+  vI.querySelector("#btn-indienen-bevestig").click();
+  await wacht(40);
+  const voorI = sheets["Inzendingen LEU"].getLastRow();
+  vI.querySelector('[data-role="bevestig-ja"]').click();
+  await wacht(150);
+  const nieuwI = sheets["Inzendingen LEU"].rijen.slice(voorI).map((r) => r[3]);
+  check("enkel de geboekte VK02 gaat mee", nieuwI.join("|") === "VK02", nieuwI);
+
+  console.log("\n15. Voortgang per kwartaal");
+  const vtekst = wi.document.getElementById("voortgang-tekst").textContent;
+  check("de balk toont het kwartaal waar de leerling mee bezig is", /^K1: \d+ van \d+ geboekt · jaar: \d+ van \d+$/.test(vtekst), vtekst);
+
+  console.log("\n16. Typen terwijl het werk nog geladen wordt");
+  werkVertraging = 150;
+  const domR = await start({
+    bkh4_aanmelding: JSON.stringify({ vestiging: "LEU", naam: "Lotte V.", code: codeLeu }),
+    bkh4_vestiging: "leu",
+  });
+  domR.window.APP.getState().boekingen.AK10 = { geboekt: false, rows: [{ bedrag: "9", rekening: "", dc: "" }] };
+  domR.window.APP.saveState();
+  await wacht(300);
+  werkVertraging = 0;
+  check("het werk van de server wint (de browser was leeg bij het aanmelden)",
+    !!domR.window.APP.getState().boekingen.AK01, Object.keys(domR.window.APP.getState().boekingen));
+
+  console.log("\n17. Feedback met een tijdstip als tekst in de Sheet");
+  const dT = omgeving.alsDatum_("17/10/2026 15:35:51");
+  check("tekst-tijdstip wordt gelezen", dT && dT.getTime() === new Date(2026, 9, 17, 15, 35, 51).getTime(), dT);
 
   console.log(fouten ? "\n" + fouten + " controle(s) mislukt." : "\nAlle controles geslaagd.");
   process.exit(fouten ? 1 : 0);

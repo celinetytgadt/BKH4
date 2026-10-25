@@ -41,6 +41,22 @@ verwerking, eindbalans, indienen en feedback via Google Sheets.
   "test" alles te boeken.
 - **MAR 2e graad** (57 rekeningen) in `js/mar.js`.
 
+## Werking in het kort
+
+- **Indienen**: enkel wat afgerond is (geboekt, of volledig ingevuld) gaat
+  naar de Sheet. Wat in orde is, gaat niet meer mee.
+- **Voortgangsbalk**: toont het kwartaal waar de leerling mee bezig is
+  ("K2: 5 van 23 geboekt"), met het hele jaar erachter.
+- **Namenlijst**: bij het openen haalt de app de namen van de drie
+  vestigingen in één verzoek op (actie `namen`, zonder codes) en onthoudt ze
+  in de browser, zodat de keuzelijst de volgende keer meteen klaarstaat.
+- **Afmelden** (titelbalk): eerst gaat het werk naar de Drive, daarna wordt
+  alles van die leerling uit de browser gewist — voor gedeelde computers.
+  Lukt bewaren niet, dan blijft de leerling aangemeld.
+- **Menu links inklappen** met « bovenaan het menu.
+- **Versienummer** achter de scripts in `index.html` (`?v=…`): verander het
+  bij elke update, dan halen de browsers meteen alle nieuwe bestanden op.
+
 ## Structuur
 
 ```
