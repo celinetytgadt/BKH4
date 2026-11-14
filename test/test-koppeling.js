@@ -69,6 +69,11 @@ class Range {
   setVerticalAlignment() { return this; }
   setFontWeight() { return this; }
   setBackground() { return this; }
+  setBackgrounds() { return this; }
+  setNotes(n) { this.sheet.notities = this.sheet.notities || {}; n.forEach((rij, i) => rij.forEach((t, j) => { this.sheet.notities[(this.r + i) + "," + (this.c + j)] = t; })); return this; }
+  getSheet() { return this.sheet; }
+  getColumn() { return this.c; }
+  getNumColumns() { return this.nc; }
   createFilter() { this.sheet.filter = {}; return this; }
   getRow() { return this.r; }
 }
@@ -402,6 +407,29 @@ function boekingVolgensSleutel(ref) {
   check("AK05 (financiële korting) automatisch In orde", rij("AK05")[6] === "In orde", rij("AK05")[11]);
   check("AK03 automatisch Te remediëren", rij("AK03")[6] === "Te remediëren" && /604030/.test(rij("AK03")[11]), rij("AK03")[11]);
   check("Detail LEU gevuld, Detail TW leeg", sheets["Detail LEU"].getLastRow() > 1 && sheets["Detail TW"].getLastRow() === 1);
+  check("controles leerling: kolom in Inzendingen", inz.cel(1, 13) === "controles leerling", inz.rijen[0]);
+  check("controles leerling: niets afgevinkt", /^nee: 0 van \d+ afgevinkt$/.test(rij("AK01")[12]), rij("AK01")[12]);
+  const klasL = sheets["Klas LEU"];
+  const kolom = (kop) => klasL.rijen[0].indexOf(kop) + 1;
+  const klasRij = (naam) => klasL.rijen.findIndex((x) => x[0] === naam) + 1;
+  check("Klas LEU: kolommen per categorie na opmerking", klasL.cel(1, 4) === "K1 AK" && kolom("K1 VK") === 5 && kolom("EB") > 5, klasL.rijen[0]);
+  check("Klas LEU: volle naam van de categorie als notitie", klasL.notities && klasL.notities["1,4"] === "K1 · Aankopen", klasL.notities);
+  check("Klas TW: nog geen kolommen (geen inzending)", !sheets["Klas TW"].cel(1, 4), sheets["Klas TW"].rijen[0]);
+  check("K1 AK nog niet OK (AK03 te remediëren)", klasL.cel(klasRij("Lotte V."), kolom("K1 AK")) === "", klasL.rijen);
+  // De vakexpert zet AK03 zelf op In orde: het klasoverzicht volgt meteen.
+  const rijAk03 = inz.rijen.findIndex((x) => x[3] === "AK03") + 1;
+  inz.zet(rijAk03, 7, "In orde");
+  omgeving.onEdit({ range: inz.getRange(rijAk03, 7) });
+  check("na In orde voor AK03: OK bij K1 AK", klasL.cel(klasRij("Lotte V."), kolom("K1 AK")) === "OK", klasL.rijen[klasRij("Lotte V.") - 1]);
+  check("K1 VK blijft leeg", klasL.cel(klasRij("Lotte V."), kolom("K1 VK")) === "");
+  check("andere leerling geen OK", klasL.rijen.slice(1).filter((x) => x[0] && x[0] !== "Lotte V.").every((x) => !x[3]), klasL.rijen);
+  omgeving.onEdit({ range: inz.getRange(rijAk03, 8) });   // feedback: niets te doen
+  inz.zet(rijAk03, 7, "Te remediëren");
+  omgeving.onEdit({ range: inz.getRange(rijAk03, 1, 1, 9) });
+  check("controles-tekst: alles afgevinkt = ja", omgeving.controlesTekst_({ totaal: 3, af: 3 }) === "ja" &&
+    /heropend/.test(omgeving.controlesTekst_({ totaal: 3, af: 3, herbekijken: true })) &&
+    omgeving.controlesTekst_({ totaal: 0, af: 0 }) === "" && omgeving.controlesTekst_(undefined) === "");
+  check("terug op Te remediëren: OK verdwijnt", klasL.cel(klasRij("Lotte V."), kolom("K1 AK")) === "");
   check("werkbestand met vestiging in de naam", !!bestandMet("werk_LEU_lottev.json"),
     Object.values(drive).map((f) => f.name));
   const eigenMap = Object.values(drive).find((f) => f.name === "Boekhoudapp 4e jaar werkbestanden" && f.vanScript);

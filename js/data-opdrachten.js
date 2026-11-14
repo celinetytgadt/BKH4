@@ -179,6 +179,28 @@ const CATEGORIE_VOLGORDE = [
   "Eindejaarsverrichtingen"
 ];
 
+// De korte naam van elke categorie: de kop van haar kolom in het tabblad
+// Klas van de Sheet. Daar komt OK te staan zodra alles van die categorie
+// "In orde" is. Een categorie die hier niet staat, krijgt haar volle naam.
+const CATEGORIE_KORT = {
+  "Beginbalans": "BB",
+  "K1 · Aankopen": "K1 AK",
+  "K1 · Verkopen": "K1 VK",
+  "K1 · Btw-verwerking": "K1 BTW",
+  "K1 · Financiële verrichtingen": "K1 FIN",
+  "K2 · Aankopen": "K2 AK",
+  "K2 · Verkopen": "K2 VK",
+  "K2 · Btw-verwerking": "K2 BTW",
+  "K2 · Financiële verrichtingen": "K2 FIN",
+  "K3 · Aankopen en verkopen": "K3 AK-VK",
+  "K3 · Btw-verwerking": "K3 BTW",
+  "K3 · Financiële verrichtingen": "K3 FIN",
+  "K4 · Alle verrichtingen": "K4",
+  "Eindejaarsverrichtingen": "EJ",
+  "Resultaatverwerking": "RES",
+  "Eindbalans": "EB",
+};
+
 // Een tussentitel in het menu boven de eerste categorie van elk kwartaal. In
 // het menu valt het voorvoegsel "K1 · " dan weg onder die titel.
 const CATEGORIE_KOPPEN = {

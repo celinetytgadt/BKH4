@@ -191,6 +191,21 @@ controle* welke rekeningen afwijken (die kolom ziet de leerling niet). Bij de
 resultaatverwerking worden opbrengsten, kosten en winst vergeleken, bij de
 eindbalans in welk vak elke rubriek ligt.
 
+**Controles van de leerling.** In de kolom *controles leerling* zie je of de
+leerling de controles van die categorie had afgevinkt bij het indienen: *ja*,
+*nee: 1 van 3 afgevinkt*, of *ja, maar daarna een boeking heropend*. Leeg =
+die categorie heeft geen controles.
+
+**Klasoverzicht in het tabblad Klas.** Rechts van *opmerking* zet het script
+een kolom per categorie (*K1 AK*, *K1 VK* … *EJ*, *RES*, *EB*). Daar staat **OK** zodra alle
+verrichtingen van die categorie bij die leerling op *In orde* staan (de
+nieuwste rij telt, vrijgegeven of niet). De volle naam van de categorie staat
+als notitie op de kop. Het overzicht volgt vanzelf: bij elk indienen, bij het
+automatisch nakijken en telkens je een beoordeling aanpast. De kolommen
+verschijnen na het eerste indienen met deze versie; voor de zekerheid is er
+**Boekhoudapp → Klasoverzicht (OK per categorie) bijwerken**. Tik zelf niets
+in die kolommen: ze worden telkens overschreven.
+
 **Vrijgeven.** Cursor op een rij van de leerling in *Inzendingen* van je
 vestiging → **Boekhoudapp → Feedback vrijgeven voor deze leerling**. Enkel de
 rijen van die leerling in dát tabblad worden vrijgegeven. *In orde* zet de verrichting op slot in de app.
