@@ -1,5 +1,5 @@
 /**
- * Boekhoudapp 4e jaar (Fietsatelier Noor) — De MET
+ * Boekhoudapp 4e jaar (case MetWear, zes boekjaren) — De MET
  * Serverkant: bewaren van werk, indienen ter nakijking, feedback teruggeven.
  *
  * ÉÉN SCRIPT EN ÉÉN SHEET VOOR DE DRIE VESTIGINGEN. In kern 8 had elke
@@ -25,14 +25,19 @@
  * ---------------------------------------------------------------------------
  * DE TABBLADEN (per vestiging, met de code achter de naam: "Klas LEU" …)
  *
- *   Klas          naam | code | opmerking
+ *   Klas          naam | code | opmerking | K1 AK | K1 VK | …
  *                 De namen die in de app in de keuzelijst staan, met hun
  *                 persoonlijke code. Alleen hier staan de codes — nooit in
  *                 de app-code, want die is publiek leesbaar.
+ *                 Rechts van opmerking zet het script zelf een kolom per
+ *                 categorie, met OK zodra alle verrichtingen van die
+ *                 categorie "In orde" zijn (zie Klasoverzicht hieronder).
  *
  *   Inzendingen   één rij per verrichting per inzending. Hier kijk je na.
  *                 Er wordt NOOIT een rij overschreven of verwijderd, zodat
- *                 je de evolutie van elke leerling kan volgen.
+ *                 je de evolutie van elke leerling kan volgen. De kolom
+ *                 "controles leerling" zegt of de leerling de controles van
+ *                 die categorie afgevinkt had bij het indienen.
  *
  *   Detail        één rij per boekingslijn, voor als je wil uitpluizen wat
  *                 er precies geboekt is.
@@ -45,6 +50,17 @@
  *   Taken         categorie | link naar de taak in Classroom | opmerking
  *                 De taak in Classroom die bij elke categorie hoort. De app
  *                 toont die link bij het indienen.
+ *
+ *   Zelfcontrole  tijdstip | leerling | jaar | ref | categorie | poging | juist | fout
+ *                 Eén rij per keer dat een leerling in het extra
+ *                 oefenmateriaal of de remediëring "Controleer mijn boeking"
+ *                 deed. Het beheertabblad in de app maakt er een overzicht
+ *                 van (wat ging vaak fout?).
+ *
+ * BOEKJAREN. De case loopt over zes jaren (20X1 … 20X6). Elke verrichting en
+ * categorie krijgt in de Sheet het jaar ervoor: "20X2 AK01",
+ * "20X2 · Aankopen". Enkel de taak (20X2) en de consolidaties (20X3, 20X6)
+ * worden ingediend.
  *
  * GEDEELD
  *
@@ -95,12 +111,13 @@ var BLAD_DETAIL = "Detail";
 var BLAD_INSTELLINGEN = "Instellingen";
 var BLAD_TAKEN = "Taken";
 var BLAD_SLEUTEL = "Sleutel";
+var BLAD_ZELFCONTROLE = "Zelfcontrole";
 
 // Deze tabbladen bestaan per vestiging: "Klas LEU", "Klas SKW", "Klas TW" …
 // Overal in de code staat gewoon BLAD_KLAS; blad_() zet er de code van de
 // vestiging achter waarvoor er op dat moment gewerkt wordt (zetVestiging_).
 // Het tabblad Sleutel is gedeeld.
-var PER_VESTIGING = [BLAD_KLAS, BLAD_INZENDINGEN, BLAD_DETAIL, BLAD_INSTELLINGEN, BLAD_TAKEN];
+var PER_VESTIGING = [BLAD_KLAS, BLAD_INZENDINGEN, BLAD_DETAIL, BLAD_INSTELLINGEN, BLAD_TAKEN, BLAD_ZELFCONTROLE];
 
 var _vestiging = "";
 
@@ -144,12 +161,14 @@ var VERSIE_INTERVAL_MIN = 60;
 var KOP_INZENDINGEN = [
   "tijdstip", "leerling", "categorie", "ref", "boeking", "status leerling",
   "beoordeling", "feedback", "klaar", "is laatste", "inzending",
-  "automatische controle",
+  "automatische controle", "controles leerling",
 ];
 var KOP_DETAIL = [
   "tijdstip", "leerling", "inzending", "ref", "lijn", "bedrag", "rekening",
   "omschrijving", "D/C", "relatie", "redenering", "A/P/K/O", "stijgt/daalt",
+  "klasse", "rubriek",
 ];
+var KOP_ZELFCONTROLE = ["tijdstip", "leerling", "jaar", "ref", "categorie", "poging", "juist", "fout"];
 var KOP_KLAS = ["naam", "code", "opmerking"];
 var KOP_SLEUTEL = ["ref", "rekening of veld", "D/C", "bedrag of rubrieken", "opmerking"];
 
@@ -165,26 +184,19 @@ var KOP_TAKEN = ["categorie", "link naar de taak in Classroom", "opmerking"];
 // https://classroom.google.com/c/<klas>/a/<taak>/details
 
 // De categorieën waarvoor er een taak in Classroom bestaat. Ze komen overeen
-// met wat de leerling in het indienvenster aanvinkt. Eindbalans en
-// resultaatverwerking horen samen in één taak; de rest staat apart per soort
-// verrichting. Wijzigt de bundel van opbouw, dan zet je hier de nieuwe
+// met wat de leerling in het indienvenster aanvinkt. In de taak (20X2) is er
+// één taak per categorie; resultaatverwerking en eindbalans horen bij
+// Eindejaar. Een consolidatie is één taak voor het hele jaar. Wijzigt de bundel van opbouw, dan zet je hier de nieuwe
 // categorieën en draai je Boekhoudapp -> Eerste installatie opnieuw. Het
 // beheertabblad in de app werkt de lijst ook zelf bij.
 var TAAK_CATEGORIEEN = [
-  "K1 · Aankopen",
-  "K1 · Verkopen",
-  "K1 · Btw-verwerking",
-  "K1 · Financiële verrichtingen",
-  "K2 · Aankopen",
-  "K2 · Verkopen",
-  "K2 · Btw-verwerking",
-  "K2 · Financiële verrichtingen",
-  "K3 · Aankopen en verkopen",
-  "K3 · Btw-verwerking",
-  "K3 · Financiële verrichtingen",
-  "K4 · Alle verrichtingen",
-  "Eindejaarsverrichtingen",
-  "Resultaatverwerking & Eindbalans",
+  "20X2 · Aankopen",
+  "20X2 · Verkopen",
+  "20X2 · Btw-verrekening",
+  "20X2 · Financiële verrichtingen",
+  "20X2 · Eindejaar",
+  "20X3 · Consolidatie",
+  "20X6 · Consolidatie 2",
 ];
 
 // De instellingen die de vakexpert vanuit de app kan aanpassen, met de
@@ -202,12 +214,20 @@ var INSTELLINGEN_UITLEG = [
     "Link naar de digitale cursus. Staat als knop Cursus bovenaan in de app, op elk tabblad."],
   ["handleidingUrl", "",
     "Link naar de handleiding voor de leerlingen. Staat als knop Handleiding bovenaan. Leeg = die knop verdwijnt."],
+  ["zichtbaarheid", "{}",
+    "Welke boekjaren en categorieën de leerlingen zien, en waar de zelfcontrole aan staat. Pas dit aan in het tabblad Beheer van de app, niet hier (het is JSON)."],
+  ["aanbevolen", "{}",
+    "Wat je per leerling aanbeveelt in de remediëring. Pas dit aan in het tabblad Beheer van de app (JSON). Leerlingen zien enkel hun eigen aanbevelingen."],
 ];
+
+// De jaren waarvan de feedback meetelt voor de automatische aanbevelingen
+// in de remediëring: de taak en de eerste consolidatie.
+var AANBEVELEN_UIT_JAREN = ["20X2", "20X3"];
 
 // Kolomnummers in Inzendingen (1-gebaseerd), zodat de rest leesbaar blijft.
 var K_TIJDSTIP = 1, K_LEERLING = 2, K_CATEGORIE = 3, K_REF = 4, K_BOEKING = 5,
     K_STATUS_LEERLING = 6, K_BEOORDELING = 7, K_FEEDBACK = 8, K_KLAAR = 9,
-    K_IS_LAATSTE = 10, K_INZENDING = 11, K_AUTOMATISCH = 12;
+    K_IS_LAATSTE = 10, K_INZENDING = 11, K_AUTOMATISCH = 12, K_CONTROLES = 13;
 
 // De drie beoordelingen, gelijk aan de afspraken met de collega's in
 // Classroom. "In orde" heeft een bijzondere betekenis in de app: zo'n
@@ -268,7 +288,8 @@ function doGet(e) {
     if (p.actie === "feedback") {
       var check2 = controleerAanmelding(vest, p.naam, p.code);
       if (!check2.ok) return antwoord(check2);
-      return antwoord({ ok: true, feedback: haalFeedbackOp(vest, check2.leerling) });
+      return antwoord({ ok: true, feedback: haalFeedbackOp(vest, check2.leerling),
+        aanbevolen: aanbevolenVoor_(check2.leerling) });
     }
 
     return antwoord({ ok: false, fout: "onbekende actie" });
@@ -318,7 +339,14 @@ function doPost(e) {
     if (!check.ok) return antwoord(check);
 
     if (data.actie === "bewaren") {
-      return antwoord(bewaarWerk(vest, check.leerling, data.state));
+      var bewaard = bewaarWerk(vest, check.leerling, data.state);
+      // De pogingen van de zelfcontrole gaan naar het tabblad Zelfcontrole.
+      // De app haalt ze pas uit haar lijst als het aantal hier terugkomt.
+      if (bewaard.ok && data.zelfcontrole && data.zelfcontrole.length) {
+        if (!neemSlot()) return antwoord(bewaard);
+        bewaard.zelfcontrole = schrijfZelfcontrole_(check.leerling, data.zelfcontrole);
+      }
+      return antwoord(bewaard);
     }
     if (data.actie === "indienen") {
       if (!neemSlot()) return antwoord({ ok: false, fout: "te druk, probeer opnieuw" });
@@ -621,10 +649,15 @@ function verwerkInzending(vest, leerling, data) {
   var blad = blad_(BLAD_INZENDINGEN);
   var eersteNieuweRij = blad.getLastRow() + 1;
 
+  // Had de leerling de controles van die categorie afgevinkt? De app stuurt
+  // de stand per categorie mee; elke rij van die categorie krijgt ze.
+  var controles = data.controles || {};
+  zorgVoorKop_(blad, K_CONTROLES);
   var rijen = items.map(function (it) {
     return [
       nu, leerling, it.categorie || "", it.ref || "", it.boeking || "",
       it.status || "", "", "", false, "JA", inzendingId, "",
+      controlesTekst_(controles[it.categorie]),
     ];
   });
   blad.getRange(eersteNieuweRij, 1, rijen.length, KOP_INZENDINGEN.length).setValues(rijen);
@@ -641,6 +674,15 @@ function verwerkInzending(vest, leerling, data) {
     nakijkenEnSchrijven_(blad, eersteNieuweRij, items);
   } catch (err) {
     console.error("Automatisch nakijken mislukt: " + err);
+  }
+
+  // Het klasoverzicht bijwerken. Ook hier: lukt dat niet, dan is de
+  // inzending zelf toch binnen.
+  try {
+    bewaarKlasKolommen_(data.categorieen);
+    werkKlasoverzichtBij_();
+  } catch (err2) {
+    console.error("Klasoverzicht bijwerken mislukt: " + err2);
   }
 
   return { ok: true, aantal: rijen.length, inzending: inzendingId };
@@ -688,6 +730,7 @@ function schrijfDetail_(leerling, data, inzendingId, nu) {
         nu, leerling, inzendingId, it.ref, idx + 1,
         r.bedrag || "", r.rekening || "", r.omschrijving || "", r.dc || "",
         r.relatie || "", r.redenering || "", r.apko || "", r.stijgtDaalt || "",
+        r.klasse || "", r.rubriek || "",
       ]);
     });
   });
@@ -757,9 +800,13 @@ function rubriekLijst_(v) {
     .filter(function (x) { return x; }).sort();
 }
 
+// "20X2 AK01" → "AK01". De Sheet zet het boekjaar voor elke verrichting.
+function kaleRef_(ref) { return String(ref || "").replace(/^20X\d /, ""); }
+
 function soortVoorRef_(ref) {
-  if (ref === REF_GETALLEN) return "getallen";
-  if (ref === REF_BALANS) return "balans";
+  var kaal = kaleRef_(ref);
+  if (kaal === REF_GETALLEN) return "getallen";
+  if (kaal === REF_BALANS) return "balans";
   return "boeking";
 }
 
@@ -819,7 +866,7 @@ function sleutelLezen_() {
  * afgewerkt), anders { ok: true/false, notitie: "…" }.
  */
 function controleerItem_(ref, status, lijnen, sleutel) {
-  if (REF_NIET_NAKIJKEN[ref]) return null;
+  if (REF_NIET_NAKIJKEN[kaleRef_(ref)]) return null;
   var s = sleutel[ref];
   if (!s) return null;
   var verschillen = [];
@@ -895,10 +942,12 @@ function nakijkenEnSchrijven_(blad, eersteRij, items) {
 }
 
 // Sheets die al bestonden vóór deze versie hebben de kolom nog niet.
-function zorgVoorKopAutomatisch_(blad) {
-  var kop = blad.getRange(1, K_AUTOMATISCH);
+function zorgVoorKopAutomatisch_(blad) { zorgVoorKop_(blad, K_AUTOMATISCH); }
+
+function zorgVoorKop_(blad, kolom) {
+  var kop = blad.getRange(1, kolom);
   if (!kop.getValue()) {
-    kop.setValue(KOP_INZENDINGEN[K_AUTOMATISCH - 1]).setFontWeight("bold").setBackground("#e9eaf7");
+    kop.setValue(KOP_INZENDINGEN[kolom - 1]).setFontWeight("bold").setBackground("#e9eaf7");
   }
 }
 
@@ -1043,9 +1092,169 @@ function nakijkenOpenInzendingen() {
     }
     beoordelingBereik.setValues(beoordelingen);
     autoBereik.setValues(notities);
+    werkKlasoverzichtBij_();
   });
   ui.alert("Klaar, voor de drie vestigingen: " + inOrde + " keer '" + BEOORDELINGEN[0] + "' en " + teRemedieren + " keer '" +
     BEOORDELINGEN[1] + "' ingevuld.\n\nNiets is vrijgegeven: zet zelf het vinkje 'klaar' aan.");
+}
+
+/* ==========================================================================
+   Klasoverzicht: OK per categorie in het tabblad Klas
+
+   Rechts van de kolom opmerking staat in Klas een kolom per categorie
+   (K1 AK, K1 VK …). Daarin komt OK zodra ALLE verrichtingen van die
+   categorie bij de leerling op "In orde" staan — telkens de beoordeling van
+   de nieuwste rij van die verrichting in Inzendingen, vrijgegeven of niet.
+   Zolang er nog iets ontbreekt of te remediëren is, blijft het vakje leeg.
+
+   Welke categorieën er zijn en welke verrichtingen erbij horen, weet de
+   app: die stuurt het mee bij elk indienen, en het script onthoudt het in
+   de scripteigenschappen. Zo hoeft er hier niets bijgehouden te worden als
+   de bundel verandert.
+
+   Het overzicht wordt vanzelf bijgewerkt bij elk indienen, bij het
+   automatisch nakijken, bij het bewaren van de klaslijst in de app en
+   telkens jij een beoordeling aanpast (onEdit). Voor de zekerheid staat er
+   ook een menu-item: Boekhoudapp → Klasoverzicht bijwerken.
+
+   Die kolommen zijn van het script: wat je er zelf intikt, wordt bij de
+   volgende keer overschreven. Eigen kolommen zet je best in een ander
+   tabblad.
+   ========================================================================== */
+
+var EIGENSCHAP_KLASKOLOMMEN = "klasKolommen";
+var KLEUR_KLAS_OK = "#d9ead3";
+
+// De tekst in de kolom "controles leerling" van Inzendingen.
+function controlesTekst_(c) {
+  if (!c || !Number(c.totaal)) return "";
+  var totaal = Number(c.totaal);
+  var af = Math.min(Number(c.af) || 0, totaal);
+  if (af < totaal) return "nee: " + af + " van " + totaal + " afgevinkt";
+  return c.herbekijken ? "ja, maar daarna een boeking heropend" : "ja";
+}
+
+// Wat de app meestuurt: [{ categorie, kort, refs: [...] }, …]. Enkel als het
+// verandert, wordt het opnieuw weggeschreven. De app is publiek: alles
+// wordt ingekort tot redelijke maten.
+function bewaarKlasKolommen_(lijst) {
+  if (!Array.isArray(lijst) || !lijst.length) return;
+  var schoon = lijst.slice(0, 40).map(function (c) {
+    var cat = String((c && c.categorie) || "").slice(0, 120);
+    return {
+      categorie: cat,
+      kort: String((c && c.kort) || cat).slice(0, 20),
+      refs: ((c && c.refs) || []).slice(0, 200).map(function (r) { return String(r).slice(0, 60); }),
+    };
+  }).filter(function (c) { return c.categorie && c.refs.length; });
+  if (!schoon.length) return;
+  var props = PropertiesService.getScriptProperties();
+  var json = JSON.stringify(schoon);
+  if (props.getProperty(EIGENSCHAP_KLASKOLOMMEN) !== json) props.setProperty(EIGENSCHAP_KLASKOLOMMEN, json);
+}
+
+function klasKolommen_() {
+  try {
+    var json = PropertiesService.getScriptProperties().getProperty(EIGENSCHAP_KLASKOLOMMEN);
+    return json ? JSON.parse(json) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// Per leerling (genormaliseerde naam) en per ref: de beoordeling van de
+// nieuwste rij in Inzendingen van de vestiging waarvoor nu gewerkt wordt.
+function laatsteBeoordelingen_() {
+  var uit = {};
+  var blad = bladOfNiets_(BLAD_INZENDINGEN);
+  if (!blad || blad.getLastRow() < 2) return uit;
+  var n = blad.getLastRow() - 1;
+  var links = blad.getRange(2, K_LEERLING, n, K_REF - K_LEERLING + 1).getValues();  // leerling, categorie, ref
+  var beoordeling = blad.getRange(2, K_BEOORDELING, n, 1).getValues();
+  for (var i = 0; i < n; i++) {
+    var naam = normaliseerNaam_(links[i][0]);
+    var ref = String(links[i][K_REF - K_LEERLING] || "");
+    if (!naam || !ref) continue;
+    if (!uit[naam]) uit[naam] = {};
+    uit[naam][ref] = String(beoordeling[i][0] || "").trim();   // lager = nieuwer
+  }
+  return uit;
+}
+
+/**
+ * Schrijft de kolommen per categorie in het tabblad Klas van de vestiging
+ * waarvoor nu gewerkt wordt.
+ */
+function werkKlasoverzichtBij_() {
+  var kolommen = klasKolommen_();
+  var klas = bladOfNiets_(BLAD_KLAS);
+  if (!klas || !kolommen.length) return;
+
+  var eerste = KOP_KLAS.length + 1;
+  var props = PropertiesService.getScriptProperties();
+  var sleutelAantal = EIGENSCHAP_KLASKOLOMMEN + "Aantal " + klas.getName();
+  var vorigAantal = Number(props.getProperty(sleutelAantal)) || 0;
+  var breedte = Math.max(kolommen.length, vorigAantal);
+  var rijen = Math.max(klas.getLastRow(), 1);
+
+  var beoordelingen = laatsteBeoordelingen_();
+  var namen = rijen > 1 ? klas.getRange(2, 1, rijen - 1, 1).getValues() : [];
+
+  var kop = [], notities = [];
+  for (var k = 0; k < breedte; k++) {
+    var c = kolommen[k];
+    kop.push(c ? c.kort : "");
+    notities.push(c ? c.categorie : "");
+  }
+  var waarden = [kop], kleuren = [kop.map(function (t) { return t ? "#e9eaf7" : null; })];
+  namen.forEach(function (r) {
+    var naam = normaliseerNaam_(r[0]);
+    var mijn = (naam && beoordelingen[naam]) || {};
+    var rij = [], kleur = [];
+    for (var j = 0; j < breedte; j++) {
+      var col = kolommen[j];
+      var ok = !!(naam && col && col.refs.every(function (ref) { return mijn[ref] === BEOORDELINGEN[0]; }));
+      rij.push(ok ? "OK" : "");
+      kleur.push(ok ? KLEUR_KLAS_OK : null);
+    }
+    waarden.push(rij);
+    kleuren.push(kleur);
+  });
+
+  var bereik = klas.getRange(1, eerste, waarden.length, breedte);
+  bereik.setValues(waarden);
+  bereik.setBackgrounds(kleuren);
+  klas.getRange(1, eerste, 1, breedte).setNotes([notities]).setFontWeight("bold");
+  if (vorigAantal !== kolommen.length) props.setProperty(sleutelAantal, String(kolommen.length));
+}
+
+// Menu: voor elke vestiging opnieuw opbouwen.
+function klasoverzichtBijwerken() {
+  var ui = SpreadsheetApp.getUi();
+  if (!klasKolommen_().length) {
+    ui.alert("Er is nog niets ingediend met deze versie van de app. Het klasoverzicht verschijnt na het eerste indienen.");
+    return;
+  }
+  voorElkeVestiging_(function () { werkKlasoverzichtBij_(); });
+  ui.alert("Het klasoverzicht is bijgewerkt in de tabbladen Klas van de drie vestigingen.");
+}
+
+/**
+ * Pas jij in Inzendingen een beoordeling aan, dan volgt het klasoverzicht
+ * meteen. Een eenvoudige trigger: er hoeft niets voor ingesteld te worden.
+ */
+function onEdit(e) {
+  try {
+    if (!e || !e.range) return;
+    var vest = vestigingVanTab_(e.range.getSheet().getName(), BLAD_INZENDINGEN);
+    if (!vest) return;
+    var c1 = e.range.getColumn(), c2 = c1 + e.range.getNumColumns() - 1;
+    if (K_BEOORDELING < c1 || K_BEOORDELING > c2) return;
+    zetVestiging_(vest);
+    werkKlasoverzichtBij_();
+  } catch (err) {
+    console.error("Klasoverzicht bijwerken mislukt: " + err);
+  }
 }
 
 /* ==========================================================================
@@ -1100,6 +1309,99 @@ function haalFeedbackOp(vest, naam) {
   return uit;
 }
 
+/* ==========================================================================
+   Zelfcontrole en aanbevelingen
+   ========================================================================== */
+
+// Zet de pogingen van één leerling onderaan het tabblad Zelfcontrole.
+// Geeft terug hoeveel rijen er bijkwamen.
+function schrijfZelfcontrole_(leerling, pogingen) {
+  var blad = bladOfNiets_(BLAD_ZELFCONTROLE);
+  if (!blad) {
+    blad = SpreadsheetApp.getActiveSpreadsheet().insertSheet(tabNaam_(BLAD_ZELFCONTROLE));
+    blad.getRange(1, 1, 1, KOP_ZELFCONTROLE.length).setValues([KOP_ZELFCONTROLE]).setFontWeight("bold");
+    blad.setFrozenRows(1);
+  }
+  var rijen = pogingen.slice(0, 500).map(function (p) {
+    var t = alsDatum_(p.tijd) || new Date();
+    return [t, leerling, String(p.jaar || ""), String(p.ref || ""), String(p.categorie || ""),
+      Number(p.poging) || 0, p.ok ? "JA" : "neen", String(p.fout || "")];
+  });
+  if (!rijen.length) return 0;
+  blad.getRange(blad.getLastRow() + 1, 1, rijen.length, KOP_ZELFCONTROLE.length).setValues(rijen);
+  return pogingen.length;
+}
+
+// Alle pogingen van deze vestiging, voor het overzicht in het beheertabblad.
+function zelfcontroleLezen_() {
+  var blad = bladOfNiets_(BLAD_ZELFCONTROLE);
+  if (!blad || blad.getLastRow() < 2) return [];
+  return blad.getRange(2, 1, blad.getLastRow() - 1, KOP_ZELFCONTROLE.length).getValues()
+    .filter(function (r) { return r[1] && r[3]; })
+    .map(function (r) {
+      var t = alsDatum_(r[0]);
+      return { tijd: t ? t.toISOString() : "", leerling: String(r[1]), jaar: String(r[2]), ref: String(r[3]),
+        categorie: String(r[4]), poging: Number(r[5]) || 0, ok: r[6] === "JA", fout: String(r[7] || "") };
+    });
+}
+
+function jsonInstelling_(sleutel) {
+  try {
+    var x = JSON.parse(instellingenLezen_()[sleutel] || "{}");
+    return x && typeof x === "object" ? x : {};
+  } catch (e) { return {}; }
+}
+
+/* Welke hoofdstukken van de remediëring aanbevolen zijn, per leerling
+   (genormaliseerde naam). Automatisch: elk hoofdstuk waar in de taak of de
+   eerste consolidatie een vrijgegeven beoordeling nog niet "In orde" is (de
+   laatste ronde telt). Het hoofdstuk van een document staat in
+   HOOFDSTUK_PER_DOC (SleutelCase.gs). */
+function aanbevolenAutomatisch_() {
+  var uit = {};
+  var blad = bladOfNiets_(BLAD_INZENDINGEN);
+  if (!blad || blad.getLastRow() < 2) return uit;
+  var n = blad.getLastRow() - 1;
+  var links = blad.getRange(2, K_TIJDSTIP, n, K_REF).getValues();
+  var rechts = blad.getRange(2, K_BEOORDELING, n, 3).getValues();
+  var laatste = {};    // leerling|ref → beoordeling van de jongste vrijgegeven ronde
+  for (var i = 0; i < n; i++) {
+    if (rechts[i][2] !== true) continue;
+    var ref = String(links[i][K_REF - 1] || "");
+    var jaar = ref.slice(0, 4);
+    if (AANBEVELEN_UIT_JAREN.indexOf(jaar) === -1) continue;
+    var beoordeling = String(rechts[i][0] || "").trim();
+    if (!beoordeling) continue;
+    var t = alsDatum_(links[i][K_TIJDSTIP - 1]);
+    var sl = normaliseerNaam_(links[i][K_LEERLING - 1]) + "|" + ref;
+    var tijd = t ? t.getTime() : 0;
+    if (!laatste[sl] || laatste[sl].tijd <= tijd) laatste[sl] = { tijd: tijd, beoordeling: beoordeling };
+  }
+  var hoofdstukken = typeof HOOFDSTUK_PER_DOC !== "undefined" ? HOOFDSTUK_PER_DOC : {};
+  Object.keys(laatste).forEach(function (sl) {
+    if (laatste[sl].beoordeling === "In orde") return;
+    var deel = sl.split("|");
+    var kaal = kaleRef_(deel[1]);
+    var hfst = hoofdstukken[deel[1]] ||
+      (kaal === REF_GETALLEN || kaal === REF_BALANS || kaal === "RESULTAAT" ? "Eindejaar" : "");
+    if (!hfst) return;
+    if (!uit[deel[0]]) uit[deel[0]] = [];
+    if (uit[deel[0]].indexOf(hfst) === -1) uit[deel[0]].push(hfst);
+  });
+  return uit;
+}
+
+// Wat één leerling aanbevolen krijgt: wat de expert aanduidde plus het
+// automatische deel. Enkel de eigen naam, nooit die van anderen.
+function aanbevolenVoor_(leerling) {
+  var sl = normaliseerNaam_(leerling);
+  var lijst = (jsonInstelling_("aanbevolen")[sl] || []).slice();
+  try {
+    (aanbevolenAutomatisch_()[sl] || []).forEach(function (c) { if (lijst.indexOf(c) === -1) lijst.push(c); });
+  } catch (e) { console.error("Aanbevolen: " + e); }
+  return lijst;
+}
+
 /**
  * Een tijdstip uit de Sheet als Date, of null. Meestal is het al een Date,
  * maar een cel die als tekst opgemaakt of ingeplakt werd, geeft een tekst
@@ -1127,6 +1429,7 @@ function onOpen() {
     .addItem("Sleutel van de case (opnieuw) invullen", "sleutelCaseInvullen")
     .addItem("Sleutel overnemen uit een inzending…", "sleutelOvernemen")
     .addItem("Open inzendingen automatisch nakijken", "nakijkenOpenInzendingen")
+    .addItem("Klasoverzicht (OK per categorie) bijwerken", "klasoverzichtBijwerken")
     .addSeparator()
     .addItem("Codes genereren voor lege vakjes", "genereerCodes")
     .addItem("Expertcode instellen…", "zetExpertcode")
@@ -1392,6 +1695,11 @@ function installeer() {
     stap("tabblad Detail " + v, function () {
       det.setColumnWidth(1, 130).setColumnWidth(2, 140).setColumnWidth(3, 190);
     });
+
+    var zc = maakBlad_(ss, BLAD_ZELFCONTROLE, KOP_ZELFCONTROLE);
+    stap("tabblad Zelfcontrole " + v, function () {
+      zc.setColumnWidth(1, 130).setColumnWidth(2, 140).setColumnWidth(8, 300);
+    });
   });
 
   var sl = maakBlad_(ss, BLAD_SLEUTEL, KOP_SLEUTEL);
@@ -1413,7 +1721,7 @@ function installeer() {
   // sleutelwoord, map) staan in HANDLEIDING-koppeling.md.
   SpreadsheetApp.getUi().alert(
     "Klaar.\n\n" +
-    "• Elke vestiging heeft haar eigen tabbladen: Klas, Inzendingen, Detail, Instellingen en Taken, met de code erachter (bv. 'Inzendingen LEU').\n" +
+    "• Elke vestiging heeft haar eigen tabbladen: Klas, Inzendingen, Detail, Instellingen, Taken en Zelfcontrole, met de code erachter (bv. 'Inzendingen LEU').\n" +
     "• Expertcode per vestiging: menu Boekhoudapp → Expertcode instellen.\n" +
     "• Nakijken doe je in het tabblad Inzendingen van je vestiging: filter op 'is laatste' = JA.\n" +
     "• Er wordt automatisch gecontroleerd of de inzending klopt met de sleutel" +
@@ -1548,12 +1856,16 @@ function klasLezen_() {
    nooit bij: die blijft in de Sheet. Eén functie voor de drie plaatsen waar
    ze weggestuurd worden, zodat een nieuwe instelling niet op één plek
    vergeten kan worden. */
+// "aanbevolen" hoort hier bewust NIET bij: daarin staan namen van
+// leerlingen. Elke leerling krijgt enkel de eigen aanbevelingen, mee met de
+// feedback (zie aanbevolenVoor_).
 function publiekeInstellingen_(inst) {
   return {
     welkomsttekst: inst.welkomsttekst || "",
     mededeling: inst.mededeling || "",
     cursusUrl: inst.cursusUrl || "",
     handleidingUrl: inst.handleidingUrl || "",
+    zichtbaarheid: inst.zichtbaarheid || "{}",
   };
 }
 
@@ -1598,12 +1910,17 @@ function haalBeheerOp_(code, vest) {
   var check = controleerExpert_(code);
   if (!check.ok) return check;
   var inst = instellingenLezen_();
+  var auto = {};
+  try { auto = aanbevolenAutomatisch_(); } catch (e) { console.error("Aanbevolen: " + e); }
   return {
     ok: true,
     vestiging: vest,
     instellingen: publiekeInstellingen_(inst),
     taken: takenLezen_(),
     klas: klasLezen_(),
+    aanbevolen: jsonInstelling_("aanbevolen"),
+    aanbevolenAuto: auto,
+    zelfcontrole: zelfcontroleLezen_(),
   };
 }
 
@@ -1711,6 +2028,9 @@ function bewaarBeheer_(data) {
       bk.getRange(2, 1, rijenK.length, 3).setValues(rijenK);
     }
     gedaan.push("klaslijst (" + echteRijen + ")");
+    // De volgorde van de namen kan veranderd zijn: de OK's per categorie
+    // moeten mee naar de juiste rij.
+    try { werkKlasoverzichtBij_(); } catch (errK) { console.error("Klasoverzicht: " + errK); }
   }
 
   // Zeker weten dat alles in de Sheet staat vóór we ja zeggen.

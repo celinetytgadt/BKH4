@@ -20,6 +20,9 @@
  *
  *   3. Indienen    de leerling kiest zelf welke categorieën doorgestuurd
  *                  worden ter nakijking, en haalt achteraf de feedback op.
+ *                  Enkel in de boekjaren die ingediend worden (taak en
+ *                  consolidaties). In de Sheet krijgt elke verrichting het
+ *                  boekjaar ervoor: "20X2 AK01", "20X2 · Aankopen".
  *
  * app.js roept hier twee dingen aan, meer niet:
  *   window.KOPPELING_HOOKS.naWijziging()   telkens er bewaard wordt
@@ -415,7 +418,7 @@
     // leerling intussen al iets, dan is de lokale versie plots "nieuwer" en
     // zou ze het volledige werk op de Drive overschrijven. Daarom wordt
     // vergeleken met deze momentopname, niet met de stand bij het antwoord.
-    lokaalBijAanmelding = { leeg: APP.heeftEigenBoekingen ? !APP.heeftEigenBoekingen() : !Object.keys(APP.getState().boekingen || {}).length, gewijzigd: APP.getState().gewijzigd || null };
+    lokaalBijAanmelding = { leeg: !APP.heeftEigenBoekingen(), gewijzigd: APP.getWerk().gewijzigd || null };
     laadFeedbackUitBrowser();
     APP.renderAlles();
 
@@ -483,10 +486,18 @@
     teBewaren = false;
     status("Bezig met bewaren…");
 
-    return stuur(metAanmelding({ actie: "bewaren", state: APP.getState() }))
+    // Het volledige werk (alle boekjaren) en de pogingen van de zelfcontrole
+    // die nog niet in de Sheet staan. Die laatste gaan pas uit de lijst als
+    // de server ze ontving.
+    var log = APP.zelfcontroleLog();
+    return stuur(metAanmelding({ actie: "bewaren", state: APP.getWerk(), zelfcontrole: log }))
       .then(function (r) {
         bezigMetBewaren = false;
-        if (r && r.ok) { status("Bewaard op de server om " + datumTekst(r.gewijzigd), "ok"); return true; }
+        if (r && r.ok) {
+          if (log.length && r.zelfcontrole === log.length) APP.zelfcontroleVerstuurd(log.length);
+          status("Bewaard op de server om " + datumTekst(r.gewijzigd), "ok");
+          return true;
+        }
         teBewaren = true;
         status("Bewaren lukte niet: " + foutTekst(r), "fout");
         return false;
@@ -505,7 +516,9 @@
   function bewaarViaBeacon() {
     if (!actief() || !aanmelding || !teBewaren) return;
     try {
-      var pakket = JSON.stringify(metVestiging(metAanmelding({ actie: "bewaren", state: APP.getState() })));
+      // Zonder de zelfcontrole: of dit aankomt, weten we niet, en dubbel
+      // in de Sheet is erger dan een bewaarronde later.
+      var pakket = JSON.stringify(metVestiging(metAanmelding({ actie: "bewaren", state: APP.getWerk() })));
       var blob = new Blob([pakket], { type: "text/plain;charset=utf-8" });
       if (navigator.sendBeacon(webAppUrl(), blob)) teBewaren = false;
     } catch (e) { console.error(e); }
@@ -611,7 +624,8 @@
     window.INSTELLINGEN = instellingen;
     zetTopbarLinks();
     if (vulNamenFn) vulNamenFn();
-    APP.renderAlles();
+    // De zichtbaarheid van de boekjaren kan veranderd zijn: menu opnieuw.
+    APP.herlaadZichtbaarheid();
   }
 
   function takenAlsMap(ruw) {
@@ -645,8 +659,19 @@
      Link kopiëren). Staat er iets anders — bv. enkel het ID van de taak — dan
      toont de app de herinnering zonder knop: liever geen knop dan een knop
      die op een foutmelding uitkomt. */
+  /* De naam van de taak in het tabblad Taken: "20X2 · Aankopen". De
+     resultaatverwerking en de eindbalans horen bij de taak Eindejaar; een
+     consolidatie is één taak voor het hele jaar ("20X3 · Consolidatie"). */
+  function taakNaam(categorie) {
+    var jaar = APP.huidigJaar();
+    var J = (typeof JAREN !== "undefined" && JAREN[jaar]) || {};
+    if (APP.jaarSoort().taakPer === "jaar") return jaar + " · " + (J.titel || categorie);
+    if (categorie === "Resultaatverwerking" || categorie === "Eindbalans") categorie = "Eindejaar";
+    return jaar + " · " + categorie;
+  }
+
   function taakLink(categorie) {
-    var ruw = taken[categorie];
+    var ruw = taken[taakNaam(categorie)] || taken[categorie];
     if (!ruw) {
       var sleutels = Object.keys(taken);
       for (var i = 0; i < sleutels.length; i++) {
@@ -667,7 +692,7 @@
       var url = taakLink(cat);
       if (!url) return;
       if (links.some(function (l) { return l.url === url; })) return;   // gedeelde taak
-      links.push({ cat: cat, url: url });
+      links.push({ cat: taakNaam(cat), url: url });
     });
     var html = '<div class="classroom-blok">' +
       "<p><strong>Dien de taak nu ook in in Classroom.</strong> Je kan dan pas feedback krijgen.</p>";
@@ -709,6 +734,45 @@
       // aangevinkt is).
       begonnen: refs.filter(function (r) { return APP.isBegonnenNietGeboekt && APP.isBegonnenNietGeboekt(r); }),
       controles: stand,
+      // Alles wat bij deze categorie hoort, ook wat al in orde is: daarmee
+      // zet de Sheet OK in het klasoverzicht als alles in orde is.
+      alleRefs: refs.slice(),
+    };
+  }
+
+  // De kop van de kolom in het tabblad Klas (zie CATEGORIE_KORT).
+  function kortVoor(cat) {
+    return (typeof CATEGORIE_KORT !== "undefined" && CATEGORIE_KORT[cat]) || cat;
+  }
+
+  /* Wat er bij het indienen meegaat naast de verrichtingen zelf:
+       controles   per aangevinkte categorie: hoeveel controles er zijn,
+                   hoeveel de leerling afvinkte en of er daarna nog een
+                   boeking heropend werd. Komt in de kolom "controles
+                   leerling" van Inzendingen.
+       categorieen alle categorieën met hun verrichtingen, voor de kolommen
+                   OK per categorie in het tabblad Klas. */
+  // In de Sheet staat bij elke verrichting en categorie het boekjaar:
+  // "20X2 AK01" en "20X2 · Aankopen". Zo lopen de jaren niet door elkaar.
+  function jaarRef(ref) { return APP.huidigJaar() + " " + ref; }
+  function jaarCat(cat) { return APP.huidigJaar() + " · " + cat; }
+
+  function extraBijIndienen(categorieen, overzicht) {
+    var controles = {};
+    categorieen.forEach(function (cat) {
+      var c = overzicht.filter(function (x) { return x.naam === cat; })[0];
+      if (!c) return;
+      controles[jaarCat(cat)] = {
+        totaal: c.controles.totaal || 0,
+        af: c.controles.af || 0,
+        herbekijken: typeof window.controlesHerbekijkenVoor === "function" && window.controlesHerbekijkenVoor(cat),
+      };
+    });
+    return {
+      controles: controles,
+      categorieen: overzicht.map(function (c) {
+        return { categorie: jaarCat(c.naam), kort: kortVoor(c.naam), refs: c.alleRefs.map(jaarRef) };
+      }),
     };
   }
 
@@ -747,8 +811,9 @@
         if (vragen.klanten && vragen.leveranciers) geboekt++;
       }
 
-      // De afvinkjes van de controles gaan bewust NIET mee: dat is
-      // zelfcontrole voor de leerling, geen nakijkwerk voor de vakexpert.
+      // Of de controles afgevinkt zijn, gaat mee bij het indienen (zie
+      // extraBijIndienen): de vakexpert ziet het in de kolom "controles
+      // leerling". De controles zelf blijven zelfcontrole.
 
       lijst.push(maakCategorie(cat, refs, geboekt, stukken));
     });
@@ -757,8 +822,10 @@
     // RESULTAAT_CONFIG (hier enkel RESULTAAT). Die staan niet in
     // CATEGORIE_VOLGORDE (ze hebben een eigen pagina), dus zonder dit gingen
     // ze nooit mee.
+    // Pas als het eindejaar opengezet is (of de consolidatie).
+    if (CATEGORIE_VOLGORDE.indexOf("Eindejaar") === -1 && CATEGORIE_VOLGORDE.indexOf("Alle documenten") === -1) return lijst;
     var resIngevuld = Object.keys(st.resultaat.stap || {}).some(function (k) { return st.resultaat.stap[k]; });
-    var resBoekingen = APP.resultaatConfig ? APP.resultaatConfig().refs : ["BELASTING", "RESULTAAT"];
+    var resBoekingen = APP.resultaatConfig().refs;
     var resRefs = ["RESULTAATVERWERKING"].concat(resBoekingen);
     var resGeboekt = (resIngevuld ? 1 : 0) + resBoekingen.filter(function (r) {
       return st.boekingen[r] && st.boekingen[r].geboekt;
@@ -777,6 +844,10 @@
     }
     if (!aanmelding) {
       toonMelding("Indienen", "Meld je eerst bovenaan aan met je naam en je code.");
+      return;
+    }
+    if (!APP.jaarSoort().indienen) {
+      toonMelding("Indienen", "Dit boekjaar dien je niet in bij je vakexpert.");
       return;
     }
 
@@ -926,7 +997,11 @@
     categorieen.forEach(function (cat) {
       var c = overzicht.filter(function (x) { return x.naam === cat; })[0];
       if (!c) return;
-      c.refs.forEach(function (ref) { items.push(maakItem(ref, cat)); });
+      c.refs.forEach(function (ref) {
+        var item = maakItem(ref, jaarCat(cat));
+        item.ref = jaarRef(ref);
+        items.push(item);
+      });
     });
 
     if (!items.length) {
@@ -937,7 +1012,8 @@
 
     zetModalInhoud(venster, htmlBezig("Even geduld, je werk wordt verzonden…"));
 
-    stuur(metAanmelding({ actie: "indienen", items: items }))
+    var extra = extraBijIndienen(categorieen, overzicht);
+    stuur(metAanmelding({ actie: "indienen", items: items, controles: extra.controles, categorieen: extra.categorieen }))
       .then(function (r) {
         if (r && r.ok) {
           zetModalInhoud(venster, htmlMelding("ok", "Ingediend",
@@ -990,7 +1066,7 @@
         return {
           bedrag: r.bedrag, rekening: r.rekening, omschrijving: mar ? mar.naam : "",
           dc: r.dc, relatie: r.relatie, redenering: r.redenering,
-          apko: r.apko, stijgtDaalt: r.stijgtDaalt,
+          apko: r.apko, stijgtDaalt: r.stijgtDaalt, klasse: r.klasse, rubriek: r.rubriek,
         };
       }),
     };
@@ -1117,8 +1193,19 @@
       normaliseerNaam(aanmelding ? aanmelding.naam : APP.getState().student);
   }
 
+  /* Wat aanbevolen is in de remediëring: de categorieën die de vakexpert
+     voor deze leerling aanduidde, plus de hoofdstukken die in de taak of de
+     consolidatie nog niet in orde waren. De server rekent dat uit; hier wordt
+     het enkel getoond en onthouden. */
+  function zetAanbevolen(lijst) {
+    window.AANBEVOLEN = Array.isArray(lijst) ? lijst : [];
+    schrijf(feedbackKey() + "_aanbevolen", JSON.stringify(window.AANBEVOLEN));
+  }
+
   function laadFeedbackUitBrowser() {
     feedback = {};
+    try { window.AANBEVOLEN = JSON.parse(lees(feedbackKey() + "_aanbevolen") || "[]") || []; }
+    catch (e) { window.AANBEVOLEN = []; }
     try {
       var ruw = lees(feedbackKey());
       if (!ruw) return;
@@ -1188,6 +1275,7 @@
         Object.keys(nieuw).forEach(function (ref) { nieuw[ref] = sorteerNieuwsteEerst(nieuw[ref]); });
         feedback = nieuw;
         schrijf(feedbackKey(), JSON.stringify(feedback));
+        zetAanbevolen(r.aanbevolen || []);
         APP.renderAlles();
 
         var aantal = Object.keys(nieuw).length;
@@ -1221,11 +1309,11 @@
   // app.js gebruikt dit om de feedback bij de juiste verrichting te tonen.
   // Altijd een lijst, nieuwste eerst.
   window.feedbackVoor = function (ref) {
-    return feedback[ref] || [];
+    return feedback[jaarRef(ref)] || [];
   };
 
   function laatsteBeoordeling(ref) {
-    var lijst = feedback[ref];
+    var lijst = feedback[jaarRef(ref)];
     return lijst && lijst.length ? String(lijst[0].beoordeling || "") : "";
   }
 
@@ -1310,7 +1398,11 @@
             "Controleer je internetverbinding en probeer het opnieuw.");
           return false;
         }
-        try { localStorage.removeItem(feedbackKey()); } catch (e) { /* geblokkeerd */ }
+        try {
+          localStorage.removeItem(feedbackKey());
+          localStorage.removeItem(feedbackKey() + "_aanbevolen");
+        } catch (e) { /* geblokkeerd */ }
+        window.AANBEVOLEN = [];
         aanmelding = null;
         teBewaren = false;
         try { localStorage.removeItem(AANMELD_KEY); } catch (e) { /* geblokkeerd */ }
@@ -1338,6 +1430,8 @@
     actief: actief,
     ingesteld: ingesteld,
     vestigingLabel: function () { return vestigingLabel(vestiging); },
+    // Meteen bewaren (zonder op de volgende ronde te wachten).
+    bewaarNu: function () { return bewaarNaarServer(true); },
     // De code van de gekozen vestiging, of "". Het beheertabblad gaat op slot
     // zodra die verandert: een expertcode geldt maar voor één vestiging.
     vestigingCode: function () { return vestiging ? vestiging.code : ""; },
@@ -1374,6 +1468,10 @@
     }
 
     bouwAanmeldUI();
+    // app.js startte vóór dit bestand en dacht dus dat er geen koppeling
+    // was (dan staat alles open). Nu weet ze beter: enkel wat de vakexpert
+    // openzette, en dat komt pas met de instellingen van de vestiging.
+    if (ingesteld()) APP.herlaadZichtbaarheid();
 
     var btnIndienen = document.getElementById("btn-indienen");
     var btnFeedback = document.getElementById("btn-feedback");

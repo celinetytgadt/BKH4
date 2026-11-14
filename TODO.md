@@ -2,49 +2,29 @@
 
 Eén lijn per punt volstaat. Wat klaar is, mag weg (of vink het af met `[x]`).
 
-## Na de technische update van oktober 2026 (nu doen)
+## Na de omschakeling naar MetWear (november 2026, nu doen)
 
-- [ ] **`Code.gs` opnieuw plakken in de Sheet** en *Implementeren →
-  Implementaties beheren → bewerken → nieuwe versie*. Nodig voor de
-  namenlijst die meteen klaarstaat (nieuwe actie `namen`) en de juiste
-  volgorde van de feedbackrondes. `SleutelCase.gs` en `appsscript.json` zijn
-  niet gewijzigd.
+- [ ] **`Code.gs` én `SleutelCase.gs` opnieuw plakken in de Sheet** en
+  *Implementeren → Implementaties beheren → bewerken → nieuwe versie*.
+  `appsscript.json` is niet gewijzigd.
+- [ ] In de Sheet **Boekhoudapp → Eerste installatie** opnieuw draaien: dat
+  maakt per vestiging het tabblad *Zelfcontrole*, zet de nieuwe taken
+  (*20X2 · Aankopen* …) en de instellingen *zichtbaarheid* en *aanbevolen*
+  klaar, en voegt de kolommen klasse en rubriek toe aan *Detail*.
+- [ ] **Sleutel vervangen**: **Boekhoudapp → Sleutel van de case (opnieuw)
+  invullen** (de oude sleutel van Noor moet weg).
+- [ ] Oude taken van Noor (*K1 · Aankopen* …) mogen uit het tabblad *Taken*
+  van elke vestiging; de nieuwe links vul je in via Beheer.
+- [ ] Per vestiging in **Beheer** openzetten wat de leerlingen mogen zien.
+  Tot dan zien ze niets.
 
-## De case verbeteren — alles in één keer
+## De case verbeteren
 
-Werkwijze: eerst alle wijzigingen in de Excel (*case fietsatelier
-noor.xlsx*), daarna één keer de hulpmiddelen draaien (zie
-`hulpmiddelen/README.md`), dan pas de punten onder *daarna*.
-
-**In de Excel**
-
-- [ ] **Lening bij de afsluiting**: het deel dat binnen het jaar vervalt
-  (6.000) van 173000 naar 423000 boeken. Als extra boeking bij de
-  eindejaarsverrichtingen (naast BTW4, VR en AFSCHR), met de aflossingstabel
-  (het document LENING bestaat al) als hulpdocument.
-- [ ] **Werklast nakijken**: nu 96 opdrachten (K1 27, K2 23, K3 20, K4 22,
-  afsluiting 4). Haalbaar voor de 4es? Anders per kwartaal een paar
-  documenten schrappen — liefst stukken die niets nieuws oefenen.
-- [ ] Je eigen inhoudelijke aanpassingen van deze week:
-  - [ ] …
-  - [ ] …
-
-**Daarna, in deze volgorde**
-
-- [ ] `node hulpmiddelen/lees-case.js "pad/naar/case fietsatelier noor.xlsx"`
-- [ ] `node hulpmiddelen/maak-data.js` (overschrijft `js/data-opdrachten.js`,
-  `js/data-beginstand.js` en `js/data-relaties.js`)
-- [ ] `node hulpmiddelen/maak-sleutel.js` — stopt met een fout als de
-  boekingen niet exact de proefbalans "na afsluiting" uit de Excel geven
-- [ ] `node hulpmiddelen/maak-documenten.js` (enkel de gewijzigde stukken
-  mag ook: `node hulpmiddelen/maak-documenten.js LENING DOC05 …`)
-- [ ] Een controlevraag voor de lening toevoegen in `js/data-controles.js`
-  (categorie `"Eindejaarsverrichtingen"`), bv. "Staat het deel van de lening
-  dat volgend jaar vervalt op 423000?"
-- [ ] Nieuwe `SleutelCase.gs` in de Sheet plakken en een nieuwe versie
-  implementeren.
-- [ ] Het versienummer achter de scripts in `index.html` (`?v=…`) verhogen.
-- [ ] De test draaien (`test/LEESMIJ.md`).
+Werkwijze: eerst alle wijzigingen in de case (map *case metwear BKH4*, met
+`script/genereer.py`), daarna één keer
+`python3 hulpmiddelen/metwear/maak-app-data.py "pad/naar/case metwear BKH4"`
+(zie `hulpmiddelen/README.md`). Daarna: versienummer in `index.html`
+verhogen, de test draaien en de nieuwe `SleutelCase.gs` in de Sheet plakken.
 
 ## Om de app in gebruik te nemen
 

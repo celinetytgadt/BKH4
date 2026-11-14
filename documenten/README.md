@@ -1,27 +1,20 @@
 # Documenten
 
-De verantwoordingsstukken van de case Fietsatelier Noor, jaar 2 (2027).
-Gemaakt met `hulpmiddelen/maak-documenten.js` uit de Excel van de case.
+De verantwoordingsstukken van de case MetWear bv (4e jaar), één map per
+boekjaar. Gemaakt met `hulpmiddelen/metwear/maak-app-data.py` uit de map
+*png* van de case (die zelf uit `script/genereer.py` komt).
 
-**Bestandsnaam = referentie in de app**, `.png`, volledig in HOOFDLETTERS
-(GitHub Pages is hoofdlettergevoelig, Windows niet).
-
-| Bestand | Aantal | Wat |
+| Map | Wat | Namen |
 |---|---|---|
-| `BEGINBALANS` | 1 | balans op 1 januari 2027 (= eindbalans 2026 na afsluiting) |
-| `BBAK`, `BBVK` | 2 | de twee facturen van eind december 2026 die nog openstaan (hulpdocument bij BB en BANK01) |
-| `AK01` – `AK14` | 14 | aankoopfacturen en inkomende creditnota's, K1 en K2 |
-| `VK01` – `VK14` | 14 | verkoopfacturen en uitgaande creditnota's, K1 en K2 |
-| `DOC01` – `DOC28` | 28 | facturen en creditnota's van K3 en K4, aankoop en verkoop door elkaar |
-| `ONTV01` – `ONTV03` | 3 | dagontvangstenbladen |
-| `KAS01` – `KAS07` | 7 | kasstukken: contant deel van een dagontvangst, stortingen, afhaling |
-| `BANK01` – `BANK23` | 23 | rekeninguittreksels Banco Leuven (nummer = nummer van het uittreksel) |
-| `LENING` | 1 | kredietovereenkomst en aflossingstabel (hulpdocument bij de leningsafschriften) |
-| `AFSCHR` | 1 | afschrijvingstabel 2027 |
-| `VR` | 1 | voorraadtelling 31/12/2027 |
+| `20X1` | cursus (in de les op papier) | `00_beginbalans`, AK, VK, ONTV, BTW, FIN, KAS, LEN, EJ |
+| `20X2` | taak | idem |
+| `20X3` | consolidatie | `00_beginbalans`, `DOC_01` … (verraden het type niet) |
+| `20X4` | extra oefenmateriaal | zoals 20X2 |
+| `20X5` | remediëring | zoals 20X2 |
+| `20X6` | consolidatie 2 | zoals 20X3 |
 
-Creditnota's krijgen geen eigen reeks: ze staan doorlopend in de AK-, VK- of
-DOC-reeks, op hun eigen datum (zoals in kern 8).
+`LEN..` (en in de consolidaties het DOC met de aflossingstabel) is een
+hulpdocument: het staat bij de opname en de aflossingen van die lening en
+bij de eindejaarsboeking van de leningen, niet als aparte opdracht.
 
-De btw-verwerking (BTW1–BTW4) en de resultaatverwerking (RESULTAAT) hebben
-geen document.
+Niet met de hand aanpassen: pas de case aan en draai het script opnieuw.

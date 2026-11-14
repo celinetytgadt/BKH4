@@ -6,6 +6,9 @@ Getest wordt: de installatie van de ene Sheet, het beheer per vestiging,
 aanmelden met de vestigingskeuze, indienen, automatisch nakijken met de
 sleutel van de case, gelijknamige leerlingen in twee vestigingen, feedback
 vrijgeven, de resultaatverwerking zonder belasting en de menu's in de Sheet.
+Voor de case MetWear ook: de zichtbaarheid per jaar en categorie, de cursus
+zonder redeneerschema's, de volgorde van het redeneerschema, de zelfcontrole
+in 20X4 met het overzicht in Beheer, en de aanbevelingen in de remediëring.
 
 ## Draaien
 

@@ -387,14 +387,21 @@ table.redeneerschema {
 /* Kolombreedtes. De omschrijving van de rekening en de redenering krijgen
    de meeste plaats (daar staat tekst in); A/P/K/O en D/C hebben aan een
    enkele letter genoeg. */
+/* Het schema loopt van links naar rechts in de volgorde van het
+   stappenplan: bedrag, redenering, A/P/K/O, + of −, klasse, rubriek,
+   rekeningnummer, D/C. Op een smal scherm schuift het horizontaal. */
+.redeneerschema-scroll { overflow-x: auto; }
+.redeneerschema-scroll table.redeneerschema { min-width: 760px; }
 table.redeneerschema col.c-bedrag      { width: 9%; }
-table.redeneerschema col.c-redenering  { width: 24%; }
-table.redeneerschema col.c-apko        { width: 6.5%; }
-table.redeneerschema col.c-stijgtdaalt { width: 10%; }
-table.redeneerschema col.c-rekening    { width: 16%; }
-table.redeneerschema col.c-omschrijving{ width: 25%; }
-table.redeneerschema col.c-dc          { width: 6.5%; }
-table.redeneerschema col.c-verwijder   { width: 3%; }
+table.redeneerschema col.c-redenering  { width: 15%; }
+table.redeneerschema col.c-apko        { width: 7%; }
+table.redeneerschema col.c-stijgtdaalt { width: 6.5%; }
+table.redeneerschema col.c-klasse      { width: 6.5%; }
+table.redeneerschema col.c-rubriek     { width: 16%; }
+table.redeneerschema col.c-rekening    { width: 11%; }
+table.redeneerschema col.c-omschrijving{ width: 18%; }
+table.redeneerschema col.c-dc          { width: 7%; }
+table.redeneerschema col.c-verwijder   { width: 4%; }
 table.redeneerschema th {
   text-align: left;
   font-size: 11px;
@@ -425,6 +432,8 @@ table.redeneerschema select:disabled {
 }
 td.kol-bedrag input { text-align: right; }
 td.kol-apko select,
+td.kol-stijgtdaalt select,
+td.kol-klasse select,
 td.kol-dc select { padding-left: 3px; padding-right: 2px; text-align: center; }
 td.kol-verwijder { text-align: center; padding-left: 0; padding-right: 0; }
 
@@ -1286,9 +1295,6 @@ table.relatie-detail tfoot td.totaal-fout { color: var(--kleur-fout); }
 
 @media (max-width: 1100px) {
   table.redeneerschema { font-size: 12px; }
-  table.redeneerschema col.c-redenering { width: 21%; }
-  table.redeneerschema col.c-omschrijving { width: 26%; }
-  table.redeneerschema col.c-stijgtdaalt { width: 11%; }
 }
 
 @media (max-width: 900px) {
@@ -1971,3 +1977,105 @@ table.relatie-detail.afpunt-actief tbody tr[data-role="afpunt-doel"]:hover { bac
 /* Indienvenster: stukken die begonnen zijn maar niet geboekt. */
 .bevestig-waarschuwing .link-knop { font-weight: 600; }
 .indien-rij .indien-nietgeboekt { display: block; font-size: 11.5px; color: #8a5a00; margin-left: 22px; }
+
+/* ---------- Boekjaren ---------- */
+
+.jaar-kiezer {
+  margin: 10px 8px 4px 8px;
+  padding: 8px;
+  background: #e9eaf7;
+  border-radius: 6px;
+}
+.jaar-kiezer label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kleur-primair-donker);
+  margin-bottom: 4px;
+}
+.jaar-kiezer select {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid var(--kleur-rand);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--kleur-tekst);
+  background: var(--kleur-paneel);
+}
+.nav-aanbevolen {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #fff4d6;
+  color: #7a5200;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ---------- Zelfcontrole (extra oefenmateriaal en remediëring) ---------- */
+
+.btn-zelfcontrole {
+  border: 1px solid var(--kleur-primair);
+  background: var(--kleur-primair);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-zelfcontrole:hover { background: var(--kleur-primair-donker); }
+.zc-melding {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-left: 4px solid var(--kleur-fout);
+  background: #fff1ef;
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+}
+.zc-melding p { margin: 0; }
+table.redeneerschema tr.rij-zc-fout td { background: #fff1ef; }
+table.redeneerschema tr.rij-zc-fout td.kol-bedrag { box-shadow: inset 3px 0 0 var(--kleur-fout); }
+
+/* ---------- Controles: waar kijk je, wat moet je zien ---------- */
+
+.controle-waar,
+.controle-zien {
+  margin: 4px 0 0 24px;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.controle-waar strong,
+.controle-zien strong { color: var(--kleur-primair-donker); }
+
+/* ---------- Beheer: zichtbaarheid, aanbevolen, zelfcontrole ---------- */
+
+.beheer-vink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 12px 2px 0;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.beheer-vink-uit { color: var(--kleur-tekst-zacht); opacity: 0.6; }
+.beheer-midden { text-align: center; }
+.beheer-auto {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: #fff4d6;
+  color: #7a5200;
+  font-size: 10px;
+  font-weight: 700;
+}
+.beheer-aanbevolen th, .beheer-aanbevolen td { padding: 4px 6px; }
+details.beheer-zc-jaar { margin: 10px 0; }
+details.beheer-zc-jaar > summary { cursor: pointer; font-weight: 600; color: var(--kleur-primair-donker); }
+.beheer-zc tr.beheer-zc-zwak th, .beheer-zc tr.beheer-zc-zwak td { background: #fff1ef; }
