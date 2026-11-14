@@ -2592,7 +2592,9 @@
     }
 
     html += '<div class="nav-top-item' + (uiState.huidigePagina.type === "start" ? " actief" : "") + '" data-page-type="start">Start</div>';
-    if (!huidigJaar) { el.innerHTML = html; return; }
+    // Nog geen jaar open: enkel Start en Beheer. Beheer moet er altijd
+    // staan, anders kan de vakexpert niets openzetten.
+    if (!huidigJaar) { el.innerHTML = html + htmlNavBeheer(); return; }
     html += '<div class="nav-top-item' + (uiState.huidigePagina.type === "saldibalans" ? " actief" : "") + '" data-page-type="saldibalans">Proef- en saldibalans</div>';
     // Openstaande facturen volg je het hele jaar op, dus de pagina staat
     // bovenaan en niet pas bij één categorie (zie RELATIES_BOVENAAN).
@@ -2660,16 +2662,17 @@
     });
     }
 
-    // Het beheertabblad voor de vakexperten. Het staat er voor iedereen,
-    // maar zonder de expertcode valt er niets te zien: die wordt op de
-    // server gecontroleerd.
-    if (window.BEHEER && window.BEHEER.beschikbaar()) {
-      html += '<div class="nav-categorie">Voor vakexperten</div>';
-      html += '<div class="nav-top-item nav-beheer' + (uiState.huidigePagina.type === "beheer" ? " actief" : "") +
-        '" data-page-type="beheer">Beheer</div>';
-    }
+    el.innerHTML = html + htmlNavBeheer();
+  }
 
-    el.innerHTML = html;
+  // Het beheertabblad voor de vakexperten. Het staat er voor iedereen,
+  // maar zonder de expertcode valt er niets te zien: die wordt op de
+  // server gecontroleerd.
+  function htmlNavBeheer() {
+    if (!(window.BEHEER && window.BEHEER.beschikbaar())) return "";
+    return '<div class="nav-categorie">Voor vakexperten</div>' +
+      '<div class="nav-top-item nav-beheer' + (uiState.huidigePagina.type === "beheer" ? " actief" : "") +
+      '" data-page-type="beheer">Beheer</div>';
   }
 
   /* ========================================================================

@@ -381,6 +381,7 @@ async function kiesJaar(win, jaar) {
   const doc = w.document;
   check("niets zichtbaar zolang de school niet gekozen is", w.APP.huidigJaar() === "" && !doc.querySelector('[data-role="kies-jaar"]'), w.APP.huidigJaar());
   check("beginbalans telt niet als eigen werk", w.APP.heeftEigenBoekingen() === false);
+  check("Beheer staat in het menu, ook als er nog niets open staat", !!doc.querySelector('[data-page-type="beheer"]'));
   const vestSel = doc.getElementById("vestiging-select");
   check("vestigingskeuze zichtbaar met drie scholen", vestSel.hidden === false && vestSel.options.length === 4, vestSel.options.length);
   vestSel.value = "LEU";
