@@ -1,30 +1,37 @@
 # Hulpmiddelen
 
-Scripts die de inhoud van de app maken uit de Excel van de case
-(*case fietsatelier noor.xlsx*). Enkel Node.js nodig, geen extra pakketten.
-Voor de documenten ook Google Chrome of Microsoft Edge.
+## De case MetWear in de app zetten
 
-Draai ze vanuit de hoofdmap van de repo, in deze volgorde:
+De case zelf (Excel, documenten, bundels) wordt gemaakt in de map
+*case metwear BKH4* met `script/genereer.py` (zie *Werkwijze en keuzes case
+BKH4.docx* in die map). Daarna zet één script alles in de app:
 
 ```
-node hulpmiddelen/lees-case.js "pad/naar/case fietsatelier noor.xlsx"
-node hulpmiddelen/maak-data.js
-node hulpmiddelen/maak-sleutel.js
-node hulpmiddelen/maak-documenten.js
+python3 hulpmiddelen/metwear/maak-app-data.py "pad/naar/case metwear BKH4"
 ```
 
-| Script | Maakt |
+Nodig: Python 3 met `openpyxl`. Het script stopt met een foutmelding als een
+boeking niet in evenwicht is, een rekening niet in het MAR staat of de
+beginbalans per klant of leverancier niet klopt.
+
+| Maakt | Wat |
 |---|---|
-| `lees-case.js` | `hulpmiddelen/case.json` — alles uit de Excel (documenten, lijnen, uittreksels, journaal, proefbalansen, voorraad) |
-| `opbouw.js` | (geen bestand) de vertaling case → app: welke referentie (AK01, DOC05, BANK07 …) en welke categorie elk document krijgt. De andere scripts gebruiken dit allemaal |
-| `maak-data.js` | `js/data-opdrachten.js`, `js/data-beginstand.js`, `js/data-relaties.js` |
-| `maak-sleutel.js` | `apps-script/SleutelCase.gs` — controleert eerst dat beginbalans + alle boekingen exact de proefbalans "na afsluiting" uit de Excel geven |
-| `maak-documenten.js` | `documenten/*.png` — 95 stukken. Met `AK01 BANK03` maak je er enkel die; met `--html` enkel de HTML (map `_html`) |
-| `server.js` | de app lokaal bekijken op http://localhost:8080 |
+| `js/mar.js`, `js/data-mar-indeling.js` | het MAR 2e graad (btw vereenvoudigd) met klassen en rubrieken |
+| `js/data-jaren.js` | de zes boekjaren: menu, documenten, beginbalans, de cursus 20X1 (al geboekt), relaties |
+| `js/data-sleutel-oefen.js` | de sleutel van 20X4 en 20X5, voor de zelfcontrole in de app |
+| `apps-script/SleutelCase.gs` | de sleutel van 20X2, 20X3 en 20X6: die blijft op de server |
+| `documenten/<jaar>/` | de documenten |
 
-Let op: `maak-data.js` overschrijft de drie data-bestanden. Heb je daar met de
-hand iets in aangepast, neem dat dan opnieuw over.
+Na het script: het versienummer in `index.html` verhogen, de test draaien
+(`test/LEESMIJ.md`) en de nieuwe `SleutelCase.gs` in de Sheet plakken.
 
-De documenten zijn fictief: elk bedrijf kreeg een eigen (verzonnen) huisstijl,
-de bank heet Banco Leuven. Bedragen, data, nummers en redenen komen letterlijk
-uit de Excel.
+`metwear/SleutelCase-staart.gs` is het vaste stuk onderaan `SleutelCase.gs`
+(het menu om de sleutel in te vullen); het script plakt het er telkens achter.
+
+## De app lokaal bekijken
+
+```
+node hulpmiddelen/server.js
+```
+
+en surf naar http://localhost:8080.

@@ -1,6 +1,6 @@
 # Koppeling met Google Sheets — installatie en gebruik
 
-Boekhoudapp 4e jaar (Fietsatelier Noor). Dit werkt zoals in de app van kern 8,
+Boekhoudapp 4e jaar (case MetWear, zes boekjaren). Dit werkt zoals in de app van kern 8,
 met één groot verschil:
 
 > **Eén Sheet en één script voor de drie vestigingen.** In kern 8 had elke
@@ -9,7 +9,8 @@ met één groot verschil:
 > één web-app-URL. De app stuurt bij elk verzoek de code van de vestiging mee
 > (LEU, SKW, TW). **Elke vestiging heeft in die Sheet haar eigen
 > tabbladen**, met de code achter de naam: *Klas LEU*, *Inzendingen LEU*,
-> *Detail LEU*, *Instellingen LEU*, *Taken LEU* — en hetzelfde voor SKW en TW.
+> *Detail LEU*, *Instellingen LEU*, *Taken LEU*, *Zelfcontrole LEU* — en
+> hetzelfde voor SKW en TW.
 
 | | per vestiging | voor de drie samen |
 |---|---|---|
@@ -17,6 +18,9 @@ met één groot verschil:
 | inzendingen en feedback | ✓ — *Inzendingen LEU*, *Detail LEU* … | |
 | links naar de taken in Classroom | ✓ — *Taken LEU* … | |
 | welkomsttekst, mededeling, links cursus/handleiding | ✓ — *Instellingen LEU* … | |
+| wat de leerlingen zien (jaren, categorieën, zelfcontrole) | ✓ — *Instellingen LEU*, via Beheer | |
+| aanbevolen delen per leerling (remediëring) | ✓ — *Instellingen LEU*, via Beheer | |
+| pogingen van de zelfcontrole | ✓ — *Zelfcontrole LEU* … | |
 | expertcode voor het tabblad Beheer | ✓ — *Instellingen LEU* … | |
 | werkbestanden in Drive | ✓ — `werk_LEU_lottev.json` | één map, die het script zelf aanmaakt |
 | oplossingssleutel | | ✓ — tabblad *Sleutel* |
@@ -103,7 +107,8 @@ Drive van dit account. Via **Boekhoudapp → Waar staan de werkbestanden?**
 vind je de link.
 
 Je krijgt per vestiging de tabbladen **Klas**, **Inzendingen**, **Detail**,
-**Instellingen** en **Taken** (bv. *Klas LEU*, *Klas SKW*, *Klas TW*), en één
+**Instellingen**, **Taken** en **Zelfcontrole** (bv. *Klas LEU*, *Klas SKW*,
+*Klas TW*), en één
 gedeeld tabblad **Sleutel**. Dat is meteen gevuld met de oplossing van de case:
 het automatisch nakijken werkt vanaf de eerste inzending.
 
@@ -154,23 +159,48 @@ Eén URL voor de drie vestigingen. Zet het bestand op GitHub; klaar.
 **Aanmelden.** School kiezen, naam kiezen, persoonlijke code tikken. Eén keer
 per computer.
 
-**De beginbalans staat al klaar.** De boeking BB (1 januari 2027) is de
-eindbalans van het 3e jaar na afsluiting. Ze staat geboekt en op slot; de
-leerling kan ze niet wijzigen en ze gaat niet mee bij het indienen. Op de
-controlepagina van de beginbalans legt de leerling ze wel als oefening in de
-balans.
+**Wat de leerling ziet.** Enkel wat de vakexperten van die vestiging in
+**Beheer → Wat zien de leerlingen?** openzetten: per boekjaar, en in de jaren
+met categorieën ook per categorie (Aankopen, Verkopen, Btw-verrekening,
+Financiële verrichtingen, Eindejaar). *Eindejaar* opent ook de
+resultaatverwerking en de eindbalans. Bovenaan het menu kiest de leerling het
+boekjaar.
 
-**Bewaren.** Alles blijft in de browser én gaat elke twee minuten naar de
-Drive-map. Op een andere computer aanmelden = verder werken.
+**De beginbalans staat al klaar.** Elk jaar begint met de boeking BB. Ze
+staat geboekt en op slot en gaat niet mee bij het indienen. In de cursus
+(20X1) staat álles al geboekt: de leerling ziet de documenten en de
+T-rekeningen, zonder redeneerschema's.
 
-**Indienen.** Per categorie, dus per kwartaal: *K1 · Aankopen*, *K1 ·
-Verkopen*, … *K4 · Alle verrichtingen*, *Eindejaarsverrichtingen*,
-*Resultaatverwerking* en *Eindbalans*. Na het indienen toont de app de knop
-naar de taak in Classroom van díé vestiging.
+**Bewaren.** Alles (de zes jaren samen) blijft in de browser én gaat elke
+twee minuten naar de Drive-map. Op een andere computer aanmelden = verder
+werken.
+
+**Indienen.** Enkel in de taak (20X2) en de consolidaties (20X3, 20X6). In
+de Sheet krijgt alles het jaar ervoor: *20X2 AK01*, categorie *20X2 ·
+Aankopen*. Na het indienen toont de app de knop naar de taak in Classroom:
+in 20X2 één taak per categorie (*20X2 · Aankopen* … *20X2 · Eindejaar*, waar
+ook de resultaatverwerking en de eindbalans bij horen), voor een
+consolidatie één taak voor het hele jaar (*20X3 · Consolidatie*, *20X6 ·
+Consolidatie 2*).
+
+**Zelfcontrole (20X4 en 20X5).** Staat ze aan in Beheer, dan kan de leerling
+na het boeken op *Controleer mijn boeking* klikken. De eerste keer zegt de app
+enkel *klopt nog niet*; na heropenen en verbeteren ziet de leerling welke
+lijnen nog fout zijn. Elke poging komt in het tabblad *Zelfcontrole* van de
+vestiging. **Beheer → Hoe ging de zelfcontrole?** maakt er een overzicht van:
+per document hoeveel leerlingen, hoeveel pogingen, hoeveel procent meteen
+juist, wie het nog niet juist heeft, en welke rekeningen het vaakst fout
+stonden.
+
+**Aanbevolen (20X5, remediëring).** De app zet een ★ bij de hoofdstukken waar
+een document van de taak of de consolidatie nog niet *In orde* is (de laatste
+vrijgegeven beoordeling telt). In **Beheer → Aanbevolen in de remediëring**
+vink je per leerling nog extra hoofdstukken aan. Een leerling krijgt enkel
+de eigen aanbevelingen te zien.
 
 **Klanten & leveranciers** staat bovenaan in het menu (openstaande facturen
-volg je het hele jaar op) en gaat mee bij het indienen van *K4 · Alle
-verrichtingen*.
+volg je het hele jaar op) en gaat mee bij het indienen van *Financiële
+verrichtingen* (in een consolidatie: met het hele jaar).
 
 ---
 
@@ -197,7 +227,7 @@ leerling de controles van die categorie had afgevinkt bij het indienen: *ja*,
 die categorie heeft geen controles.
 
 **Klasoverzicht in het tabblad Klas.** Rechts van *opmerking* zet het script
-een kolom per categorie (*K1 AK*, *K1 VK* … *EJ*, *RES*, *EB*). Daar staat **OK** zodra alle
+een kolom per categorie (*X2 AK*, *X2 VK* … *X2 EJ*, *X2 RES*, *X2 EB*, *X3 DOC* …). Daar staat **OK** zodra alle
 verrichtingen van die categorie bij die leerling op *In orde* staan (de
 nieuwste rij telt, vrijgegeven of niet). De volle naam van de categorie staat
 als notitie op de kop. Het overzicht volgt vanzelf: bij elk indienen, bij het
@@ -254,7 +284,7 @@ wachtwoord.
 |---|---|
 | `apps-script/appsscript.json` | het manifest: de vier beperkte toegangen, de dienst Drive en de web-app-instellingen |
 | `apps-script/Code.gs` | de serverkant; bovenaan `SLEUTEL` en `VESTIGINGEN` |
-| `apps-script/SleutelCase.gs` | de oplossing van de case, voor het tabblad Sleutel (gemaakt met `hulpmiddelen/maak-sleutel.js`) |
+| `apps-script/SleutelCase.gs` | de oplossing van de taak en de consolidaties, voor het tabblad Sleutel, en bij welk hoofdstuk elk document hoort (gemaakt met `hulpmiddelen/metwear/maak-app-data.py`) |
 | `js/config-koppeling.js` | de web-app-URL, het sleutelwoord en de drie vestigingen |
 | `js/data-klas.js` | noodlijst met namen per vestiging, normaal leeg |
 | `js/koppeling.js` | alles wat de app met de Sheet doet |

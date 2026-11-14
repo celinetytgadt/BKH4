@@ -4,9 +4,13 @@
  * er iets op GitHub gewijzigd hoeft te worden.
  *
  *   • de namen van de leerlingen van hun vestiging, met hun persoonlijke code
- *   • de link naar de taak in Classroom, per categorie
+ *   • welke boekjaren en categorieën de leerlingen zien, en waar de
+ *     zelfcontrole aan staat (extra oefenmateriaal en remediëring)
+ *   • per leerling wat aanbevolen is in de remediëring
+ *   • de link naar de taak in Classroom, per categorie of per jaar
  *   • de welkomsttekst, een mededeling, en de links naar de cursus en de
  *     handleiding
+ *   • een overzicht van de zelfcontrole: wat ging vaak fout?
  *
  * Alles komt terecht in de tabbladen van díé vestiging in de Google Sheet
  * ("Klas LEU", "Taken LEU", "Instellingen LEU" …). Alles is per vestiging:
@@ -27,10 +31,6 @@
 (function () {
   "use strict";
 
-  // De categorie waar eindbalans en resultaatverwerking samen in zitten: die
-  // twee horen in Classroom bij één taak.
-  var SAMEN = "Resultaatverwerking & Eindbalans";
-
   var ontgrendeld = false;
   // Voor welke vestiging het tabblad open staat. Een expertcode geldt maar
   // voor één vestiging: wordt bovenaan een andere school gekozen, dan gaat
@@ -49,7 +49,15 @@
   // Wat er in de velden staat. Bewust apart van het scherm: app.js bouwt de
   // pagina soms opnieuw op (bv. als er intussen feedback binnenkomt), en dan
   // mag er niets ingetikts verloren gaan.
-  var model = { instellingen: {}, taken: [], klas: [] };
+  //   zicht       { "20X2": { open, cats: { Aankopen: true }, zelfcontrole } }
+  //   aanbevolen  { genormaliseerde naam: ["Aankopen", …] }  (door de expert)
+  //   auto        idem, maar uitgerekend door de server uit de feedback
+  //   zc          de pogingen van de zelfcontrole (enkel om te lezen)
+  var model = leegModel();
+
+  function leegModel() {
+    return { instellingen: {}, taken: [], klas: [], zicht: {}, aanbevolen: {}, auto: {}, zc: [] };
+  }
 
   function api() { return window.KOPPELING_API || null; }
 
@@ -80,10 +88,19 @@
      veel dan een link die stilletjes verdwijnt.
      ====================================================================== */
   function taakCategorieen() {
-    var lijst = (typeof CATEGORIE_VOLGORDE !== "undefined" ? CATEGORIE_VOLGORDE : []).slice();
-    lijst.push(SAMEN);
+    var lijst = [];
+    Object.keys(JAREN).forEach(function (jaar) {
+      var J = JAREN[jaar];
+      var soort = JAAR_SOORTEN[J.soort] || {};
+      if (soort.taakPer === "jaar") lijst.push(jaar + " · " + J.titel);
+      if (soort.taakPer === "categorie") {
+        ZICHTBAAR_CATEGORIEEN.forEach(function (cat) {
+          if (J.categorieVolgorde.indexOf(cat) !== -1) lijst.push(jaar + " · " + cat);
+        });
+      }
+    });
     model.taken.forEach(function (t) {
-      if (lijst.indexOf(t.categorie) === -1) lijst.push(t.categorie);
+      if (t.link && lijst.indexOf(t.categorie) === -1) lijst.push(t.categorie);
     });
     return lijst;
   }
@@ -190,8 +207,148 @@
       "Het moet de volledige link zijn — enkel het stuk na <code>/a/</code> volstaat niet.</p>" +
       "</details>" +
       '<table class="beheer-tabel beheer-taken"><tbody>' + rijen + "</tbody></table>" +
-      '<p class="keuze-nota">Eindbalans en resultaatverwerking horen samen in één taak; de rest staat apart per ' +
-      "soort verrichting.</p>" +
+      '<p class="keuze-nota">In de taak is er één Classroom-taak per categorie; de resultaatverwerking en de eindbalans ' +
+      "horen bij Eindejaar. Een consolidatie is één taak voor het hele jaar. De andere jaren worden niet ingediend.</p>" +
+      "</div>";
+  }
+
+  /* ---------- Zichtbaarheid ---------- */
+
+  function zichtVoor(jaar) {
+    if (!model.zicht[jaar]) model.zicht[jaar] = { open: false, cats: {}, zelfcontrole: false };
+    if (!model.zicht[jaar].cats) model.zicht[jaar].cats = {};
+    return model.zicht[jaar];
+  }
+
+  function vinkje(rol, jaar, cat, aan, uit, label) {
+    return '<label class="beheer-vink' + (uit ? " beheer-vink-uit" : "") + '"><input type="checkbox" data-role="' + rol + '" data-jaar="' + esc(jaar) + '"' +
+      (cat ? ' data-cat="' + esc(cat) + '"' : "") + (aan ? " checked" : "") + (uit ? " disabled" : "") + "> " + esc(label) + "</label>";
+  }
+
+  function htmlZichtbaarheid() {
+    var rijen = Object.keys(JAREN).map(function (jaar) {
+      var J = JAREN[jaar];
+      var soort = JAAR_SOORTEN[J.soort] || {};
+      var z = zichtVoor(jaar);
+      var html = "<tr><th>" + esc(jaar + " · " + J.titel) + "</th>" +
+        "<td>" + vinkje("zicht-jaar", jaar, "", z.open, false, "zichtbaar") + "</td><td>";
+      if (soort.perCategorie) {
+        html += ZICHTBAAR_CATEGORIEEN.filter(function (c) { return J.categorieVolgorde.indexOf(c) !== -1; })
+          .map(function (c) { return vinkje("zicht-cat", jaar, c, !!z.cats[c], !z.open, c); }).join("");
+      } else {
+        html += '<span class="beheer-nog">alle documenten door elkaar: het hele jaar in één keer</span>';
+      }
+      html += "</td><td>";
+      if (soort.zelfcontrole) html += vinkje("zicht-zc", jaar, "", !!z.zelfcontrole, !z.open, "zelfcontrole aan");
+      else html += '<span class="beheer-nog">' + (soort.vooraf ? "staat al geboekt" : "via jou") + "</span>";
+      return html + "</td></tr>";
+    }).join("");
+
+    return '<div class="paneel">' +
+      "<h2>Wat zien de leerlingen?</h2>" +
+      "<p>Wat je hier niet aanvinkt, is voor de leerlingen van deze vestiging onzichtbaar. Zet een jaar zichtbaar en kies daarna " +
+      "welke categorieën al open staan. <em>Eindejaar</em> opent ook de resultaatverwerking en de eindbalans van dat jaar.</p>" +
+      '<table class="beheer-tabel beheer-zicht"><thead><tr><th>boekjaar</th><th></th><th>categorieën</th><th>controle</th></tr></thead>' +
+      "<tbody>" + rijen + "</tbody></table>" +
+      '<p class="keuze-nota">Met <em>zelfcontrole aan</em> kan de leerling een geboekt document laten controleren tegen de oplossing. ' +
+      "De eerste keer zegt de app enkel of het klopt; vanaf de tweede keer welke lijnen nog fout zijn. Dat kan enkel in het extra oefenmateriaal " +
+      "en de remediëring: van de taak en de consolidaties staat de oplossing niet in de app.</p>" +
+      "</div>";
+  }
+
+  /* ---------- Aanbevolen per leerling (remediëring) ---------- */
+
+  function remedieringJaren() {
+    return Object.keys(JAREN).filter(function (j) { return (JAAR_SOORTEN[JAREN[j].soort] || {}).aanbevelen; });
+  }
+
+  function htmlAanbevolen() {
+    var jaren = remedieringJaren();
+    if (!jaren.length) return "";
+    var jaar = jaren[0];
+    var cats = ZICHTBAAR_CATEGORIEEN.filter(function (c) { return JAREN[jaar].categorieVolgorde.indexOf(c) !== -1; });
+    var leerlingen = model.klas.filter(function (l) { return !l.weg && String(l.naam || "").trim(); });
+    var rijen = leerlingen.map(function (l) {
+      var sl = sleutelNaam(l.naam);
+      var eigen = model.aanbevolen[sl] || [];
+      var auto = model.auto[sl] || [];
+      return "<tr><th>" + esc(l.naam) + "</th>" + cats.map(function (c) {
+        var a = auto.indexOf(c) !== -1;
+        return '<td class="beheer-midden"><input type="checkbox" data-role="aanbevolen" data-naam="' + esc(sl) + '" data-cat="' + esc(c) + '"' +
+          (eigen.indexOf(c) !== -1 ? " checked" : "") + ' title="Aanbevelen voor ' + esc(l.naam) + '">' +
+          (a ? ' <span class="beheer-auto" title="Ook automatisch aanbevolen: dit deel was in de taak of de consolidatie nog niet in orde">auto</span>' : "") +
+          "</td>";
+      }).join("") + "</tr>";
+    }).join("");
+
+    return '<div class="paneel">' +
+      "<h2>Aanbevolen in de remediëring (" + esc(jaar) + ")</h2>" +
+      "<p>De leerling ziet in het menu een ★ bij wat aanbevolen is. De app doet dat al vanzelf voor de hoofdstukken waar een " +
+      "document van de taak (20X2) of de consolidatie (20X3) nog niet <em>In orde</em> was (aangeduid met <em>auto</em>). " +
+      "Vink hier aan wat je daarnaast nog aanraadt. Andere leerlingen zien dit niet.</p>" +
+      (rijen
+        ? '<table class="beheer-tabel beheer-aanbevolen"><thead><tr><th>leerling</th>' +
+          cats.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>" + rijen + "</tbody></table>"
+        : "<p>Nog geen leerlingen.</p>") +
+      "</div>";
+  }
+
+  /* ---------- Overzicht van de zelfcontrole ---------- */
+
+  function htmlZelfcontrole() {
+    var perJaar = {};
+    model.zc.forEach(function (p) {
+      if (!p || !p.jaar || !p.ref) return;
+      var j = perJaar[p.jaar] || (perJaar[p.jaar] = { refs: {}, leerlingen: {}, fout: {} });
+      var r = j.refs[p.ref] || (j.refs[p.ref] = { ref: p.ref, categorie: p.categorie, pogingen: 0, leerlingen: {}, eersteJuist: 0, eersteTotaal: 0 });
+      r.pogingen++;
+      var sl = sleutelNaam(p.leerling);
+      j.leerlingen[sl] = true;
+      // Per leerling: de laatste poging telt voor "nog niet juist".
+      var vorige = r.leerlingen[sl];
+      if (!vorige || String(vorige.tijd) <= String(p.tijd)) r.leerlingen[sl] = { tijd: p.tijd, ok: !!p.ok, naam: p.leerling };
+      if (Number(p.poging) === 1) { r.eersteTotaal++; if (p.ok) r.eersteJuist++; }
+      String(p.fout || "").split(",").forEach(function (f) {
+        f = f.trim();
+        if (f) j.fout[f] = (j.fout[f] || 0) + 1;
+      });
+    });
+
+    var jaren = Object.keys(perJaar).sort();
+    var inhoud = jaren.length ? jaren.map(function (jaar) {
+      var j = perJaar[jaar];
+      var refs = Object.keys(j.refs).map(function (k) { return j.refs[k]; });
+      var volgorde = (JAREN[jaar] ? JAREN[jaar].opdrachten.map(function (o) { return o.ref; }) : []);
+      refs.sort(function (a, b) { return volgorde.indexOf(a.ref) - volgorde.indexOf(b.ref); });
+      var fouten = Object.keys(j.fout).sort(function (a, b) { return j.fout[b] - j.fout[a]; }).slice(0, 10);
+
+      var rijen = refs.map(function (r) {
+        var ll = Object.keys(r.leerlingen).map(function (k) { return r.leerlingen[k]; });
+        var nietOk = ll.filter(function (x) { return !x.ok; });
+        var pct = r.eersteTotaal ? Math.round(100 * r.eersteJuist / r.eersteTotaal) : null;
+        return "<tr" + (pct !== null && pct < 50 ? ' class="beheer-zc-zwak"' : "") + "><th>" + esc(r.ref) + "</th><td>" + esc(r.categorie || "") + "</td>" +
+          '<td class="beheer-midden">' + ll.length + '</td><td class="beheer-midden">' + r.pogingen + "</td>" +
+          '<td class="beheer-midden">' + (pct === null ? "—" : pct + "%") + "</td>" +
+          "<td>" + (nietOk.length ? esc(nietOk.map(function (x) { return x.naam; }).join(", ")) : "—") + "</td></tr>";
+      }).join("");
+
+      return "<details class=\"beheer-zc-jaar\"" + (jaren.length === 1 ? " open" : "") + "><summary>" + esc(jaar) +
+        (JAREN[jaar] ? " · " + esc(JAREN[jaar].titel) : "") + " — " + Object.keys(j.leerlingen).length + " leerling(en)</summary>" +
+        (fouten.length ? "<p><strong>Vaakst fout:</strong> " + fouten.map(function (f) {
+          var m = /^(\d+)(.*)$/.exec(f) || [f, f, ""];
+          var mar = window.APP && APP.marBij ? APP.marBij(m[1]) : null;
+          return esc(m[1]) + (mar ? " " + esc(mar.naam) : "") + esc(m[2]) + " ×" + j.fout[f];
+        }).join(" · ") + "</p>" : "") +
+        '<table class="beheer-tabel beheer-zc"><thead><tr><th>document</th><th>categorie</th><th>leerlingen</th><th>pogingen</th>' +
+        "<th>1e keer juist</th><th>nog niet juist</th></tr></thead><tbody>" + rijen + "</tbody></table></details>";
+    }).join("") : "<p>Nog geen zelfcontroles. Ze verschijnen hier zodra leerlingen in het extra oefenmateriaal of de remediëring op <em>Controleer mijn boeking</em> klikken.</p>";
+
+    return '<div class="paneel">' +
+      "<h2>Hoe ging de zelfcontrole?</h2>" +
+      "<p>Per document: hoeveel leerlingen het controleerden, hoe vaak, hoeveel procent het de eerste keer juist had, en wie het nog niet juist heeft. " +
+      "Bij <em>vaakst fout</em> staan de rekeningen die het vaakst verkeerd stonden (of ontbraken). Documenten waar minder dan de helft het meteen juist had, staan in het rood.</p>" +
+      inhoud +
+      '<p class="keuze-nota">Alle pogingen staan ook in de Google Sheet, in het tabblad <em>Zelfcontrole ' + esc(api() ? api().vestigingCode() : "") + "</em>.</p>" +
       "</div>";
   }
 
@@ -232,7 +389,7 @@
     return '<h1 class="pagina-titel">Beheer</h1>' +
       '<p class="pagina-subtitel">' + esc(a ? a.vestigingLabel() : "") +
       " — deze instellingen gelden enkel voor deze vestiging</p>" +
-      htmlKlas() + htmlTaken() + htmlTeksten() +
+      htmlZichtbaarheid() + htmlKlas() + htmlAanbevolen() + htmlTaken() + htmlTeksten() + htmlZelfcontrole() +
       '<div class="paneel beheer-voet">' +
       '<button type="button" class="btn-primair" data-role="bewaren"' + (bezig ? " disabled" : "") + ">" +
       (bezig ? "Bezig met bewaren…" : "Bewaren") + "</button> " +
@@ -274,6 +431,7 @@
         expertcode = code;
         ontgrendeld = true;
         ontgrendeldVoor = voorVestiging;
+        melding = null;
         neemOver(r);
         herteken();
       })
@@ -285,8 +443,19 @@
       });
   }
 
+  function leesJson(ruw) {
+    if (ruw && typeof ruw === "object") return ruw;
+    try { var x = JSON.parse(ruw || "{}"); return x && typeof x === "object" ? x : {}; } catch (e) { return {}; }
+  }
+
   function neemOver(r) {
     model.instellingen = r.instellingen || {};
+    model.zicht = leesJson(model.instellingen.zichtbaarheid);
+    model.aanbevolen = leesJson(r.aanbevolen || model.instellingen.aanbevolen);
+    model.auto = leesJson(r.aanbevolenAuto);
+    model.zc = Array.isArray(r.zelfcontrole) ? r.zelfcontrole : [];
+    // Die twee gaan als tekst (JSON) naar de Sheet; hier werken we met het object.
+    delete model.instellingen.aanbevolen;
     model.taken = (r.taken || []).map(function (t) {
       return { categorie: t.categorie, link: t.link || "", opmerking: t.opmerking || "" };
     });
@@ -304,7 +473,7 @@
     ontgrendeld = false;
     ontgrendeldVoor = "";
     expertcode = "";
-    model = { instellingen: {}, taken: [], klas: [] };
+    model = leegModel();
     zegBezig("Je koos een andere school. Geef de expertcode van die vestiging in.");
   }
 
@@ -326,11 +495,16 @@
       return { categorie: cat, link: String(t.link || "").trim(), opmerking: t.opmerking || "" };
     });
 
+    var instellingen = {};
+    Object.keys(model.instellingen).forEach(function (k) { instellingen[k] = model.instellingen[k]; });
+    instellingen.zichtbaarheid = JSON.stringify(model.zicht);
+    instellingen.aanbevolen = JSON.stringify(model.aanbevolen);
+
     a.stuur({
       actie: "beheerBewaren",
       sleutel: a.sleutel(),
       expertcode: expertcode,
-      instellingen: model.instellingen,
+      instellingen: instellingen,
       taken: taken,
       klas: klas,
     })
@@ -408,7 +582,8 @@
       if (String(links[taken[i].categorie] || "") !== String(taken[i].link || "")) return false;
     }
     var inst = r.instellingen || {};
-    var sleutels = Object.keys(model.instellingen);
+    if (String(inst.zichtbaarheid || "") !== JSON.stringify(model.zicht)) return false;
+    var sleutels = Object.keys(model.instellingen).filter(function (k) { return k !== "zichtbaarheid"; });
     for (var j = 0; j < sleutels.length; j++) {
       if (String(inst[sleutels[j]] || "") !== String(model.instellingen[sleutels[j]] || "")) return false;
     }
@@ -452,6 +627,23 @@
         if (rol === "taak") { taakVoor(t.dataset.cat).link = t.value; return; }
         if (rol === "klas-naam") { model.klas[+t.dataset.i].naam = t.value; return; }
         if (rol === "klas-opm") { model.klas[+t.dataset.i].opmerking = t.value; return; }
+      });
+
+      el.addEventListener("change", function (e) {
+        if (!opBeheerpagina()) return;
+        var t = e.target;
+        var rol = t.dataset && t.dataset.role;
+        if (rol === "zicht-jaar") { zichtVoor(t.dataset.jaar).open = t.checked; herteken(); return; }
+        if (rol === "zicht-cat") { zichtVoor(t.dataset.jaar).cats[t.dataset.cat] = t.checked; return; }
+        if (rol === "zicht-zc") { zichtVoor(t.dataset.jaar).zelfcontrole = t.checked; return; }
+        if (rol === "aanbevolen") {
+          var lijst = model.aanbevolen[t.dataset.naam] || [];
+          lijst = lijst.filter(function (c) { return c !== t.dataset.cat; });
+          if (t.checked) lijst.push(t.dataset.cat);
+          if (lijst.length) model.aanbevolen[t.dataset.naam] = lijst;
+          else delete model.aanbevolen[t.dataset.naam];
+          return;
+        }
       });
 
       el.addEventListener("keydown", function (e) {
