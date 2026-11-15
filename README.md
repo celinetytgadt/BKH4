@@ -18,8 +18,10 @@ Google Sheets.
 | 20X5 | remediëring | niet indienen; zelfcontrole mogelijk; aanbevolen delen per leerling (★) |
 | 20X6 | consolidatie 2 | als geheel in te dienen |
 
-Elk jaar begint met de beginbalans (BB), al geboekt en op slot. De
-leerling kiest het boekjaar bovenaan het menu.
+Elk jaar begint met de beginbalans (BB), al geboekt en op slot; ze staat
+niet in het menu en standaard niet in de T-rekeningen. In 20X2, 20X4 en 20X5
+zijn aankopen en verkopen opgesplitst in taken (AK taak 1–4, VK taak 1–4),
+elk met eigen controles. De leerling kiest het boekjaar bovenaan het menu.
 
 ## Wat is er bijzonder?
 
@@ -44,10 +46,12 @@ leerling kiest het boekjaar bovenaan het menu.
 - **Aanbevolen in de remediëring**: automatisch voor de hoofdstukken waar
   een document van 20X2 of 20X3 nog niet *In orde* was, en per leerling aan
   te vinken in Beheer. Een leerling ziet enkel de eigen aanbevelingen.
-- **Controles met meer uitleg**: per vraag *waar kijk je* en *wat moet je
-  zien*.
+- **Controles per taak**: één vraag per T-rekening, met de T-rekening zoals
+  ze moet staan. Btw, financieel en eindejaar: per vraag *waar kijk je* en
+  *wat moet je zien*.
 - **In de Sheet krijgt alles het jaar ervoor**: *20X2 AK01*, *20X2 ·
-  Aankopen*. Het klasoverzicht heeft kolommen als *X2 AK*, *X3 DOC*.
+  Aankopen taak 1: eenvoudige facturen*. Het klasoverzicht heeft kolommen als
+  *X2 AK1*, *X3 DOC*.
 - **Resultaatverwerking zonder vennootschapsbelasting**: de volledige winst
   gaat naar de overgedragen winst (één boeking RESULTAAT, drie getallen).
 - **Eén script en één Sheet voor de drie vestigingen**, met per vestiging

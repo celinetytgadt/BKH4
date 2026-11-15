@@ -190,8 +190,14 @@ var KOP_TAKEN = ["categorie", "link naar de taak in Classroom", "opmerking"];
 // categorieën en draai je Boekhoudapp -> Eerste installatie opnieuw. Het
 // beheertabblad in de app werkt de lijst ook zelf bij.
 var TAAK_CATEGORIEEN = [
-  "20X2 · Aankopen",
-  "20X2 · Verkopen",
+  "20X2 · Aankopen taak 1: eenvoudige facturen",
+  "20X2 · Aankopen taak 2: handelskorting & transportkosten",
+  "20X2 · Aankopen taak 3: diensten, diverse goederen & vaste activa",
+  "20X2 · Aankopen taak 4: creditnota's",
+  "20X2 · Verkopen taak 1: eenvoudige facturen",
+  "20X2 · Verkopen taak 2: handelskorting & extra kosten",
+  "20X2 · Verkopen taak 3: creditnota's",
+  "20X2 · Verkopen taak 4: terugstuurbare verpakking",
   "20X2 · Btw-verrekening",
   "20X2 · Financiële verrichtingen",
   "20X2 · Eindejaar",

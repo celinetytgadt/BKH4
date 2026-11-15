@@ -250,6 +250,13 @@
 
   /* ---------- Zichtbaarheid ---------- */
 
+  // Pagina's die je per jaar apart aan- of uitzet: [sleutel, label].
+  var EXTRA_PAGINAS = [
+    ["saldibalans", "proef- en saldibalans"],
+    ["relaties", "klanten & leveranciers"],
+    ["bbInT", "beginbalans in T-rekeningen"],
+  ];
+
   function zichtVoor(jaar) {
     if (!model.zicht[jaar]) model.zicht[jaar] = { open: false, cats: {}, zelfcontrole: false };
     if (!model.zicht[jaar].cats) model.zicht[jaar].cats = {};
@@ -277,6 +284,10 @@
       html += "</td><td>";
       if (soort.zelfcontrole) html += vinkje("zicht-zc", jaar, "", !!z.zelfcontrole, !z.open, "zelfcontrole aan");
       else html += '<span class="beheer-nog">' + (soort.vooraf ? "staat al geboekt" : "via jou") + "</span>";
+      html += "</td><td>";
+      EXTRA_PAGINAS.forEach(function (x) {
+        html += vinkje("zicht-extra", jaar, x[0], !!z[x[0]], !z.open, x[1]);
+      });
       return html + "</td></tr>";
     }).join("");
 
@@ -284,11 +295,13 @@
       "<h2>Wat zien de leerlingen?</h2>" +
       "<p>Wat je hier niet aanvinkt, is voor de leerlingen van deze vestiging onzichtbaar. Zet een jaar zichtbaar en kies daarna " +
       "welke categorieën al open staan. <em>Eindejaar</em> opent ook de resultaatverwerking en de eindbalans van dat jaar.</p>" +
-      '<table class="beheer-tabel beheer-zicht"><thead><tr><th>boekjaar</th><th></th><th>categorieën</th><th>controle</th></tr></thead>' +
+      '<table class="beheer-tabel beheer-zicht"><thead><tr><th>boekjaar</th><th></th><th>categorieën</th><th>controle</th><th>extra</th></tr></thead>' +
       "<tbody>" + rijen + "</tbody></table>" +
       '<p class="keuze-nota">Met <em>zelfcontrole aan</em> kan de leerling een geboekt document laten controleren tegen de oplossing. ' +
       "De eerste keer zegt de app enkel of het klopt; vanaf de tweede keer welke lijnen nog fout zijn. Dat kan enkel in het extra oefenmateriaal " +
       "en de remediëring: van de taak en de consolidaties staat de oplossing niet in de app.</p>" +
+      '<p class="keuze-nota">De T-rekeningen tonen standaard enkel wat de leerling zelf boekt, zonder de beginbalans. Vink ' +
+      "<em>beginbalans in T-rekeningen</em> aan als ze de beginbalans er wel bij moeten zien (bv. voor de saldi van bank en kas).</p>" +
       "</div>";
   }
 
@@ -663,6 +676,7 @@
         if (rol === "zicht-jaar") { zichtVoor(t.dataset.jaar).open = t.checked; herteken(); return; }
         if (rol === "zicht-cat") { zichtVoor(t.dataset.jaar).cats[t.dataset.cat] = t.checked; return; }
         if (rol === "zicht-zc") { zichtVoor(t.dataset.jaar).zelfcontrole = t.checked; return; }
+        if (rol === "zicht-extra") { zichtVoor(t.dataset.jaar)[t.dataset.cat] = t.checked; return; }
         if (rol === "aanbevolen") {
           var lijst = model.aanbevolen[t.dataset.naam] || [];
           lijst = lijst.filter(function (c) { return c !== t.dataset.cat; });

@@ -14,7 +14,6 @@ var JAREN = {
   "titel": "Cursus",
   "kort": "X1",
   "categorieVolgorde": [
-   "Beginbalans",
    "Aankopen",
    "Verkopen",
    "Btw-verrekening",
@@ -2435,9 +2434,14 @@ var JAREN = {
   "titel": "Taak",
   "kort": "X2",
   "categorieVolgorde": [
-   "Beginbalans",
-   "Aankopen",
-   "Verkopen",
+   "Aankopen taak 1: eenvoudige facturen",
+   "Aankopen taak 2: handelskorting & transportkosten",
+   "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+   "Aankopen taak 4: creditnota's",
+   "Verkopen taak 1: eenvoudige facturen",
+   "Verkopen taak 2: handelskorting & extra kosten",
+   "Verkopen taak 3: creditnota's",
+   "Verkopen taak 4: terugstuurbare verpakking",
    "Btw-verrekening",
    "Financiële verrichtingen",
    "Eindejaar"
@@ -2453,189 +2457,168 @@ var JAREN = {
    },
    {
     "ref": "AK01",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 1: eenvoudige facturen",
     "titel": "Aankoop AK01",
     "doc": "20X2/AK01",
     "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK02",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 1: eenvoudige facturen",
     "titel": "Aankoop AK02",
     "doc": "20X2/AK02",
     "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "AK03",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK03",
     "doc": "20X2/AK03",
     "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "AK04",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK04",
     "doc": "20X2/AK04",
     "relatie": "FairFabrics nv"
    },
    {
     "ref": "AK05",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK05",
     "doc": "20X2/AK05",
     "relatie": "FairFabrics nv"
    },
    {
     "ref": "AK06",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK06",
     "doc": "20X2/AK06",
     "relatie": "GreenThread bv"
    },
    {
     "ref": "AK07",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
     "titel": "Aankoop AK07",
     "doc": "20X2/AK07",
-    "relatie": "GreenThread bv"
-   },
-   {
-    "ref": "AK08",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK08",
-    "doc": "20X2/AK08",
-    "relatie": "EthiKnit nv"
-   },
-   {
-    "ref": "AK09",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK09",
-    "doc": "20X2/AK09",
     "relatie": "Connecto nv"
    },
    {
-    "ref": "AK10",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK10",
-    "doc": "20X2/AK10",
+    "ref": "AK08",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK08",
+    "doc": "20X2/AK08",
     "relatie": "WebNest bv"
    },
    {
-    "ref": "AK11",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK11",
-    "doc": "20X2/AK11",
+    "ref": "AK09",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK09",
+    "doc": "20X2/AK09",
     "relatie": "Winkelinrichting Rek & Co bv"
    },
    {
-    "ref": "AK12",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK12",
-    "doc": "20X2/AK12",
+    "ref": "AK10",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK10",
+    "doc": "20X2/AK10",
     "relatie": "Digistore bv"
    },
    {
-    "ref": "AK13",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK13",
-    "doc": "20X2/AK13",
+    "ref": "AK11",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK11",
+    "doc": "20X2/AK11",
     "relatie": "EthiKnit nv"
    },
    {
-    "ref": "AK14",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK14",
-    "doc": "20X2/AK14",
-    "relatie": "GreenThread bv"
-   },
-   {
-    "ref": "AK15",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK15",
-    "doc": "20X2/AK15",
+    "ref": "AK12",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK12",
+    "doc": "20X2/AK12",
     "relatie": "Connecto nv"
    },
    {
     "ref": "VK01",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Verkoop VK01",
     "doc": "20X2/VK01",
     "relatie": "Restaurant Da Rossi bv"
    },
    {
     "ref": "VK02",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Verkoop VK02",
     "doc": "20X2/VK02",
     "relatie": "Kinderopvang De Kleine Wereld vzw"
    },
    {
-    "ref": "VK03",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK03",
-    "doc": "20X2/VK03",
-    "relatie": "Architectenbureau Lindqvist bv"
-   },
-   {
-    "ref": "VK04",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK04",
-    "doc": "20X2/VK04",
-    "relatie": "Hotel De Linde bv"
-   },
-   {
-    "ref": "VK05",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK05",
-    "doc": "20X2/VK05",
-    "relatie": "Scouts Sint-Jan Wilsele"
-   },
-   {
-    "ref": "VK06",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK06",
-    "doc": "20X2/VK06",
-    "relatie": "Fietsclub De Trappers vzw"
-   },
-   {
-    "ref": "VK07",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK07",
-    "doc": "20X2/VK07",
-    "relatie": "Basisschool De Regenboog"
-   },
-   {
-    "ref": "VK08",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK08",
-    "doc": "20X2/VK08",
-    "relatie": "Café De Fiets bv"
-   },
-   {
     "ref": "ONTV01",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Dagontvangsten ONTV01",
     "doc": "20X2/ONTV01",
     "relatie": "Dagontvangsten (particulieren)"
    },
    {
     "ref": "ONTV02",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Dagontvangsten ONTV02",
     "doc": "20X2/ONTV02",
     "relatie": "Dagontvangsten (particulieren)"
    },
    {
-    "ref": "VK09",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK09",
-    "doc": "20X2/VK09",
+    "ref": "VK03",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK03",
+    "doc": "20X2/VK03",
+    "relatie": "Architectenbureau Lindqvist bv"
+   },
+   {
+    "ref": "VK04",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK04",
+    "doc": "20X2/VK04",
+    "relatie": "Hotel De Linde bv"
+   },
+   {
+    "ref": "VK05",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK05",
+    "doc": "20X2/VK05",
+    "relatie": "Scouts Sint-Jan Wilsele"
+   },
+   {
+    "ref": "VK06",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK06",
+    "doc": "20X2/VK06",
+    "relatie": "Fietsclub De Trappers vzw"
+   },
+   {
+    "ref": "VK07",
+    "categorie": "Verkopen taak 3: creditnota's",
+    "titel": "Verkoop VK07",
+    "doc": "20X2/VK07",
     "relatie": "Restaurant Da Rossi bv"
    },
    {
+    "ref": "VK08",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
+    "titel": "Verkoop VK08",
+    "doc": "20X2/VK08",
+    "relatie": "Basisschool De Regenboog"
+   },
+   {
+    "ref": "VK09",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
+    "titel": "Verkoop VK09",
+    "doc": "20X2/VK09",
+    "relatie": "Café De Fiets bv"
+   },
+   {
     "ref": "VK10",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
     "titel": "Verkoop VK10",
     "doc": "20X2/VK10",
     "relatie": "Basisschool De Regenboog"
@@ -2676,7 +2659,7 @@ var JAREN = {
     "titel": "Bankuittreksel FIN03",
     "doc": "20X2/FIN03",
     "betaalstuk": true,
-    "relatie": "GreenThread bv"
+    "relatie": "EthiKnit nv"
    },
    {
     "ref": "FIN04",
@@ -3209,14 +3192,11 @@ var JAREN = {
     "AK07",
     "AK08",
     "AK09",
-    "AK10",
-    "AK11",
-    "AK12"
+    "AK10"
    ],
    "aankoopCN": [
-    "AK13",
-    "AK14",
-    "AK15"
+    "AK11",
+    "AK12"
    ],
    "verkoopfacturen": [
     "VK01",
@@ -3225,11 +3205,11 @@ var JAREN = {
     "VK04",
     "VK05",
     "VK06",
-    "VK07",
-    "VK08"
+    "VK08",
+    "VK09"
    ],
    "verkoopCN": [
-    "VK09",
+    "VK07",
     "VK10"
    ],
    "dagontvangsten": [
@@ -3265,21 +3245,18 @@ var JAREN = {
     "VK06"
    ],
    "verpakking": [
-    "AK07",
-    "AK08",
-    "AK14",
-    "VK07",
     "VK08",
+    "VK09",
     "VK10"
    ],
    "vasteActiva": [
-    "AK11",
-    "AK12"
+    "AK09",
+    "AK10"
    ],
    "diensten": [
-    "AK09",
-    "AK10",
-    "AK15"
+    "AK07",
+    "AK08",
+    "AK12"
    ],
    "btw": [
     {
@@ -3315,6 +3292,515 @@ var JAREN = {
     "afschrijvingen": "EJ01",
     "voorraad": "EJ02",
     "lening": "EJ03"
+   },
+   "tRekeningen": {
+    "Aankopen taak 1: eenvoudige facturen": {
+     "411000": {
+      "D": [
+       [
+        "AK01",
+        231
+       ],
+       [
+        "AK02",
+        525
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK01",
+        1331
+       ],
+       [
+        "AK02",
+        3025
+       ]
+      ]
+     },
+     "604000": {
+      "D": [
+       [
+        "AK01",
+        1100
+       ],
+       [
+        "AK02",
+        2500
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 2: handelskorting & transportkosten": {
+     "411000": {
+      "D": [
+       [
+        "AK03",
+        939
+       ],
+       [
+        "AK04",
+        359
+       ],
+       [
+        "AK05",
+        382
+       ],
+       [
+        "AK06",
+        202
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK03",
+        5409
+       ],
+       [
+        "AK04",
+        2069
+       ],
+       [
+        "AK05",
+        2202
+       ],
+       [
+        "AK06",
+        1162
+       ]
+      ]
+     },
+     "604000": {
+      "D": [
+       [
+        "AK03",
+        4700
+       ],
+       [
+        "AK04",
+        1800
+       ],
+       [
+        "AK05",
+        1700
+       ],
+       [
+        "AK06",
+        900
+       ]
+      ],
+      "C": []
+     },
+     "604020": {
+      "D": [],
+      "C": [
+       [
+        "AK03",
+        230
+       ],
+       [
+        "AK04",
+        90
+       ]
+      ]
+     },
+     "604030": {
+      "D": [
+       [
+        "AK05",
+        120
+       ],
+       [
+        "AK06",
+        60
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 3: diensten, diverse goederen & vaste activa": {
+     "240000": {
+      "D": [
+       [
+        "AK09",
+        2500
+       ]
+      ],
+      "C": []
+     },
+     "240200": {
+      "D": [
+       [
+        "AK10",
+        1200
+       ]
+      ],
+      "C": []
+     },
+     "411000": {
+      "D": [
+       [
+        "AK07",
+        21
+       ],
+       [
+        "AK08",
+        8
+       ],
+       [
+        "AK09",
+        525
+       ],
+       [
+        "AK10",
+        252
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK07",
+        121
+       ],
+       [
+        "AK08",
+        48
+       ],
+       [
+        "AK09",
+        3025
+       ],
+       [
+        "AK10",
+        1452
+       ]
+      ]
+     },
+     "613000": {
+      "D": [
+       [
+        "AK08",
+        40
+       ]
+      ],
+      "C": []
+     },
+     "616000": {
+      "D": [
+       [
+        "AK07",
+        100
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 4: creditnota's": {
+     "411000": {
+      "D": [],
+      "C": [
+       [
+        "AK11",
+        13
+       ],
+       [
+        "AK12",
+        2
+       ]
+      ]
+     },
+     "440000": {
+      "D": [
+       [
+        "AK11",
+        73
+       ],
+       [
+        "AK12",
+        12
+       ]
+      ],
+      "C": []
+     },
+     "604010": {
+      "D": [],
+      "C": [
+       [
+        "AK11",
+        60
+       ]
+      ]
+     },
+     "616000": {
+      "D": [],
+      "C": [
+       [
+        "AK12",
+        10
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 1: eenvoudige facturen": {
+     "400000": {
+      "D": [
+       [
+        "VK01",
+        4840
+       ],
+       [
+        "VK02",
+        7018
+       ],
+       [
+        "ONTV01",
+        5324
+       ],
+       [
+        "ONTV02",
+        2541
+       ]
+      ],
+      "C": []
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK01",
+        840
+       ],
+       [
+        "VK02",
+        1218
+       ],
+       [
+        "ONTV01",
+        924
+       ],
+       [
+        "ONTV02",
+        441
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK01",
+        4000
+       ],
+       [
+        "VK02",
+        5800
+       ],
+       [
+        "ONTV01",
+        4400
+       ],
+       [
+        "ONTV02",
+        2100
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 2: handelskorting & extra kosten": {
+     "400000": {
+      "D": [
+       [
+        "VK03",
+        3267
+       ],
+       [
+        "VK04",
+        2614
+       ],
+       [
+        "VK05",
+        1016
+       ],
+       [
+        "VK06",
+        3933
+       ]
+      ],
+      "C": []
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK03",
+        567
+       ],
+       [
+        "VK04",
+        454
+       ],
+       [
+        "VK05",
+        176
+       ],
+       [
+        "VK06",
+        683
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK03",
+        3000
+       ],
+       [
+        "VK04",
+        2400
+       ],
+       [
+        "VK05",
+        800
+       ],
+       [
+        "VK06",
+        3200
+       ]
+      ]
+     },
+     "704020": {
+      "D": [
+       [
+        "VK03",
+        300
+       ],
+       [
+        "VK04",
+        240
+       ]
+      ],
+      "C": []
+     },
+     "746000": {
+      "D": [],
+      "C": [
+       [
+        "VK05",
+        40
+       ],
+       [
+        "VK06",
+        50
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 3: creditnota's": {
+     "400000": {
+      "D": [],
+      "C": [
+       [
+        "VK07",
+        290
+       ]
+      ]
+     },
+     "451000": {
+      "D": [
+       [
+        "VK07",
+        50
+       ]
+      ],
+      "C": []
+     },
+     "704010": {
+      "D": [
+       [
+        "VK07",
+        240
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Verkopen taak 4: terugstuurbare verpakking": {
+     "400000": {
+      "D": [
+       [
+        "VK08",
+        1532
+       ],
+       [
+        "VK09",
+        403
+       ]
+      ],
+      "C": [
+       [
+        "VK10",
+        80
+       ]
+      ]
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK08",
+        252
+       ],
+       [
+        "VK09",
+        63
+       ]
+      ]
+     },
+     "488000": {
+      "D": [
+       [
+        "VK10",
+        80
+       ]
+      ],
+      "C": [
+       [
+        "VK08",
+        80
+       ],
+       [
+        "VK09",
+        40
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK08",
+        1200
+       ],
+       [
+        "VK09",
+        300
+       ]
+      ]
+     }
+    }
    }
   }
  },
@@ -3324,7 +3810,6 @@ var JAREN = {
   "titel": "Consolidatie",
   "kort": "X3",
   "categorieVolgorde": [
-   "Beginbalans",
    "Alle documenten"
   ],
   "opdrachten": [
@@ -3693,7 +4178,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "24.015",
+     "bedrag": "28.165",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -3880,7 +4365,7 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "600",
+     "bedrag": "300",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -3924,7 +4409,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "7.306",
+     "bedrag": "2.541",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4023,7 +4508,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "81.121",
+     "bedrag": "80.806",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -4054,9 +4539,14 @@ var JAREN = {
   "titel": "Extra oefenmateriaal",
   "kort": "X4",
   "categorieVolgorde": [
-   "Beginbalans",
-   "Aankopen",
-   "Verkopen",
+   "Aankopen taak 1: eenvoudige facturen",
+   "Aankopen taak 2: handelskorting & transportkosten",
+   "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+   "Aankopen taak 4: creditnota's",
+   "Verkopen taak 1: eenvoudige facturen",
+   "Verkopen taak 2: handelskorting & extra kosten",
+   "Verkopen taak 3: creditnota's",
+   "Verkopen taak 4: terugstuurbare verpakking",
    "Btw-verrekening",
    "Financiële verrichtingen",
    "Eindejaar"
@@ -4072,301 +4562,266 @@ var JAREN = {
    },
    {
     "ref": "AK01",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 1: eenvoudige facturen",
     "titel": "Aankoop AK01",
     "doc": "20X4/AK01",
     "relatie": "FairFabrics nv"
    },
    {
     "ref": "AK02",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 1: eenvoudige facturen",
     "titel": "Aankoop AK02",
     "doc": "20X4/AK02",
     "relatie": "GreenThread bv"
    },
    {
     "ref": "AK03",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 1: eenvoudige facturen",
     "titel": "Aankoop AK03",
     "doc": "20X4/AK03",
     "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK04",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK04",
     "doc": "20X4/AK04",
     "relatie": "GreenThread bv"
    },
    {
     "ref": "AK05",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK05",
     "doc": "20X4/AK05",
     "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK06",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK06",
     "doc": "20X4/AK06",
     "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "AK07",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK07",
     "doc": "20X4/AK07",
     "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK08",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK08",
     "doc": "20X4/AK08",
     "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "AK09",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK09",
     "doc": "20X4/AK09",
     "relatie": "FairFabrics nv"
    },
    {
     "ref": "AK10",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
     "titel": "Aankoop AK10",
     "doc": "20X4/AK10",
-    "relatie": "Terra Outdoor bv"
+    "relatie": "Drukkerij Letterwerk bv"
    },
    {
     "ref": "AK11",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
     "titel": "Aankoop AK11",
     "doc": "20X4/AK11",
-    "relatie": "FairFabrics nv"
-   },
-   {
-    "ref": "AK12",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK12",
-    "doc": "20X4/AK12",
-    "relatie": "GreenThread bv"
-   },
-   {
-    "ref": "AK13",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK13",
-    "doc": "20X4/AK13",
-    "relatie": "Drukkerij Letterwerk bv"
-   },
-   {
-    "ref": "AK14",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK14",
-    "doc": "20X4/AK14",
     "relatie": "Bureau & Co bv"
    },
    {
-    "ref": "AK15",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK15",
-    "doc": "20X4/AK15",
+    "ref": "AK12",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK12",
+    "doc": "20X4/AK12",
     "relatie": "Stroomkracht nv"
    },
    {
-    "ref": "AK16",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK16",
-    "doc": "20X4/AK16",
+    "ref": "AK13",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK13",
+    "doc": "20X4/AK13",
     "relatie": "Winkelinrichting Rek & Co bv"
    },
    {
-    "ref": "AK17",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK17",
-    "doc": "20X4/AK17",
+    "ref": "AK14",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK14",
+    "doc": "20X4/AK14",
     "relatie": "KassaTech bv"
    },
    {
-    "ref": "AK18",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK18",
-    "doc": "20X4/AK18",
+    "ref": "AK15",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK15",
+    "doc": "20X4/AK15",
     "relatie": "Lichtpunt bv"
    },
    {
-    "ref": "AK19",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK19",
-    "doc": "20X4/AK19",
+    "ref": "AK16",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK16",
+    "doc": "20X4/AK16",
     "relatie": "FairFabrics nv"
    },
    {
-    "ref": "AK20",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK20",
-    "doc": "20X4/AK20",
+    "ref": "AK17",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK17",
+    "doc": "20X4/AK17",
     "relatie": "GreenThread bv"
    },
    {
-    "ref": "AK21",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK21",
-    "doc": "20X4/AK21",
-    "relatie": "Terra Outdoor bv"
-   },
-   {
-    "ref": "AK22",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK22",
-    "doc": "20X4/AK22",
-    "relatie": "FairFabrics nv"
-   },
-   {
-    "ref": "AK23",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK23",
-    "doc": "20X4/AK23",
+    "ref": "AK18",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK18",
+    "doc": "20X4/AK18",
     "relatie": "Drukkerij Letterwerk bv"
    },
    {
-    "ref": "AK24",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK24",
-    "doc": "20X4/AK24",
+    "ref": "AK19",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK19",
+    "doc": "20X4/AK19",
     "relatie": "Bureau & Co bv"
    },
    {
     "ref": "VK01",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Verkoop VK01",
     "doc": "20X4/VK01",
     "relatie": "Jeugdtheater Applaus vzw"
    },
    {
     "ref": "VK02",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Verkoop VK02",
     "doc": "20X4/VK02",
     "relatie": "Danscentrum Kowalski vzw"
    },
    {
     "ref": "VK03",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Verkoop VK03",
     "doc": "20X4/VK03",
     "relatie": "Scouts Sint-Jan Wilsele"
    },
    {
-    "ref": "VK04",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK04",
-    "doc": "20X4/VK04",
-    "relatie": "Restaurant Da Rossi bv"
-   },
-   {
-    "ref": "VK05",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK05",
-    "doc": "20X4/VK05",
-    "relatie": "Kinderopvang De Kleine Wereld vzw"
-   },
-   {
-    "ref": "VK06",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK06",
-    "doc": "20X4/VK06",
-    "relatie": "Basisschool De Regenboog"
-   },
-   {
-    "ref": "VK07",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK07",
-    "doc": "20X4/VK07",
-    "relatie": "Architectenbureau Lindqvist bv"
-   },
-   {
-    "ref": "VK08",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK08",
-    "doc": "20X4/VK08",
-    "relatie": "Hotel De Linde bv"
-   },
-   {
-    "ref": "VK09",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK09",
-    "doc": "20X4/VK09",
-    "relatie": "Bakkerij Vandenbroeck bv"
-   },
-   {
-    "ref": "VK10",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK10",
-    "doc": "20X4/VK10",
-    "relatie": "Scouts Sint-Jan Wilsele"
-   },
-   {
-    "ref": "VK11",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK11",
-    "doc": "20X4/VK11",
-    "relatie": "Fietsclub De Trappers vzw"
-   },
-   {
-    "ref": "VK12",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK12",
-    "doc": "20X4/VK12",
-    "relatie": "Jeugdtheater Applaus vzw"
-   },
-   {
     "ref": "ONTV01",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Dagontvangsten ONTV01",
     "doc": "20X4/ONTV01",
     "relatie": "Dagontvangsten (particulieren)"
    },
    {
     "ref": "ONTV02",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Dagontvangsten ONTV02",
     "doc": "20X4/ONTV02",
     "relatie": "Dagontvangsten (particulieren)"
    },
    {
     "ref": "ONTV03",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Dagontvangsten ONTV03",
     "doc": "20X4/ONTV03",
     "relatie": "Dagontvangsten (particulieren)"
    },
    {
-    "ref": "VK13",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK13",
-    "doc": "20X4/VK13",
+    "ref": "VK04",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK04",
+    "doc": "20X4/VK04",
+    "relatie": "Restaurant Da Rossi bv"
+   },
+   {
+    "ref": "VK05",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK05",
+    "doc": "20X4/VK05",
+    "relatie": "Kinderopvang De Kleine Wereld vzw"
+   },
+   {
+    "ref": "VK06",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK06",
+    "doc": "20X4/VK06",
+    "relatie": "Basisschool De Regenboog"
+   },
+   {
+    "ref": "VK07",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK07",
+    "doc": "20X4/VK07",
+    "relatie": "Architectenbureau Lindqvist bv"
+   },
+   {
+    "ref": "VK08",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK08",
+    "doc": "20X4/VK08",
+    "relatie": "Hotel De Linde bv"
+   },
+   {
+    "ref": "VK09",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
+    "titel": "Verkoop VK09",
+    "doc": "20X4/VK09",
+    "relatie": "Bakkerij Vandenbroeck bv"
+   },
+   {
+    "ref": "VK10",
+    "categorie": "Verkopen taak 3: creditnota's",
+    "titel": "Verkoop VK10",
+    "doc": "20X4/VK10",
     "relatie": "Jeugdtheater Applaus vzw"
    },
    {
-    "ref": "VK14",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK14",
-    "doc": "20X4/VK14",
+    "ref": "VK11",
+    "categorie": "Verkopen taak 3: creditnota's",
+    "titel": "Verkoop VK11",
+    "doc": "20X4/VK11",
     "relatie": "Danscentrum Kowalski vzw"
    },
    {
+    "ref": "VK12",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
+    "titel": "Verkoop VK12",
+    "doc": "20X4/VK12",
+    "relatie": "Scouts Sint-Jan Wilsele"
+   },
+   {
+    "ref": "VK13",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
+    "titel": "Verkoop VK13",
+    "doc": "20X4/VK13",
+    "relatie": "Fietsclub De Trappers vzw"
+   },
+   {
+    "ref": "VK14",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
+    "titel": "Verkoop VK14",
+    "doc": "20X4/VK14",
+    "relatie": "Jeugdtheater Applaus vzw"
+   },
+   {
     "ref": "VK15",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
     "titel": "Verkoop VK15",
     "doc": "20X4/VK15",
     "relatie": "Scouts Sint-Jan Wilsele"
    },
    {
     "ref": "VK16",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
     "titel": "Verkoop VK16",
     "doc": "20X4/VK16",
     "relatie": "Fietsclub De Trappers vzw"
@@ -4398,7 +4853,7 @@ var JAREN = {
     "titel": "Bankuittreksel FIN01",
     "doc": "20X4/FIN01",
     "betaalstuk": true,
-    "relatie": "Terra Outdoor bv"
+    "relatie": "Drukkerij Letterwerk bv"
    },
    {
     "ref": "FIN02",
@@ -4430,7 +4885,7 @@ var JAREN = {
     "titel": "Bankuittreksel FIN05",
     "doc": "20X4/FIN05",
     "betaalstuk": true,
-    "relatie": "Terra Outdoor bv"
+    "relatie": "Drukkerij Letterwerk bv"
    },
    {
     "ref": "FIN06",
@@ -4702,7 +5157,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "27.066",
+     "bedrag": "31.216",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4900,7 +5355,7 @@ var JAREN = {
      "relatie": "Yogastudio Lotus bv"
     },
     {
-     "bedrag": "600",
+     "bedrag": "300",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -4944,7 +5399,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "7.306",
+     "bedrag": "2.541",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5043,7 +5498,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "81.702",
+     "bedrag": "81.387",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -5082,18 +5537,13 @@ var JAREN = {
     "AK12",
     "AK13",
     "AK14",
-    "AK15",
-    "AK16",
-    "AK17",
-    "AK18"
+    "AK15"
    ],
    "aankoopCN": [
-    "AK19",
-    "AK20",
-    "AK21",
-    "AK22",
-    "AK23",
-    "AK24"
+    "AK16",
+    "AK17",
+    "AK18",
+    "AK19"
    ],
    "verkoopfacturen": [
     "VK01",
@@ -5105,13 +5555,13 @@ var JAREN = {
     "VK07",
     "VK08",
     "VK09",
-    "VK10",
-    "VK11",
-    "VK12"
+    "VK12",
+    "VK13",
+    "VK14"
    ],
    "verkoopCN": [
-    "VK13",
-    "VK14",
+    "VK10",
+    "VK11",
     "VK15",
     "VK16"
    ],
@@ -5161,28 +5611,23 @@ var JAREN = {
     "VK09"
    ],
    "verpakking": [
-    "AK10",
-    "AK11",
-    "AK12",
-    "AK21",
-    "AK22",
-    "VK10",
-    "VK11",
     "VK12",
+    "VK13",
+    "VK14",
     "VK15",
     "VK16"
    ],
    "vasteActiva": [
-    "AK16",
-    "AK17",
-    "AK18"
-   ],
-   "diensten": [
     "AK13",
     "AK14",
-    "AK15",
-    "AK23",
-    "AK24"
+    "AK15"
+   ],
+   "diensten": [
+    "AK10",
+    "AK11",
+    "AK12",
+    "AK18",
+    "AK19"
    ],
    "btw": [
     {
@@ -5225,6 +5670,704 @@ var JAREN = {
     "afschrijvingen": "EJ01",
     "voorraad": "EJ02",
     "lening": "EJ03"
+   },
+   "tRekeningen": {
+    "Aankopen taak 1: eenvoudige facturen": {
+     "411000": {
+      "D": [
+       [
+        "AK01",
+        63
+       ],
+       [
+        "AK02",
+        126
+       ],
+       [
+        "AK03",
+        525
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK01",
+        363
+       ],
+       [
+        "AK02",
+        726
+       ],
+       [
+        "AK03",
+        3025
+       ]
+      ]
+     },
+     "604000": {
+      "D": [
+       [
+        "AK01",
+        300
+       ],
+       [
+        "AK02",
+        600
+       ],
+       [
+        "AK03",
+        2500
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 2: handelskorting & transportkosten": {
+     "411000": {
+      "D": [
+       [
+        "AK04",
+        218
+       ],
+       [
+        "AK05",
+        359
+       ],
+       [
+        "AK06",
+        1117
+       ],
+       [
+        "AK07",
+        613
+       ],
+       [
+        "AK08",
+        1189
+       ],
+       [
+        "AK09",
+        248
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK04",
+        1258
+       ],
+       [
+        "AK05",
+        2069
+       ],
+       [
+        "AK06",
+        6437
+       ],
+       [
+        "AK07",
+        3533
+       ],
+       [
+        "AK08",
+        6849
+       ],
+       [
+        "AK09",
+        1428
+       ]
+      ]
+     },
+     "604000": {
+      "D": [
+       [
+        "AK04",
+        1150
+       ],
+       [
+        "AK05",
+        1900
+       ],
+       [
+        "AK06",
+        5600
+       ],
+       [
+        "AK07",
+        2800
+       ],
+       [
+        "AK08",
+        5600
+       ],
+       [
+        "AK09",
+        1100
+       ]
+      ],
+      "C": []
+     },
+     "604020": {
+      "D": [],
+      "C": [
+       [
+        "AK04",
+        110
+       ],
+       [
+        "AK05",
+        190
+       ],
+       [
+        "AK06",
+        280
+       ]
+      ]
+     },
+     "604030": {
+      "D": [
+       [
+        "AK07",
+        120
+       ],
+       [
+        "AK08",
+        60
+       ],
+       [
+        "AK09",
+        80
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 3: diensten, diverse goederen & vaste activa": {
+     "230000": {
+      "D": [
+       [
+        "AK15",
+        1000
+       ]
+      ],
+      "C": []
+     },
+     "232000": {
+      "D": [
+       [
+        "AK14",
+        2000
+       ]
+      ],
+      "C": []
+     },
+     "240000": {
+      "D": [
+       [
+        "AK13",
+        1500
+       ]
+      ],
+      "C": []
+     },
+     "411000": {
+      "D": [
+       [
+        "AK10",
+        46
+       ],
+       [
+        "AK11",
+        27
+       ],
+       [
+        "AK12",
+        50
+       ],
+       [
+        "AK13",
+        315
+       ],
+       [
+        "AK14",
+        420
+       ],
+       [
+        "AK15",
+        210
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK10",
+        266
+       ],
+       [
+        "AK11",
+        157
+       ],
+       [
+        "AK12",
+        290
+       ],
+       [
+        "AK13",
+        1815
+       ],
+       [
+        "AK14",
+        2420
+       ],
+       [
+        "AK15",
+        1210
+       ]
+      ]
+     },
+     "612000": {
+      "D": [
+       [
+        "AK10",
+        220
+       ],
+       [
+        "AK11",
+        130
+       ]
+      ],
+      "C": []
+     },
+     "612700": {
+      "D": [
+       [
+        "AK12",
+        240
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 4: creditnota's": {
+     "411000": {
+      "D": [],
+      "C": [
+       [
+        "AK16",
+        13
+       ],
+       [
+        "AK17",
+        13
+       ],
+       [
+        "AK18",
+        11
+       ],
+       [
+        "AK19",
+        4
+       ]
+      ]
+     },
+     "440000": {
+      "D": [
+       [
+        "AK16",
+        73
+       ],
+       [
+        "AK17",
+        73
+       ],
+       [
+        "AK18",
+        61
+       ],
+       [
+        "AK19",
+        24
+       ]
+      ],
+      "C": []
+     },
+     "604010": {
+      "D": [],
+      "C": [
+       [
+        "AK16",
+        60
+       ],
+       [
+        "AK17",
+        60
+       ]
+      ]
+     },
+     "612000": {
+      "D": [],
+      "C": [
+       [
+        "AK18",
+        50
+       ],
+       [
+        "AK19",
+        20
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 1: eenvoudige facturen": {
+     "400000": {
+      "D": [
+       [
+        "VK01",
+        1936
+       ],
+       [
+        "VK02",
+        5143
+       ],
+       [
+        "VK03",
+        4114
+       ],
+       [
+        "ONTV01",
+        2904
+       ],
+       [
+        "ONTV02",
+        2541
+       ],
+       [
+        "ONTV03",
+        4840
+       ]
+      ],
+      "C": []
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK01",
+        336
+       ],
+       [
+        "VK02",
+        893
+       ],
+       [
+        "VK03",
+        714
+       ],
+       [
+        "ONTV01",
+        504
+       ],
+       [
+        "ONTV02",
+        441
+       ],
+       [
+        "ONTV03",
+        840
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK01",
+        1600
+       ],
+       [
+        "VK02",
+        4250
+       ],
+       [
+        "VK03",
+        3400
+       ],
+       [
+        "ONTV01",
+        2400
+       ],
+       [
+        "ONTV02",
+        2100
+       ],
+       [
+        "ONTV03",
+        4000
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 2: handelskorting & extra kosten": {
+     "400000": {
+      "D": [
+       [
+        "VK04",
+        1561
+       ],
+       [
+        "VK05",
+        2021
+       ],
+       [
+        "VK06",
+        2420
+       ],
+       [
+        "VK07",
+        2226
+       ],
+       [
+        "VK08",
+        2251
+       ],
+       [
+        "VK09",
+        3642
+       ]
+      ],
+      "C": []
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK04",
+        271
+       ],
+       [
+        "VK05",
+        351
+       ],
+       [
+        "VK06",
+        420
+       ],
+       [
+        "VK07",
+        386
+       ],
+       [
+        "VK08",
+        391
+       ],
+       [
+        "VK09",
+        632
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK04",
+        1350
+       ],
+       [
+        "VK05",
+        1850
+       ],
+       [
+        "VK06",
+        2100
+       ],
+       [
+        "VK07",
+        1800
+       ],
+       [
+        "VK08",
+        1800
+       ],
+       [
+        "VK09",
+        2950
+       ]
+      ]
+     },
+     "704020": {
+      "D": [
+       [
+        "VK04",
+        60
+       ],
+       [
+        "VK05",
+        180
+       ],
+       [
+        "VK06",
+        100
+       ]
+      ],
+      "C": []
+     },
+     "746000": {
+      "D": [],
+      "C": [
+       [
+        "VK07",
+        40
+       ],
+       [
+        "VK08",
+        60
+       ],
+       [
+        "VK09",
+        60
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 3: creditnota's": {
+     "400000": {
+      "D": [],
+      "C": [
+       [
+        "VK10",
+        194
+       ],
+       [
+        "VK11",
+        387
+       ]
+      ]
+     },
+     "451000": {
+      "D": [
+       [
+        "VK10",
+        34
+       ],
+       [
+        "VK11",
+        67
+       ]
+      ],
+      "C": []
+     },
+     "704010": {
+      "D": [
+       [
+        "VK10",
+        160
+       ],
+       [
+        "VK11",
+        320
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Verkopen taak 4: terugstuurbare verpakking": {
+     "400000": {
+      "D": [
+       [
+        "VK12",
+        4315
+       ],
+       [
+        "VK13",
+        2722
+       ],
+       [
+        "VK14",
+        2258
+       ]
+      ],
+      "C": [
+       [
+        "VK15",
+        80
+       ],
+       [
+        "VK16",
+        60
+       ]
+      ]
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK12",
+        735
+       ],
+       [
+        "VK13",
+        462
+       ],
+       [
+        "VK14",
+        378
+       ]
+      ]
+     },
+     "488000": {
+      "D": [
+       [
+        "VK15",
+        80
+       ],
+       [
+        "VK16",
+        60
+       ]
+      ],
+      "C": [
+       [
+        "VK12",
+        80
+       ],
+       [
+        "VK13",
+        60
+       ],
+       [
+        "VK14",
+        80
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK12",
+        3500
+       ],
+       [
+        "VK13",
+        2200
+       ],
+       [
+        "VK14",
+        1800
+       ]
+      ]
+     }
+    }
    }
   }
  },
@@ -5234,9 +6377,14 @@ var JAREN = {
   "titel": "Remediëring",
   "kort": "X5",
   "categorieVolgorde": [
-   "Beginbalans",
-   "Aankopen",
-   "Verkopen",
+   "Aankopen taak 1: eenvoudige facturen",
+   "Aankopen taak 2: handelskorting & transportkosten",
+   "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+   "Aankopen taak 4: creditnota's",
+   "Verkopen taak 1: eenvoudige facturen",
+   "Verkopen taak 2: handelskorting & extra kosten",
+   "Verkopen taak 3: creditnota's",
+   "Verkopen taak 4: terugstuurbare verpakking",
    "Btw-verrekening",
    "Financiële verrichtingen",
    "Eindejaar"
@@ -5252,112 +6400,98 @@ var JAREN = {
    },
    {
     "ref": "AK01",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 1: eenvoudige facturen",
     "titel": "Aankoop AK01",
     "doc": "20X5/AK01",
     "relatie": "GreenThread bv"
    },
    {
     "ref": "AK02",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK02",
     "doc": "20X5/AK02",
     "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK03",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 2: handelskorting & transportkosten",
     "titel": "Aankoop AK03",
     "doc": "20X5/AK03",
     "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "AK04",
-    "categorie": "Aankopen",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
     "titel": "Aankoop AK04",
     "doc": "20X5/AK04",
-    "relatie": "FairFabrics nv"
-   },
-   {
-    "ref": "AK05",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK05",
-    "doc": "20X5/AK05",
     "relatie": "Connecto nv"
    },
    {
-    "ref": "AK06",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK06",
-    "doc": "20X5/AK06",
+    "ref": "AK05",
+    "categorie": "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+    "titel": "Aankoop AK05",
+    "doc": "20X5/AK05",
     "relatie": "Winkelinrichting Rek & Co bv"
    },
    {
-    "ref": "AK07",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK07",
-    "doc": "20X5/AK07",
+    "ref": "AK06",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK06",
+    "doc": "20X5/AK06",
     "relatie": "Terra Outdoor bv"
    },
    {
-    "ref": "AK08",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK08",
-    "doc": "20X5/AK08",
-    "relatie": "FairFabrics nv"
-   },
-   {
-    "ref": "AK09",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK09",
-    "doc": "20X5/AK09",
+    "ref": "AK07",
+    "categorie": "Aankopen taak 4: creditnota's",
+    "titel": "Aankoop AK07",
+    "doc": "20X5/AK07",
     "relatie": "Connecto nv"
    },
    {
     "ref": "VK01",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
     "titel": "Verkoop VK01",
     "doc": "20X5/VK01",
     "relatie": "Kinderopvang De Kleine Wereld vzw"
    },
    {
+    "ref": "ONTV01",
+    "categorie": "Verkopen taak 1: eenvoudige facturen",
+    "titel": "Dagontvangsten ONTV01",
+    "doc": "20X5/ONTV01",
+    "relatie": "Dagontvangsten (particulieren)"
+   },
+   {
     "ref": "VK02",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
     "titel": "Verkoop VK02",
     "doc": "20X5/VK02",
     "relatie": "Hotel De Linde bv"
    },
    {
     "ref": "VK03",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 2: handelskorting & extra kosten",
     "titel": "Verkoop VK03",
     "doc": "20X5/VK03",
     "relatie": "Fietsclub De Trappers vzw"
    },
    {
     "ref": "VK04",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 3: creditnota's",
     "titel": "Verkoop VK04",
     "doc": "20X5/VK04",
-    "relatie": "Café De Fiets bv"
-   },
-   {
-    "ref": "ONTV01",
-    "categorie": "Verkopen",
-    "titel": "Dagontvangsten ONTV01",
-    "doc": "20X5/ONTV01",
-    "relatie": "Dagontvangsten (particulieren)"
-   },
-   {
-    "ref": "VK05",
-    "categorie": "Verkopen",
-    "titel": "Verkoop VK05",
-    "doc": "20X5/VK05",
     "relatie": "Kinderopvang De Kleine Wereld vzw"
    },
    {
+    "ref": "VK05",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
+    "titel": "Verkoop VK05",
+    "doc": "20X5/VK05",
+    "relatie": "Café De Fiets bv"
+   },
+   {
     "ref": "VK06",
-    "categorie": "Verkopen",
+    "categorie": "Verkopen taak 4: terugstuurbare verpakking",
     "titel": "Verkoop VK06",
     "doc": "20X5/VK06",
     "relatie": "Café De Fiets bv"
@@ -5383,7 +6517,7 @@ var JAREN = {
     "titel": "Bankuittreksel FIN02",
     "doc": "20X5/FIN02",
     "betaalstuk": true,
-    "relatie": "FairFabrics nv"
+    "relatie": "Connecto nv"
    },
    {
     "ref": "FIN03",
@@ -5571,7 +6705,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "35.211",
+     "bedrag": "43.711",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5813,7 +6947,7 @@ var JAREN = {
      "relatie": "Yogastudio Lotus bv"
     },
     {
-     "bedrag": "750",
+     "bedrag": "300",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -5868,18 +7002,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "205",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "Drukkerij Letterwerk bv"
-    },
-    {
-     "bedrag": "12.908",
+     "bedrag": "8.143",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5890,7 +7013,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "6.990",
+     "bedrag": "6.627",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5901,7 +7024,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "16.325",
+     "bedrag": "13.150",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5978,7 +7101,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "79.670",
+     "bedrag": "80.112",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -6007,22 +7130,20 @@ var JAREN = {
     "AK02",
     "AK03",
     "AK04",
-    "AK05",
-    "AK06"
+    "AK05"
    ],
    "aankoopCN": [
-    "AK07",
-    "AK08",
-    "AK09"
+    "AK06",
+    "AK07"
    ],
    "verkoopfacturen": [
     "VK01",
     "VK02",
     "VK03",
-    "VK04"
+    "VK05"
    ],
    "verkoopCN": [
-    "VK05",
+    "VK04",
     "VK06"
    ],
    "dagontvangsten": [
@@ -6045,17 +7166,15 @@ var JAREN = {
     "VK03"
    ],
    "verpakking": [
-    "AK04",
-    "AK08",
-    "VK04",
+    "VK05",
     "VK06"
    ],
    "vasteActiva": [
-    "AK06"
+    "AK05"
    ],
    "diensten": [
-    "AK05",
-    "AK09"
+    "AK04",
+    "AK07"
    ],
    "btw": [
     {
@@ -6084,6 +7203,365 @@ var JAREN = {
     "afschrijvingen": "EJ01",
     "voorraad": "EJ02",
     "lening": "EJ03"
+   },
+   "tRekeningen": {
+    "Aankopen taak 1: eenvoudige facturen": {
+     "411000": {
+      "D": [
+       [
+        "AK01",
+        168
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK01",
+        968
+       ]
+      ]
+     },
+     "604000": {
+      "D": [
+       [
+        "AK01",
+        800
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 2: handelskorting & transportkosten": {
+     "411000": {
+      "D": [
+       [
+        "AK02",
+        330
+       ],
+       [
+        "AK03",
+        435
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK02",
+        1900
+       ],
+       [
+        "AK03",
+        2505
+       ]
+      ]
+     },
+     "604000": {
+      "D": [
+       [
+        "AK02",
+        1650
+       ],
+       [
+        "AK03",
+        1950
+       ]
+      ],
+      "C": []
+     },
+     "604020": {
+      "D": [],
+      "C": [
+       [
+        "AK02",
+        80
+       ]
+      ]
+     },
+     "604030": {
+      "D": [
+       [
+        "AK03",
+        120
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 3: diensten, diverse goederen & vaste activa": {
+     "232000": {
+      "D": [
+       [
+        "AK05",
+        1000
+       ]
+      ],
+      "C": []
+     },
+     "411000": {
+      "D": [
+       [
+        "AK04",
+        21
+       ],
+       [
+        "AK05",
+        210
+       ]
+      ],
+      "C": []
+     },
+     "440000": {
+      "D": [],
+      "C": [
+       [
+        "AK04",
+        121
+       ],
+       [
+        "AK05",
+        1210
+       ]
+      ]
+     },
+     "616000": {
+      "D": [
+       [
+        "AK04",
+        100
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Aankopen taak 4: creditnota's": {
+     "411000": {
+      "D": [],
+      "C": [
+       [
+        "AK06",
+        32
+       ],
+       [
+        "AK07",
+        2
+       ]
+      ]
+     },
+     "440000": {
+      "D": [
+       [
+        "AK06",
+        182
+       ],
+       [
+        "AK07",
+        12
+       ]
+      ],
+      "C": []
+     },
+     "604010": {
+      "D": [],
+      "C": [
+       [
+        "AK06",
+        150
+       ]
+      ]
+     },
+     "616000": {
+      "D": [],
+      "C": [
+       [
+        "AK07",
+        10
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 1: eenvoudige facturen": {
+     "400000": {
+      "D": [
+       [
+        "VK01",
+        847
+       ],
+       [
+        "ONTV01",
+        5808
+       ]
+      ],
+      "C": []
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK01",
+        147
+       ],
+       [
+        "ONTV01",
+        1008
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK01",
+        700
+       ],
+       [
+        "ONTV01",
+        4800
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 2: handelskorting & extra kosten": {
+     "400000": {
+      "D": [
+       [
+        "VK02",
+        762
+       ],
+       [
+        "VK03",
+        1319
+       ]
+      ],
+      "C": []
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK02",
+        132
+       ],
+       [
+        "VK03",
+        229
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK02",
+        700
+       ],
+       [
+        "VK03",
+        1050
+       ]
+      ]
+     },
+     "704020": {
+      "D": [
+       [
+        "VK02",
+        70
+       ]
+      ],
+      "C": []
+     },
+     "746000": {
+      "D": [],
+      "C": [
+       [
+        "VK03",
+        40
+       ]
+      ]
+     }
+    },
+    "Verkopen taak 3: creditnota's": {
+     "400000": {
+      "D": [],
+      "C": [
+       [
+        "VK04",
+        48
+       ]
+      ]
+     },
+     "451000": {
+      "D": [
+       [
+        "VK04",
+        8
+       ]
+      ],
+      "C": []
+     },
+     "704010": {
+      "D": [
+       [
+        "VK04",
+        40
+       ]
+      ],
+      "C": []
+     }
+    },
+    "Verkopen taak 4: terugstuurbare verpakking": {
+     "400000": {
+      "D": [
+       [
+        "VK05",
+        2238
+       ]
+      ],
+      "C": [
+       [
+        "VK06",
+        60
+       ]
+      ]
+     },
+     "451000": {
+      "D": [],
+      "C": [
+       [
+        "VK05",
+        378
+       ]
+      ]
+     },
+     "488000": {
+      "D": [
+       [
+        "VK06",
+        60
+       ]
+      ],
+      "C": [
+       [
+        "VK05",
+        60
+       ]
+      ]
+     },
+     "704000": {
+      "D": [],
+      "C": [
+       [
+        "VK05",
+        1800
+       ]
+      ]
+     }
+    }
    }
   }
  },
@@ -6093,7 +7571,6 @@ var JAREN = {
   "titel": "Consolidatie 2",
   "kort": "X6",
   "categorieVolgorde": [
-   "Beginbalans",
    "Alle documenten"
   ],
   "opdrachten": [
@@ -6406,7 +7883,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "38.010",
+     "bedrag": "47.510",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -6637,7 +8114,7 @@ var JAREN = {
      "relatie": "Yogastudio Lotus bv"
     },
     {
-     "bedrag": "750",
+     "bedrag": "300",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -6670,7 +8147,7 @@ var JAREN = {
      "relatie": "Bureau & Co bv"
     },
     {
-     "bedrag": "218",
+     "bedrag": "109",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -6692,18 +8169,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "205",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "Drukkerij Letterwerk bv"
-    },
-    {
-     "bedrag": "14.808",
+     "bedrag": "10.043",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -6714,7 +8180,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "6.990",
+     "bedrag": "6.627",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -6725,7 +8191,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "17.293",
+     "bedrag": "14.118",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -6802,7 +8268,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "76.598",
+     "bedrag": "77.931",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",

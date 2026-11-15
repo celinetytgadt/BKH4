@@ -23,7 +23,6 @@ var CONTROLE_CONFIG = {
   laatsteBankRef: null,
   laatsteKasRef: null,
   voorraadRef: null,
-  beginbalansRef: "BB",
 };
 
 // Rekeningen waarvan de verwachte saldokant afwijkt van de gewone regel
@@ -49,6 +48,45 @@ var INLEIDING =
   "Loop elke controle na vóór je indient. Bij elke vraag staat waar je kijkt en wat je daar moet zien. " +
   "Klopt het, vink ze dan aan. Klopt het niet, ga dan terug naar de boeking en zoek de fout.";
 
+// Hoe heten de documenten van een taak in de vragen?
+function documentWoord(taak) {
+  if (/^Aankopen taak 4/.test(taak) || /^Verkopen taak 3/.test(taak)) return "creditnota";
+  if (/^Aankopen/.test(taak)) return "aankoopfactuur";
+  if (/^Verkopen taak 1/.test(taak)) return "verkoopfactuur en dagontvangst";
+  if (/^Verkopen taak 4/.test(taak)) return "verkoopfactuur en creditnota";
+  return "verkoopfactuur";
+}
+
+function naamVanRekening(nr) {
+  var a = typeof MAR !== "undefined" ? MAR.filter(function (x) { return String(x.nr) === String(nr); })[0] : null;
+  return nr + (a ? " " + a.naam : "");
+}
+
+// Eén vraag per T-rekening. Wat niet in de lijst staat, krijgt de algemene vraag.
+function vraagVoorRekening(nr, stuk) {
+  var rek = "de rekening " + naamVanRekening(nr);
+  var vast = {
+    "440000": "Staat elke " + stuk + " op " + rek + "?",
+    "400000": "Staat elke " + stuk + " op " + rek + "?",
+    "411000": "Staat de btw van elke " + stuk + " op " + rek + "?",
+    "451000": "Staat de btw van elke " + stuk + " op " + rek + "?",
+    "604000": "Staan de aangekochte handelsgoederen op " + rek + "?",
+    "604010": "Staan de teruggestuurde handelsgoederen op " + rek + "?",
+    "604020": "Staat elke handelskorting op " + rek + "?",
+    "604030": "Staan de transport- en leveringskosten op " + rek + "?",
+    "704000": "Staan de verkochte handelsgoederen op " + rek + "?",
+    "704010": "Staan de teruggenomen handelsgoederen op " + rek + "?",
+    "704020": "Staat elke handelskorting op " + rek + "?",
+    "746000": "Staan de doorgerekende kosten op " + rek + "?",
+    "488000": "Staat de waarborg voor de verpakking op " + rek + "?",
+    "418000": "Staat de waarborg voor de verpakking op " + rek + "?",
+  };
+  if (vast[nr]) return vast[nr];
+  if (String(nr).charAt(0) === "2") return "Staat elke investering op " + rek + "?";
+  if (String(nr).slice(0, 2) === "61") return "Staan de diensten en diverse goederen op " + rek + "?";
+  return "Staat alles van deze taak juist op " + rek + "?";
+}
+
 function maakControles(J) {
   var jaar = J.jaar;
   var info = J.controleInfo;          // null in de consolidaties
@@ -63,25 +101,39 @@ function maakControles(J) {
     if (refs.length === 1) return refs[0];
     return refs.slice(0, -1).join(", ") + " en " + refs[refs.length - 1];
   }
+  /* Aankopen en verkopen: per taak één vraag per T-rekening die in die taak
+     gebruikt wordt, met de T-rekening zoals ze moet staan (enkel de
+     boekingen van die taak, zonder beginbalans). Kort gehouden voor het 4e
+     jaar: de vraag, de T-rekening en waar je filtert. */
+  function perTaakControles(tRek) {
+    Object.keys(tRek).forEach(function (taak) {
+      perCat[taak] = { inleiding: "Vergelijk elke T-rekening hieronder met die in het T-paneel. Staan dezelfde documenten aan dezelfde kant, met hetzelfde bedrag? Vink dan de vraag aan." };
+      var stuk = documentWoord(taak);
+      // Eerst de leverancier of klant, dan de btw, dan de rest.
+      var eerst = ["440000", "400000", "411000", "451000"];
+      var nrs = Object.keys(tRek[taak]).sort(function (a, b) {
+        var ia = eerst.indexOf(a), ib = eerst.indexOf(b);
+        if (ia === -1) ia = 99;
+        if (ib === -1) ib = 99;
+        return ia - ib || Number(a) - Number(b);
+      });
+      nrs.forEach(function (nr) {
+        voeg(taak, {
+          id: "taak-" + (CATEGORIE_AFKORTING[taak] || taak) + "-" + nr,
+          vraag: vraagVoorRekening(nr, stuk),
+          tVerwacht: { nr: nr, D: tRek[taak][nr].D, C: tRek[taak][nr].C },
+          filterTip: "Filter in het T-paneel op " + nr + ".",
+        });
+      });
+    });
+  }
+
   function voeg(cat, c) {
     c.categorie = cat;
     c.id = jaar + "-" + c.id;
     if (!c.type) c.type = c.docs ? "check-met-document" : "check";
     lijst.push(c);
   }
-
-  /* ---------------- Beginbalans ---------------- */
-  perCat["Beginbalans"] = {
-    inleiding: "Je beginboeking staat al klaar: het is de eindbalans van vorig jaar. Leg de rubrieken op hun plaats in de balans. Je toewijzing wordt bewaard en ligt straks al klaar voor de eindbalans.",
-    invulbalansVoorRef: "BB",
-  };
-  voeg("Beginbalans", {
-    id: "beginbalans-klopt",
-    vraag: "Komt de balans die je hierboven legde overeen met het document Beginbalans?",
-    waar: "Het document hieronder en je gelegde balans.",
-    zien: "Elk vak heeft hetzelfde bedrag als op het document, en totaal activa = totaal passiva. Bij de vaste activa staat de aanschafwaarde min de afschrijvingen (bv. rubriek 24 = 240000 − 240009 + 240200 − 240209).",
-    docs: [{ doc: doc("00_beginbalans"), titel: "Beginbalans" }],
-  });
 
   var catAK = conso ? "Alle documenten" : "Aankopen";
   var catVK = conso ? "Alle documenten" : "Verkopen";
@@ -99,103 +151,104 @@ function maakControles(J) {
       filterTip: "Filter in het T-paneel op 400000 en daarna op 440000.",
     });
   } else {
-    perCat["Aankopen"] = { inleiding: INLEIDING };
-    perCat["Verkopen"] = { inleiding: INLEIDING };
+    perTaakControles(info.tRekeningen || {});
     perCat["Btw-verrekening"] = { inleiding: INLEIDING + " Boek eerst alle aankopen en verkopen: pas dan kloppen deze controles." };
     perCat["Financiële verrichtingen"] = { inleiding: INLEIDING + " Hier komen kas, bank, de leningen en je klanten en leveranciers samen. Neem er de tijd voor." };
     perCat["Eindejaar"] = { inleiding: INLEIDING + " Boek eerst alle andere categorieën van dit jaar: de eindejaarsboekingen vertrekken van de saldi op 31 december." };
   }
 
-  /* ---------------- Aankopen ---------------- */
-  voeg(catAK, {
-    id: "aankopen-440000",
-    vraag: "Staat elke aankoopfactuur credit en elke creditnota van een leverancier debet op 440000 Leveranciers?",
-    waar: "T-rekening 440000.",
-    zien: conso
-      ? "Credit het totaal (te betalen) van elke aankoopfactuur, debet het totaal van elke creditnota van een leverancier. Het bedrag is telkens het totaal onderaan het document, met btw en verpakking erbij."
-      : "Credit: " + opsomming(info.aankoopfacturen) + ". Debet: " + opsomming(info.aankoopCN) +
-        ". Het bedrag is telkens het totaal onderaan het document (met btw en verpakking erbij). Ontbreekt er een document, of staat het aan de verkeerde kant, ga dan terug naar die boeking.",
-    filterTip: "Filter in het T-paneel op 440000.",
-  });
-  voeg(catAK, {
-    id: "aankopen-411000",
-    vraag: "Staat de btw van de aankopen op 411000 Aftrekbare btw — debet bij een factuur, credit bij een creditnota?",
-    waar: "T-rekening 411000.",
-    zien: "Per document het btw-bedrag van de factuur (21% van de maatstaf van heffing, dus ná de handelskorting). Een waarborg voor verpakking krijgt geen btw. Een creditnota geeft btw terug: die staat credit.",
-    filterTip: "Filter in het T-paneel op 411000.",
-  });
-  voeg(catAK, {
-    id: "aankopen-korting-kosten",
-    vraag: "Staan handelskortingen en extra kosten op hun eigen rekening?",
-    waar: "T-rekeningen 604000, 604020 en 604030.",
-    zien: (conso ? "" : "Bij " + opsomming(info.kortingen.filter(function (r) { return r.indexOf("AK") === 0; })) + ": ") +
-      "604000 debet met het bruto bedrag (vóór de korting) en 604020 Handelskorting op aankopen credit. " +
-      (conso ? "" : "Bij " + opsomming(info.extraKosten.filter(function (r) { return r.indexOf("AK") === 0; })) + ": ") +
-      "transport- of leveringskosten debet op 604030 Aankoopkosten, niet bij de handelsgoederen. Een retour (creditnota handelsgoederen) staat credit op 604010.",
-    filterTip: "Filter in het T-paneel op rubriek 60.",
-  });
-  voeg(catAK, {
-    id: "aankopen-verpakking",
-    vraag: "Staan de waarborgen voor verpakking op 418000 Terug te vorderen verpakking, zonder btw?",
-    waar: "T-rekening 418000.",
-    zien: (conso
-      ? "Debet de waarborg op elke aankoopfactuur met terugstuurbare verpakking; credit wanneer de verpakking teruggaat met een creditnota."
-      : "Debet bij de facturen met verpakking (" + opsomming(info.verpakking.filter(function (r) { return r.indexOf("AK") === 0 && info.aankoopCN.indexOf(r) === -1; })) +
-        "), credit bij de creditnota voor teruggestuurde verpakking (" + opsomming(info.verpakking.filter(function (r) { return info.aankoopCN.indexOf(r) !== -1; })) + ").") +
-      " Een waarborg is geen kost: je krijgt hem terug.",
-    filterTip: "Filter in het T-paneel op 418000.",
-  });
-  voeg(catAK, {
-    id: "aankopen-vaste-activa",
-    vraag: "Staan de investeringen op een rekening van klasse 2, en niet bij de kosten?",
-    waar: "T-rekeningen van klasse 2.",
-    zien: (conso ? "Een aankoop die je jarenlang gebruikt (installatie, meubilair, computer …)" : "De aankopen " + opsomming(info.vasteActiva)) +
-      " staan debet op de juiste rekening van rubriek 23 (installaties, uitrusting) of 24 (meubilair, computers). Enkel het bedrag zonder btw; de btw staat op 411000.",
-    filterTip: "Filter in het T-paneel op klasse 2.",
-  });
-  voeg(catAK, {
-    id: "aankopen-diensten",
-    vraag: "Staan diensten en diverse goederen op rubriek 61, met de creditnota aan de andere kant?",
-    waar: "T-rekeningen van rubriek 61.",
-    zien: (conso ? "Internet, elektriciteit, drukwerk, kantoorbenodigdheden …" : "De facturen " + opsomming(info.diensten.filter(function (r) { return info.aankoopCN.indexOf(r) === -1; }))) +
-      " staan debet op de rekening die past bij wat er gekocht is (bv. 616000 Internet & telefonie, 612700 Verbruik elektriciteit). " +
-      "Een creditnota daarop staat credit op diezelfde rekening.",
-    filterTip: "Filter in het T-paneel op rubriek 61.",
-  });
+  if (conso) {
+    /* ---------------- Aankopen ---------------- */
+    voeg(catAK, {
+      id: "aankopen-440000",
+      vraag: "Staat elke aankoopfactuur credit en elke creditnota van een leverancier debet op 440000 Leveranciers?",
+      waar: "T-rekening 440000.",
+      zien: conso
+        ? "Credit het totaal (te betalen) van elke aankoopfactuur, debet het totaal van elke creditnota van een leverancier. Het bedrag is telkens het totaal onderaan het document, met btw en verpakking erbij."
+        : "Credit: " + opsomming(info.aankoopfacturen) + ". Debet: " + opsomming(info.aankoopCN) +
+          ". Het bedrag is telkens het totaal onderaan het document (met btw en verpakking erbij). Ontbreekt er een document, of staat het aan de verkeerde kant, ga dan terug naar die boeking.",
+      filterTip: "Filter in het T-paneel op 440000.",
+    });
+    voeg(catAK, {
+      id: "aankopen-411000",
+      vraag: "Staat de btw van de aankopen op 411000 Aftrekbare btw — debet bij een factuur, credit bij een creditnota?",
+      waar: "T-rekening 411000.",
+      zien: "Per document het btw-bedrag van de factuur (21% van de maatstaf van heffing, dus ná de handelskorting). Een waarborg voor verpakking krijgt geen btw. Een creditnota geeft btw terug: die staat credit.",
+      filterTip: "Filter in het T-paneel op 411000.",
+    });
+    voeg(catAK, {
+      id: "aankopen-korting-kosten",
+      vraag: "Staan handelskortingen en extra kosten op hun eigen rekening?",
+      waar: "T-rekeningen 604000, 604020 en 604030.",
+      zien: (conso ? "" : "Bij " + opsomming(info.kortingen.filter(function (r) { return r.indexOf("AK") === 0; })) + ": ") +
+        "604000 debet met het bruto bedrag (vóór de korting) en 604020 Handelskorting op aankopen credit. " +
+        (conso ? "" : "Bij " + opsomming(info.extraKosten.filter(function (r) { return r.indexOf("AK") === 0; })) + ": ") +
+        "transport- of leveringskosten debet op 604030 Aankoopkosten, niet bij de handelsgoederen. Een retour (creditnota handelsgoederen) staat credit op 604010.",
+      filterTip: "Filter in het T-paneel op rubriek 60.",
+    });
+    voeg(catAK, {
+      id: "aankopen-verpakking",
+      vraag: "Staan de waarborgen voor verpakking op 418000 Terug te vorderen verpakking, zonder btw?",
+      waar: "T-rekening 418000.",
+      zien: (conso
+        ? "Debet de waarborg op elke aankoopfactuur met terugstuurbare verpakking; credit wanneer de verpakking teruggaat met een creditnota."
+        : "Debet bij de facturen met verpakking (" + opsomming(info.verpakking.filter(function (r) { return r.indexOf("AK") === 0 && info.aankoopCN.indexOf(r) === -1; })) +
+          "), credit bij de creditnota voor teruggestuurde verpakking (" + opsomming(info.verpakking.filter(function (r) { return info.aankoopCN.indexOf(r) !== -1; })) + ").") +
+        " Een waarborg is geen kost: je krijgt hem terug.",
+      filterTip: "Filter in het T-paneel op 418000.",
+    });
+    voeg(catAK, {
+      id: "aankopen-vaste-activa",
+      vraag: "Staan de investeringen op een rekening van klasse 2, en niet bij de kosten?",
+      waar: "T-rekeningen van klasse 2.",
+      zien: (conso ? "Een aankoop die je jarenlang gebruikt (installatie, meubilair, computer …)" : "De aankopen " + opsomming(info.vasteActiva)) +
+        " staan debet op de juiste rekening van rubriek 23 (installaties, uitrusting) of 24 (meubilair, computers). Enkel het bedrag zonder btw; de btw staat op 411000.",
+      filterTip: "Filter in het T-paneel op klasse 2.",
+    });
+    voeg(catAK, {
+      id: "aankopen-diensten",
+      vraag: "Staan diensten en diverse goederen op rubriek 61, met de creditnota aan de andere kant?",
+      waar: "T-rekeningen van rubriek 61.",
+      zien: (conso ? "Internet, elektriciteit, drukwerk, kantoorbenodigdheden …" : "De facturen " + opsomming(info.diensten.filter(function (r) { return info.aankoopCN.indexOf(r) === -1; }))) +
+        " staan debet op de rekening die past bij wat er gekocht is (bv. 616000 Internet & telefonie, 612700 Verbruik elektriciteit). " +
+        "Een creditnota daarop staat credit op diezelfde rekening.",
+      filterTip: "Filter in het T-paneel op rubriek 61.",
+    });
 
-  /* ---------------- Verkopen ---------------- */
-  voeg(catVK, {
-    id: "verkopen-400000",
-    vraag: "Staat elke verkoopfactuur en dagontvangst debet en elke creditnota aan een klant credit op 400000 Handelsdebiteuren?",
-    waar: "T-rekening 400000.",
-    zien: conso
-      ? "Debet het totaal van elke verkoopfactuur en van het dagontvangstenblad (contant én bancontact samen), credit het totaal van elke creditnota aan een klant."
-      : "Debet: " + opsomming(info.verkoopfacturen.concat(info.dagontvangsten.map(function (o) { return o.ontv; }))) +
-        ". Credit: " + opsomming(info.verkoopCN) + ". Het bedrag is het totaal van het document. Bij een dagontvangst is dat het volledige bedrag, contant en bancontact samen.",
-    filterTip: "Filter in het T-paneel op 400000.",
-  });
-  voeg(catVK, {
-    id: "verkopen-451000",
-    vraag: "Staat de btw van de verkopen credit op 451000 Verschuldigde btw, en die van een creditnota debet?",
-    waar: "T-rekening 451000.",
-    zien: "Per verkoopfactuur en dagontvangst het btw-bedrag van het document credit. Bij een creditnota aan een klant staat de btw debet: die hoef je niet meer te betalen.",
-    filterTip: "Filter in het T-paneel op 451000.",
-  });
-  voeg(catVK, {
-    id: "verkopen-korting-kosten",
-    vraag: "Staan handelskortingen, retours en doorgerekende kosten op hun eigen rekening?",
-    waar: "T-rekeningen van rubriek 70 en 746000.",
-    zien: "704000 credit met het bruto bedrag en 704020 Handelskorting op verkopen debet. Een retour (creditnota) staat debet op 704010. " +
-      "Kosten die MetWear aan de klant aanrekent (transport, levering) staan credit op 746000 Doorgerekende kosten.",
-    filterTip: "Filter in het T-paneel op rubriek 70 en daarna op 746000.",
-  });
-  voeg(catVK, {
-    id: "verkopen-verpakking",
-    vraag: "Staan de waarborgen voor verpakking van klanten credit op 488000 Terug te betalen verpakking, zonder btw?",
-    waar: "T-rekening 488000.",
-    zien: "Credit de waarborg op de verkoopfacturen met terugstuurbare verpakking, debet wanneer de klant de verpakking terugbrengt (creditnota). Het is een schuld: MetWear moet het geld teruggeven.",
-    filterTip: "Filter in het T-paneel op 488000.",
-  });
+    /* ---------------- Verkopen ---------------- */
+    voeg(catVK, {
+      id: "verkopen-400000",
+      vraag: "Staat elke verkoopfactuur en dagontvangst debet en elke creditnota aan een klant credit op 400000 Handelsdebiteuren?",
+      waar: "T-rekening 400000.",
+      zien: conso
+        ? "Debet het totaal van elke verkoopfactuur en van het dagontvangstenblad (contant én bancontact samen), credit het totaal van elke creditnota aan een klant."
+        : "Debet: " + opsomming(info.verkoopfacturen.concat(info.dagontvangsten.map(function (o) { return o.ontv; }))) +
+          ". Credit: " + opsomming(info.verkoopCN) + ". Het bedrag is het totaal van het document. Bij een dagontvangst is dat het volledige bedrag, contant en bancontact samen.",
+      filterTip: "Filter in het T-paneel op 400000.",
+    });
+    voeg(catVK, {
+      id: "verkopen-451000",
+      vraag: "Staat de btw van de verkopen credit op 451000 Verschuldigde btw, en die van een creditnota debet?",
+      waar: "T-rekening 451000.",
+      zien: "Per verkoopfactuur en dagontvangst het btw-bedrag van het document credit. Bij een creditnota aan een klant staat de btw debet: die hoef je niet meer te betalen.",
+      filterTip: "Filter in het T-paneel op 451000.",
+    });
+    voeg(catVK, {
+      id: "verkopen-korting-kosten",
+      vraag: "Staan handelskortingen, retours en doorgerekende kosten op hun eigen rekening?",
+      waar: "T-rekeningen van rubriek 70 en 746000.",
+      zien: "704000 credit met het bruto bedrag en 704020 Handelskorting op verkopen debet. Een retour (creditnota) staat debet op 704010. " +
+        "Kosten die MetWear aan de klant aanrekent (transport, levering) staan credit op 746000 Doorgerekende kosten.",
+      filterTip: "Filter in het T-paneel op rubriek 70 en daarna op 746000.",
+    });
+    voeg(catVK, {
+      id: "verkopen-verpakking",
+      vraag: "Staan de waarborgen voor verpakking van klanten credit op 488000 Terug te betalen verpakking, zonder btw?",
+      waar: "T-rekening 488000.",
+      zien: "Credit de waarborg op de verkoopfacturen met terugstuurbare verpakking, debet wanneer de klant de verpakking terugbrengt (creditnota). Het is een schuld: MetWear moet het geld teruggeven.",
+      filterTip: "Filter in het T-paneel op 488000.",
+    });
+  }
 
   /* ---------------- Btw-verrekening ---------------- */
   voeg(catBTW, {

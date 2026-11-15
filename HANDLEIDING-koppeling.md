@@ -162,13 +162,33 @@ per computer.
 
 **Wat de leerling ziet.** Enkel wat de vakexperten van die vestiging in
 **Beheer → Wat zien de leerlingen?** openzetten: per boekjaar, en in de jaren
-met categorieën ook per categorie (Aankopen, Verkopen, Btw-verrekening,
-Financiële verrichtingen, Eindejaar). *Eindejaar* opent ook de
-resultaatverwerking en de eindbalans. Bovenaan het menu kiest de leerling het
+met categorieën ook per categorie. In 20X2, 20X4 en 20X5 zijn aankopen en
+verkopen opgesplitst in taken (lessen):
+
+- Aankopen taak 1: eenvoudige facturen
+- Aankopen taak 2: handelskorting & transportkosten
+- Aankopen taak 3: diensten, diverse goederen & vaste activa
+- Aankopen taak 4: creditnota's
+- Verkopen taak 1: eenvoudige facturen (met de dagontvangsten)
+- Verkopen taak 2: handelskorting & extra kosten
+- Verkopen taak 3: creditnota's
+- Verkopen taak 4: terugstuurbare verpakking
+
+Daarna volgen Btw-verrekening, Financiële verrichtingen en Eindejaar.
+*Eindejaar* opent ook de resultaatverwerking en de eindbalans. Per jaar zet
+je ook apart open: *proef- en saldibalans*, *klanten & leveranciers* en
+*beginbalans in T-rekeningen*. Bovenaan het menu kiest de leerling het
 boekjaar.
 
 **De beginbalans staat al klaar.** Elk jaar begint met de boeking BB. Ze
-staat geboekt en op slot en gaat niet mee bij het indienen. In de cursus
+staat geboekt, maar niet meer in het menu, en gaat niet mee bij het
+indienen. De T-rekeningen tonen ze standaard niet: zo ziet de leerling enkel
+wat hij zelf boekt. Zet *beginbalans in T-rekeningen* aan zodra de saldi
+ertoe doen (bv. bank en kas bij de financiële verrichtingen).
+
+**Controles per taak.** Bij elke taak van aankopen en verkopen staat één
+vraag per T-rekening die in die taak gebruikt wordt, met de T-rekening zoals
+ze moet staan (enkel de documenten van die taak, zonder beginbalans). In de cursus
 (20X1) staat álles al geboekt: de leerling ziet de documenten en de
 T-rekeningen, zonder redeneerschema's.
 
@@ -178,8 +198,9 @@ werken.
 
 **Indienen.** Enkel in de taak (20X2) en de consolidaties (20X3, 20X6). In
 de Sheet krijgt alles het jaar ervoor: *20X2 AK01*, categorie *20X2 ·
-Aankopen*. Na het indienen toont de app de knop naar de taak in Classroom:
-in 20X2 één taak per categorie (*20X2 · Aankopen* … *20X2 · Eindejaar*, waar
+Aankopen taak 1: eenvoudige facturen*. Na het indienen toont de app de knop
+naar de taak in Classroom: in 20X2 één taak per categorie (*20X2 · Aankopen
+taak 1: eenvoudige facturen* … *20X2 · Eindejaar*, waar
 ook de resultaatverwerking en de eindbalans bij horen), voor een
 consolidatie één taak voor het hele jaar (*20X3 · Consolidatie*, *20X6 ·
 Consolidatie 2*).

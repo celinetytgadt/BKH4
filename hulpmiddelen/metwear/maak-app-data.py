@@ -48,6 +48,59 @@ CAT_KORT = {"Aankopen": "AK", "Verkopen": "VK", "Btw-verrekening": "BTW",
             "Financiële verrichtingen": "FIN", "Eindejaar": "EJ"}
 CONSO_CAT = "Alle documenten"
 
+# In de taak, het extra oefenmateriaal en de remediëring zijn aankopen en
+# verkopen opgesplitst in de taken (lessen) van de klas. Dezelfde namen komen
+# in het indienvenster, in de Classroom-taken en in het tabblad Beheer.
+AK1 = "Aankopen taak 1: eenvoudige facturen"
+AK2 = "Aankopen taak 2: handelskorting & transportkosten"
+AK3 = "Aankopen taak 3: diensten, diverse goederen & vaste activa"
+AK4 = "Aankopen taak 4: creditnota's"
+VK1 = "Verkopen taak 1: eenvoudige facturen"
+VK2 = "Verkopen taak 2: handelskorting & extra kosten"
+VK3 = "Verkopen taak 3: creditnota's"
+VK4 = "Verkopen taak 4: terugstuurbare verpakking"
+TAKEN = [AK1, AK2, AK3, AK4, VK1, VK2, VK3, VK4]
+TAAK_KORT = {AK1: "AK1", AK2: "AK2", AK3: "AK3", AK4: "AK4", VK1: "VK1", VK2: "VK2", VK3: "VK3", VK4: "VK4"}
+TAAK_VAN_SOORT = {
+    "AK handelsgoederen": AK1,
+    "AK handelsgoederen met handelskorting": AK2,
+    "AK handelsgoederen met extra kosten": AK2,
+    "AK diensten & div. goederen": AK3,
+    "AK materiële vaste activa": AK3,
+    "AK creditnota handelsgoederen": AK4,
+    "AK creditnota diensten & div. goederen": AK4,
+    # Terugstuurbare verpakking leren ze enkel bij de verkopen; in de
+    # consolidaties hoort een aankoop met verpakking dus ook bij VK taak 4.
+    "AK handelsgoederen met terugstuurbare verpakking": VK4,
+    "AK creditnota verpakking": VK4,
+    "VK handelsgoederen": VK1,
+    "Dagontvangsten": VK1,
+    "VK handelsgoederen met handelskorting": VK2,
+    "VK handelsgoederen met extra kosten": VK2,
+    "VK creditnota handelsgoederen": VK3,
+    "VK handelsgoederen met terugstuurbare verpakking": VK4,
+    "VK creditnota verpakking": VK4,
+}
+PER_TAAK = ("taak", "extra", "remediering")
+
+
+def categorie_van(d, soort_jaar):
+    """De categorie in het menu van een document."""
+    if soort_jaar == "conso":
+        return CONSO_CAT
+    if soort_jaar in PER_TAAK and d["hoofdstuk"] in ("Aankopen", "Verkopen"):
+        if d["soort"] not in TAAK_VAN_SOORT:
+            fout("%s %s: soort %s hoort bij geen taak" % (d["jaar"], d["naam"], d["soort"]))
+        return TAAK_VAN_SOORT[d["soort"]]
+    return d["hoofdstuk"]
+
+
+def hoofdstuk_voor_aanbeveling(d):
+    """Welk deel van de remediëring past bij een fout in dit document."""
+    if d["hoofdstuk"] in ("Aankopen", "Verkopen"):
+        return TAAK_VAN_SOORT.get(d["soort"], d["hoofdstuk"])
+    return d["hoofdstuk"]
+
 TITEL_PREFIX = [
     ("AK", "Aankoop"), ("VK", "Verkoop"), ("ONTV", "Dagontvangsten"), ("BTW", "Btw-verrekening"),
     ("FIN", "Bankuittreksel"), ("KAS", "Kasblad"), ("EJ", "Eindejaar"), ("DOC_", "Document"),
@@ -267,6 +320,24 @@ def controle_info(jaar_docs):
     ])
 
 
+def t_rekeningen(opdrachten, jaar_sleutel):
+    """Per taak van aankopen en verkopen: de T-rekeningen zoals ze moeten staan
+    na die taak (zonder beginbalans). Voor de controles van die taak."""
+    uit = OrderedDict()
+    for taak in TAKEN:
+        refs = [o["ref"] for o in opdrachten if o["categorie"] == taak]
+        if not refs:
+            continue
+        per = OrderedDict()
+        for ref in refs:
+            for nr, b in jaar_sleutel[ref].items():
+                if abs(b) < 0.005:
+                    continue
+                per.setdefault(nr, {"D": [], "C": []})["D" if b > 0 else "C"].append([ref, round(abs(b), 2)])
+        uit[taak] = OrderedDict((nr, per[nr]) for nr in sorted(per))
+    return uit
+
+
 def main():
     if len(sys.argv) < 2:
         fout("geef de map van de case mee, bv. \"../case metwear BKH4\"")
@@ -350,7 +421,7 @@ def main():
                 o["titel"] = "Beginbalans 1 januari " + jaar + " (BB)"
                 o["vasteBoeking"] = True
             else:
-                o["categorie"] = CONSO_CAT if conso else d["hoofdstuk"].replace("Eindejaar", "Eindejaar")
+                o["categorie"] = categorie_van(d, info["soort"])
                 o["titel"] = titel_voor(ref)
                 if cursus:
                     o["vasteBoeking"] = True
@@ -444,14 +515,17 @@ def main():
         print("%s: %d opdrachten, opbrengsten %s, kosten %s, winst %s" % (
             jaar, len(opdrachten), bedrag_tekst(opbr), bedrag_tekst(kost), bedrag_tekst(winst)))
 
+        # De beginbalans staat niet meer in het menu: ze is geboekt en komt
+        # enkel nog in de T-rekeningen als de vakexpert dat aanzet.
         if conso:
-            volgorde = ["Beginbalans", CONSO_CAT]
+            volgorde = [CONSO_CAT]
         else:
-            volgorde = ["Beginbalans"] + [c for c in CATEGORIEEN if any(o["categorie"] == c for o in opdrachten)]
+            alle = TAKEN + CATEGORIEEN
+            volgorde = [c for c in alle if any(o["categorie"] == c for o in opdrachten)]
 
-        # Opdrachten in de volgorde van het menu.
+        # Opdrachten in de volgorde van het menu (de beginbalans vooraan).
         if not conso:
-            opdrachten.sort(key=lambda o: volgorde.index(o["categorie"]))
+            opdrachten.sort(key=lambda o: -1 if o["ref"] == "BB" else volgorde.index(o["categorie"]))
 
         j = OrderedDict()
         j["jaar"] = jaar
@@ -463,6 +537,8 @@ def main():
         j["vasteBoekingen"] = vaste
         # In de consolidaties zou deze lijst verraden welk DOC_.. wat is.
         j["controleInfo"] = None if conso else controle_info(jaar_docs)
+        if not conso and not cursus:
+            j["controleInfo"]["tRekeningen"] = t_rekeningen(opdrachten, jaar_sleutel)
         js_jaren[jaar] = j
 
         if info["soort"] in ("extra", "remediering"):
@@ -485,7 +561,7 @@ def main():
             for o in opdrachten:
                 if o["ref"] == "BB":
                     continue
-                hs = docs[(jaar, o["ref"])]["hoofdstuk"]
+                hs = hoofdstuk_voor_aanbeveling(docs[(jaar, o["ref"])])
                 hoofdstuk_server.append([jaar + " " + o["ref"], hs])
 
     relaties = OrderedDict([("klanten", sorted(klanten)), ("leveranciers", sorted(leveranciers))])
