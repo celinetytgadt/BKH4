@@ -240,6 +240,10 @@ async function start(vooraf) {
   const bronnen = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
   const dom = new JSDOM(html.replace(/<script src="[^"]+"><\/script>/g, ""), {
     runScripts: "dangerously", url: "https://test.local/", pretendToBeVisual: true,
+    // Onthouden of jsdom DOMContentLoaded al vuurde: readyState staat soms
+    // al op "interactive" vóór het event komt. Dan óók zelf dispatchen liet
+    // init() van app.js twee keer lopen (elke klik telde dubbel).
+    beforeParse(win) { win.document.addEventListener("DOMContentLoaded", () => { win.__dclGevuurd = true; }); },
   });
   dom.window.fetch = server;
   dom.window.navigator.sendBeacon = () => true;
@@ -258,7 +262,7 @@ async function start(vooraf) {
   // moet vóór app.js geladen zijn, net als in index.html.
   const laatst = (b) => /^js\/(koppeling|beheer)\.js(\?|$)/.test(b);
   bronnen.filter((b) => !laatst(b)).forEach(laad);
-  if (dom.window.document.readyState === "loading") {
+  if (!dom.window.__dclGevuurd) {
     await new Promise((res) => dom.window.document.addEventListener("DOMContentLoaded", res, { once: true }));
   } else {
     dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
