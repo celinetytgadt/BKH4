@@ -409,6 +409,8 @@ async function kiesJaar(win, jaar) {
   check("enkel de opengezette jaren in de keuzelijst", jaarOpties.join(",") === "20X1,20X2,20X3,20X4,20X5", jaarOpties);
   const sel = doc.getElementById("leerling-select");
   check("namen van Leuven in de keuzelijst", sel.options.length === 3, [...sel.options].map((o) => o.value));
+  check("niet aangemeld: Aanmelden zichtbaar, Afmelden verborgen",
+    doc.getElementById("btn-aanmelden").hidden === false && doc.getElementById("btn-afmelden").hidden === true);
   sel.value = "Lotte V.";
   doc.getElementById("leerling-code").value = codeTw;   // code van de andere school
   doc.getElementById("btn-aanmelden").click();
@@ -419,6 +421,10 @@ async function kiesJaar(win, jaar) {
   doc.getElementById("btn-aanmelden").click();
   await wacht(120);
   check("aangemeld als Lotte V. van Leuven", w.APP.getState().student === "Lotte V.", w.APP.getState().student);
+  check("aangemeld: Afmelden zichtbaar, Aanmelden en codeveld weg, naam vast",
+    doc.getElementById("btn-afmelden").hidden === false && doc.getElementById("btn-aanmelden").hidden === true &&
+    doc.getElementById("leerling-code").hidden === true && doc.getElementById("leerling-select").disabled === true,
+    [doc.getElementById("btn-afmelden").hidden, doc.getElementById("btn-aanmelden").hidden]);
   check("bewaart onder het eigen voorvoegsel bkh4_",
     JSON.parse(w.localStorage.getItem("bkh4_aanmelding")).naam === "Lotte V." &&
       Object.keys(w.localStorage).filter((k) => /^boekhoudapp_/.test(k)).length === 5,
