@@ -1,3 +1,6 @@
 node_modules/
 hulpmiddelen/_html/
 .claude/settings.local.json
+
+# Case MetWear met oplossingen: nooit in de openbare repo
+case metwear BKH4/
