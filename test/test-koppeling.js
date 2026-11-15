@@ -210,8 +210,12 @@ vm.createContext(omgeving);
 vm.runInContext(CODE_GS + "\n" + SLEUTEL_GS, omgeving);
 
 let werkVertraging = 0;   // ms: het werk komt traag terug van de server
+let serverHangt = false;  // nagebootst: Google laat de web-app wachten
+let serverWeg = false;    // nagebootst: de web-app is onbereikbaar
 function server(url, opts) {
   const u = new URL(url);
+  if (serverHangt) return new Promise(() => {});
+  if (serverWeg) return Promise.reject(new Error("netwerkfout"));
   let r;
   if (!opts || opts.method === "GET") {
     const parameter = {};
@@ -236,6 +240,10 @@ async function start(vooraf) {
   const bronnen = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
   const dom = new JSDOM(html.replace(/<script src="[^"]+"><\/script>/g, ""), {
     runScripts: "dangerously", url: "https://test.local/", pretendToBeVisual: true,
+    // Onthouden of jsdom DOMContentLoaded al vuurde: readyState staat soms
+    // al op "interactive" vóór het event komt. Dan óók zelf dispatchen liet
+    // init() van app.js twee keer lopen (elke klik telde dubbel).
+    beforeParse(win) { win.document.addEventListener("DOMContentLoaded", () => { win.__dclGevuurd = true; }); },
   });
   dom.window.fetch = server;
   dom.window.navigator.sendBeacon = () => true;
@@ -254,7 +262,7 @@ async function start(vooraf) {
   // moet vóór app.js geladen zijn, net als in index.html.
   const laatst = (b) => /^js\/(koppeling|beheer)\.js(\?|$)/.test(b);
   bronnen.filter((b) => !laatst(b)).forEach(laad);
-  if (dom.window.document.readyState === "loading") {
+  if (!dom.window.__dclGevuurd) {
     await new Promise((res) => dom.window.document.addEventListener("DOMContentLoaded", res, { once: true }));
   } else {
     dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
@@ -389,6 +397,10 @@ async function kiesJaar(win, jaar) {
   check("beginbalans telt niet als eigen werk", w.APP.heeftEigenBoekingen() === false);
   check("Beheer staat in het menu, ook als er nog niets open staat", !!doc.querySelector('[data-page-type="beheer"]'));
   const vestSel = doc.getElementById("vestiging-select");
+  const selVoor = doc.getElementById("leerling-select");
+  check("vóór de schoolkeuze: grijze keuzelijst, geen vrij naamveld",
+    !selVoor.hidden && selVoor.disabled && /kies eerst je school/.test(selVoor.textContent) &&
+    doc.getElementById("leerling-naam-input").hidden && doc.getElementById("btn-aanmelden").disabled, selVoor.outerHTML);
   check("vestigingskeuze zichtbaar met drie scholen", vestSel.hidden === false && vestSel.options.length === 4, vestSel.options.length);
   vestSel.value = "LEU";
   vestSel.dispatchEvent(new w.Event("change"));
@@ -893,6 +905,30 @@ async function kiesJaar(win, jaar) {
   await wacht(30);
   check("klik: naar VK01", !wi.document.querySelector(".koppeling-overlay") &&
     /VK01/.test(wi.document.querySelector(".pagina-titel").textContent));
+
+  console.log("\n22. Naam kiezen: nooit een vrij naamveld");
+  const naamVeldTest = async (beschrijving, verwacht) => {
+    const d = await start({});
+    await wacht(30);
+    const ws = d.window, ds = ws.document;
+    const vs = ds.getElementById("vestiging-select");
+    vs.value = "LEU";
+    vs.dispatchEvent(new ws.Event("change"));
+    await wacht(30);
+    const s = ds.getElementById("leerling-select");
+    check(beschrijving, !s.hidden && s.disabled && verwacht.test(s.textContent) &&
+      ds.getElementById("leerling-naam-input").hidden &&
+      ds.getElementById("leerling-code").disabled && ds.getElementById("btn-aanmelden").disabled, s.outerHTML);
+    return ds;
+  };
+  serverHangt = true;
+  await naamVeldTest("trage server: 'Namen worden geladen…', alles grijs", /Namen worden geladen/);
+  serverHangt = false;
+  serverWeg = true;
+  const dsWeg = await naamVeldTest("onbereikbare server: 'Geen namen gevonden', nog steeds grijs", /Geen namen gevonden/);
+  check("met een melding om de pagina te herladen", /Herlaad de pagina/.test(dsWeg.getElementById("koppeling-status").textContent),
+    dsWeg.getElementById("koppeling-status").textContent);
+  serverWeg = false;
 
   console.log(fouten ? "\n" + fouten + " controle(s) mislukt." : "\nAlle controles geslaagd.");
   process.exit(fouten ? 1 : 0);

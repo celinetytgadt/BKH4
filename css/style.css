@@ -2083,3 +2083,11 @@ details.beheer-zc-jaar > summary { cursor: pointer; font-weight: 600; color: var
 /* De T-rekening zoals ze moet staan, bij de controles per taak. */
 .controle-t-verwacht { max-width: 340px; margin: 8px 0 4px 26px; }
 .controle-t-verwacht .trek-blok { margin: 0; }
+
+/* Aanmelden: grijs zolang de namenlijst nog niet geladen is. */
+#leerling-select:disabled,
+#leerling-code:disabled,
+#btn-aanmelden:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
