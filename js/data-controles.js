@@ -164,16 +164,16 @@ function maakControles(J) {
       vraag: "Staat elke aankoopfactuur credit en elke creditnota van een leverancier debet op 440000 Leveranciers?",
       waar: "T-rekening 440000.",
       zien: conso
-        ? "Credit het totaal (te betalen) van elke aankoopfactuur, debet het totaal van elke creditnota van een leverancier. Het bedrag is telkens het totaal onderaan het document, met btw en verpakking erbij."
+        ? "Credit het totaal (te betalen) van elke aankoopfactuur, debet het totaal van elke creditnota van een leverancier. Het bedrag is telkens het totaal onderaan het document, met btw erbij."
         : "Credit: " + opsomming(info.aankoopfacturen) + ". Debet: " + opsomming(info.aankoopCN) +
-          ". Het bedrag is telkens het totaal onderaan het document (met btw en verpakking erbij). Ontbreekt er een document, of staat het aan de verkeerde kant, ga dan terug naar die boeking.",
+          ". Het bedrag is telkens het totaal onderaan het document (met btw erbij). Ontbreekt er een document, of staat het aan de verkeerde kant, ga dan terug naar die boeking.",
       filterTip: "Filter in het T-paneel op 440000.",
     });
     voeg(catAK, {
       id: "aankopen-411000",
       vraag: "Staat de btw van de aankopen op 411000 Aftrekbare btw — debet bij een factuur, credit bij een creditnota?",
       waar: "T-rekening 411000.",
-      zien: "Per document het btw-bedrag van de factuur (21% van de maatstaf van heffing, dus ná de handelskorting). Een waarborg voor verpakking krijgt geen btw. Een creditnota geeft btw terug: die staat credit.",
+      zien: "Per document het btw-bedrag van de factuur (21% van de maatstaf van heffing, dus ná de handelskorting). Een creditnota geeft btw terug: die staat credit.",
       filterTip: "Filter in het T-paneel op 411000.",
     });
     voeg(catAK, {
@@ -185,17 +185,6 @@ function maakControles(J) {
         (conso ? "" : "Bij " + opsomming(info.extraKosten.filter(function (r) { return r.indexOf("AK") === 0; })) + ": ") +
         "transport- of leveringskosten debet op 604030 Aankoopkosten, niet bij de handelsgoederen. Een retour (creditnota handelsgoederen) staat credit op 604010.",
       filterTip: "Filter in het T-paneel op rubriek 60.",
-    });
-    voeg(catAK, {
-      id: "aankopen-verpakking",
-      vraag: "Staan de waarborgen voor verpakking op 418000 Terug te vorderen verpakking, zonder btw?",
-      waar: "T-rekening 418000.",
-      zien: (conso
-        ? "Debet de waarborg op elke aankoopfactuur met terugstuurbare verpakking; credit wanneer de verpakking teruggaat met een creditnota."
-        : "Debet bij de facturen met verpakking (" + opsomming(info.verpakking.filter(function (r) { return r.indexOf("AK") === 0 && info.aankoopCN.indexOf(r) === -1; })) +
-          "), credit bij de creditnota voor teruggestuurde verpakking (" + opsomming(info.verpakking.filter(function (r) { return info.aankoopCN.indexOf(r) !== -1; })) + ").") +
-        " Een waarborg is geen kost: je krijgt hem terug.",
-      filterTip: "Filter in het T-paneel op 418000.",
     });
     voeg(catAK, {
       id: "aankopen-vaste-activa",

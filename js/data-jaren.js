@@ -43,7 +43,7 @@ var JAREN = {
     "titel": "Aankoop AK02",
     "vasteBoeking": true,
     "doc": "20X1/AK02",
-    "relatie": "EthiKnit nv"
+    "relatie": "FairFabrics nv"
    },
    {
     "ref": "AK03",
@@ -51,7 +51,7 @@ var JAREN = {
     "titel": "Aankoop AK03",
     "vasteBoeking": true,
     "doc": "20X1/AK03",
-    "relatie": "Terra Outdoor bv"
+    "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK04",
@@ -59,7 +59,7 @@ var JAREN = {
     "titel": "Aankoop AK04",
     "vasteBoeking": true,
     "doc": "20X1/AK04",
-    "relatie": "Terra Outdoor bv"
+    "relatie": "GreenThread bv"
    },
    {
     "ref": "AK05",
@@ -67,7 +67,7 @@ var JAREN = {
     "titel": "Aankoop AK05",
     "vasteBoeking": true,
     "doc": "20X1/AK05",
-    "relatie": "EthiKnit nv"
+    "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "AK06",
@@ -75,7 +75,7 @@ var JAREN = {
     "titel": "Aankoop AK06",
     "vasteBoeking": true,
     "doc": "20X1/AK06",
-    "relatie": "FairFabrics nv"
+    "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "AK07",
@@ -83,7 +83,7 @@ var JAREN = {
     "titel": "Aankoop AK07",
     "vasteBoeking": true,
     "doc": "20X1/AK07",
-    "relatie": "FairFabrics nv"
+    "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK08",
@@ -91,7 +91,7 @@ var JAREN = {
     "titel": "Aankoop AK08",
     "vasteBoeking": true,
     "doc": "20X1/AK08",
-    "relatie": "GreenThread bv"
+    "relatie": "FairFabrics nv"
    },
    {
     "ref": "AK09",
@@ -131,7 +131,7 @@ var JAREN = {
     "titel": "Aankoop AK13",
     "vasteBoeking": true,
     "doc": "20X1/AK13",
-    "relatie": "FairFabrics nv"
+    "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK14",
@@ -286,7 +286,7 @@ var JAREN = {
     "vasteBoeking": true,
     "doc": "20X1/FIN03",
     "betaalstuk": true,
-    "relatie": "FairFabrics nv"
+    "relatie": "EthiKnit nv"
    },
    {
     "ref": "FIN04",
@@ -601,6 +601,41 @@ var JAREN = {
    ],
    "AK02": [
     {
+     "bedrag": "1.210",
+     "redenering": "",
+     "apko": "P",
+     "stijgtDaalt": "+",
+     "klasse": "4",
+     "rubriek": "44",
+     "rekening": "440000",
+     "dc": "C",
+     "relatie": "FairFabrics nv"
+    },
+    {
+     "bedrag": "210",
+     "redenering": "",
+     "apko": "A",
+     "stijgtDaalt": "+",
+     "klasse": "4",
+     "rubriek": "41",
+     "rekening": "411000",
+     "dc": "D",
+     "relatie": ""
+    },
+    {
+     "bedrag": "1.000",
+     "redenering": "",
+     "apko": "K",
+     "stijgtDaalt": "+",
+     "klasse": "6",
+     "rubriek": "60",
+     "rekening": "604000",
+     "dc": "D",
+     "relatie": ""
+    }
+   ],
+   "AK03": [
+    {
      "bedrag": "1.694",
      "redenering": "",
      "apko": "P",
@@ -634,7 +669,42 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK03": [
+   "AK04": [
+    {
+     "bedrag": "2.420",
+     "redenering": "",
+     "apko": "P",
+     "stijgtDaalt": "+",
+     "klasse": "4",
+     "rubriek": "44",
+     "rekening": "440000",
+     "dc": "C",
+     "relatie": "GreenThread bv"
+    },
+    {
+     "bedrag": "420",
+     "redenering": "",
+     "apko": "A",
+     "stijgtDaalt": "+",
+     "klasse": "4",
+     "rubriek": "41",
+     "rekening": "411000",
+     "dc": "D",
+     "relatie": ""
+    },
+    {
+     "bedrag": "2.000",
+     "redenering": "",
+     "apko": "K",
+     "stijgtDaalt": "+",
+     "klasse": "6",
+     "rubriek": "60",
+     "rekening": "604000",
+     "dc": "D",
+     "relatie": ""
+    }
+   ],
+   "AK05": [
     {
      "bedrag": "11.979",
      "redenering": "",
@@ -680,7 +750,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK04": [
+   "AK06": [
     {
      "bedrag": "4.949",
      "redenering": "",
@@ -726,7 +796,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK05": [
+   "AK07": [
     {
      "bedrag": "2.541",
      "redenering": "",
@@ -772,7 +842,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK06": [
+   "AK08": [
     {
      "bedrag": "339",
      "redenering": "",
@@ -814,98 +884,6 @@ var JAREN = {
      "klasse": "6",
      "rubriek": "60",
      "rekening": "604030",
-     "dc": "D",
-     "relatie": ""
-    }
-   ],
-   "AK07": [
-    {
-     "bedrag": "1.310",
-     "redenering": "",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "FairFabrics nv"
-    },
-    {
-     "bedrag": "210",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "411000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "1.000",
-     "redenering": "",
-     "apko": "K",
-     "stijgtDaalt": "+",
-     "klasse": "6",
-     "rubriek": "60",
-     "rekening": "604000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "100",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    }
-   ],
-   "AK08": [
-    {
-     "bedrag": "2.720",
-     "redenering": "",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "GreenThread bv"
-    },
-    {
-     "bedrag": "420",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "411000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "2.000",
-     "redenering": "",
-     "apko": "K",
-     "stijgtDaalt": "+",
-     "klasse": "6",
-     "rubriek": "60",
-     "rekening": "604000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "300",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
      "dc": "D",
      "relatie": ""
     }
@@ -1052,6 +1030,41 @@ var JAREN = {
    ],
    "AK13": [
     {
+     "bedrag": "242",
+     "redenering": "",
+     "apko": "P",
+     "stijgtDaalt": "-",
+     "klasse": "4",
+     "rubriek": "44",
+     "rekening": "440000",
+     "dc": "D",
+     "relatie": "EthiKnit nv"
+    },
+    {
+     "bedrag": "42",
+     "redenering": "",
+     "apko": "A",
+     "stijgtDaalt": "-",
+     "klasse": "4",
+     "rubriek": "41",
+     "rekening": "411000",
+     "dc": "C",
+     "relatie": ""
+    },
+    {
+     "bedrag": "200",
+     "redenering": "",
+     "apko": "K",
+     "stijgtDaalt": "-",
+     "klasse": "6",
+     "rubriek": "60",
+     "rekening": "604010",
+     "dc": "C",
+     "relatie": ""
+    }
+   ],
+   "AK14": [
+    {
      "bedrag": "121",
      "redenering": "",
      "apko": "P",
@@ -1081,30 +1094,6 @@ var JAREN = {
      "klasse": "6",
      "rubriek": "60",
      "rekening": "604010",
-     "dc": "C",
-     "relatie": ""
-    }
-   ],
-   "AK14": [
-    {
-     "bedrag": "100",
-     "redenering": "",
-     "apko": "P",
-     "stijgtDaalt": "-",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "D",
-     "relatie": "FairFabrics nv"
-    },
-    {
-     "bedrag": "100",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "-",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
      "dc": "C",
      "relatie": ""
     }
@@ -1632,7 +1621,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "4.618",
+     "bedrag": "4.576",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -1643,7 +1632,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "305",
+     "bedrag": "347",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -1691,7 +1680,7 @@ var JAREN = {
    ],
    "FIN01": [
     {
-     "bedrag": "1.310",
+     "bedrag": "1.210",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -1702,7 +1691,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "1.310",
+     "bedrag": "1.210",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "-",
@@ -1739,7 +1728,7 @@ var JAREN = {
    ],
    "FIN03": [
     {
-     "bedrag": "1.210",
+     "bedrag": "2.299",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -1750,7 +1739,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "1.210",
+     "bedrag": "2.299",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "-",
@@ -1758,7 +1747,7 @@ var JAREN = {
      "rubriek": "44",
      "rekening": "440000",
      "dc": "D",
-     "relatie": "FairFabrics nv"
+     "relatie": "EthiKnit nv"
     }
    ],
    "FIN04": [
@@ -2134,7 +2123,7 @@ var JAREN = {
    ],
    "FIN15": [
     {
-     "bedrag": "305",
+     "bedrag": "347",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -2145,7 +2134,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "305",
+     "bedrag": "347",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "-",
@@ -2287,7 +2276,7 @@ var JAREN = {
    ],
    "RESULTAAT": [
     {
-     "bedrag": "9.280",
+     "bedrag": "9.480",
      "redenering": "",
      "apko": "K",
      "stijgtDaalt": "+",
@@ -2298,7 +2287,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "9.280",
+     "bedrag": "9.480",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -2365,21 +2354,18 @@ var JAREN = {
     }
    ],
    "kortingen": [
-    "AK03",
-    "AK04",
+    "AK05",
+    "AK06",
     "VK03",
     "VK04"
    ],
    "extraKosten": [
-    "AK05",
-    "AK06",
+    "AK07",
+    "AK08",
     "VK05",
     "VK06"
    ],
    "verpakking": [
-    "AK07",
-    "AK08",
-    "AK14",
     "VK07",
     "VK08",
     "VK10"
@@ -2883,7 +2869,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "17.880",
+     "bedrag": "18.080",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -3037,17 +3023,6 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "4.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -3070,18 +3045,7 @@ var JAREN = {
      "relatie": "Connecto nv"
     },
     {
-     "bedrag": "2.541",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "EthiKnit nv"
-    },
-    {
-     "bedrag": "971",
+     "bedrag": "339",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -3092,7 +3056,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "7.560",
+     "bedrag": "7.260",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -3158,7 +3122,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "62.151",
+     "bedrag": "61.120",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -4178,7 +4142,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "28.165",
+     "bedrag": "28.365",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4365,17 +4329,6 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "8.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -4409,18 +4362,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "2.541",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "EthiKnit nv"
-    },
-    {
-     "bedrag": "3.300",
+     "bedrag": "4.610",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4431,7 +4373,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "8.722",
+     "bedrag": "8.422",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4508,7 +4450,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "80.806",
+     "bedrag": "79.775",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -5157,7 +5099,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "31.216",
+     "bedrag": "31.516",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5355,17 +5297,6 @@ var JAREN = {
      "relatie": "Yogastudio Lotus bv"
     },
     {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "11.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -5399,18 +5330,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "2.541",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "EthiKnit nv"
-    },
-    {
-     "bedrag": "4.909",
+     "bedrag": "6.219",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5421,7 +5341,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "11.892",
+     "bedrag": "11.592",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5498,7 +5418,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "81.387",
+     "bedrag": "80.456",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -6705,7 +6625,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "43.711",
+     "bedrag": "44.011",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -6947,17 +6867,6 @@ var JAREN = {
      "relatie": "Yogastudio Lotus bv"
     },
     {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "7.500",
      "redenering": "beginbalans",
      "apko": "P",
@@ -7002,7 +6911,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "8.143",
+     "bedrag": "5.602",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -7013,7 +6922,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "6.627",
+     "bedrag": "7.937",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -7024,7 +6933,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "13.150",
+     "bedrag": "12.850",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -7101,7 +7010,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "80.112",
+     "bedrag": "79.181",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -7883,7 +7792,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "47.510",
+     "bedrag": "47.810",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8114,17 +8023,6 @@ var JAREN = {
      "relatie": "Yogastudio Lotus bv"
     },
     {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "2.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -8169,7 +8067,7 @@ var JAREN = {
      "relatie": "Digistore bv"
     },
     {
-     "bedrag": "10.043",
+     "bedrag": "7.502",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8180,7 +8078,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "6.627",
+     "bedrag": "7.937",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8191,7 +8089,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "14.118",
+     "bedrag": "13.818",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8268,7 +8166,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "77.931",
+     "bedrag": "77.000",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
