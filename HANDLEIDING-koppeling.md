@@ -26,8 +26,9 @@ met één groot verschil:
 | oplossingssleutel | | ✓ — tabblad *Sleutel* |
 
 **Beheer per vestiging.** Elke vestiging heeft haar eigen expertcode. Met de
-code van Leuven opent het tabblad Beheer in de app enkel Leuven; kiest
-iemand bovenaan een andere school, dan gaat het tabblad meteen weer op slot.
+school kies je in het tabblad Beheer zelf, los van de schoolkeuze bovenaan
+(die is voor de leerlingen). Met de code van Leuven opent Beheer enkel
+Leuven; kies je in Beheer een andere school, dan gaat het weer op slot.
 
 Twee leerlingen met dezelfde naam in twee scholen zijn geen probleem: de
 vestiging hoort overal mee bij de naam.
