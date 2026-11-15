@@ -641,6 +641,8 @@ async function kiesJaar(win, jaar) {
   console.log("\n11. Zelfcontrole in het extra oefenmateriaal (20X4)");
   await kiesJaar(w, "20X4");
   check("20X4: geen indienknop", doc.getElementById("btn-indienen").hidden === true);
+  check("20X4: geen controlepagina's en geen eindcontrole in het menu",
+    !doc.querySelector('#nav-links [data-page-type="controle"]') && !doc.querySelector('#nav-links [data-page-type="controles"]'));
   check("20X4: proef- en saldibalans en klanten & leveranciers niet opengezet", !doc.querySelector('[data-page-type="saldibalans"]') &&
     !doc.querySelector('[data-page-type="relaties"]'));
   const sl4 = w.eval("SLEUTEL_OEFEN")["20X4"].AK01;

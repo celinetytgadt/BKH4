@@ -271,6 +271,8 @@
 
   // Afsluiten (eindcontrole, resultaatverwerking, eindbalans) is er zodra de
   // eindejaarsverrichtingen open staan. In de cursus staat alles al geboekt.
+  function controlesAan(jaar) { return jaarSoort(jaar).controles !== false; }
+
   function afsluitenZichtbaar() {
     if (!huidigJaar || jaarSoort().vooraf) return false;
     return CATEGORIE_VOLGORDE.indexOf("Eindejaar") !== -1 || CATEGORIE_VOLGORDE.indexOf("Alle documenten") !== -1;
@@ -318,7 +320,9 @@
     Object.keys(c.perCategorie).forEach(function (k) {
       if (cats.indexOf(k) !== -1) CATEGORIE_CONTROLES[k] = c.perCategorie[k];
     });
-    if (jaarSoort(jaar).vooraf) { HANDMATIGE_CONTROLES = []; CATEGORIE_CONTROLES = {}; }
+    // Geen controlepagina's in een vooraf geboekt jaar, en ook niet waar de
+    // soort ze uitzet (het extra oefenmateriaal: daar is er de zelfcontrole).
+    if (jaarSoort(jaar).vooraf || !controlesAan(jaar)) { HANDMATIGE_CONTROLES = []; CATEGORIE_CONTROLES = {}; }
     state = normaliseerState(werk.jaren[jaar], werk.student);
     werk.jaren[jaar] = state;
   }
@@ -748,6 +752,8 @@
   }
 
   function alleControlesOk() {
+    // Zonder controles in dit jaar valt er ook niets na te kijken.
+    if (!controlesAan()) return true;
     return controleSaldoSoort().ok && controleHandmatigOk();
   }
 
@@ -1059,11 +1065,11 @@
       html += '<button type="button" class="btn-heropenen" data-scope="' + escapeAttr(ref) + '" data-role="heropenen">Heropenen om te wijzigen</button>';
       html += htmlZelfcontroleMelding(ref, zc);
     } else {
-      html += '<button type="button" class="btn-boeken' + (klaar ? " btn-boeken-klaar" : "") + '" data-scope="' + escapeAttr(ref) + '" data-role="boeken" ' + (klaar ? "" : "disabled") + ">Boeken</button>";
+      html += '<button type="button" class="btn-boeken' + (klaar ? " btn-boeken-klaar" : "") + '" data-scope="' + escapeAttr(ref) + '" data-role="boeken" ' + (klaar ? "" : "disabled") + ">Bewaren</button>";
       // Alles ingevuld en debet = credit: enkel nog op Boeken drukken. Dat
       // vergeten leerlingen weleens, en dan telt de boeking nergens mee.
       if (klaar) {
-        html += '<span class="boeken-herinnering">Klaar? Druk op <strong>Boeken</strong>: pas dan telt deze boeking mee in je T-rekeningen en kan je ze indienen.</span>';
+        html += '<span class="boeken-herinnering">Klaar? Druk op <strong>Bewaren</strong>: pas dan telt deze boeking mee in je T-rekeningen en kan je ze indienen.</span>';
       }
       // Een schema waar nog niets in staat, krijgt nog geen lijst met wat er
       // ontbreekt: die gele kaders vóór de leerling iets deed, zijn enkel
@@ -1288,7 +1294,7 @@
       remediering: "Remediëring: oefen de delen die nog moeilijk gaan. Je dient dit niet in.",
     }[J.soort] || "";
     if (zelfcontroleAan()) {
-      tekst += " Na het boeken kan je met <strong>Controleer mijn boeking</strong> nagaan of je boeking klopt.";
+      tekst += " Na het bewaren kan je met <strong>Controleer mijn boeking</strong> nagaan of je boeking klopt.";
     }
     var html = '<div class="paneel paneel-tip"><h2>' + huidigJaar + " · " + escapeAttr(J.titel) + "</h2><p>" + tekst + "</p>";
     if (soort.aanbevelen) {
@@ -1319,7 +1325,7 @@
     "<p>Kies links bovenaan het boekjaar en daarna een document. Vul het redeneerschema in, van links naar rechts: " +
     "bedrag, redenering, A/P/K/O, + of −, klasse, rubriek, rekeningnummer en debet of credit. Alles is verplicht behalve de redenering. " +
     "De keuzelijsten helpen je: kies je K, dan zie je enkel klasse 6; kies je een klasse, dan zie je enkel haar rubrieken.</p>" +
-    "<p>Rechts staan altijd je T-rekeningen, zodat je die kan gebruiken terwijl je boekt. Boeken kan pas als debet en credit gelijk zijn.</p>" +
+    "<p>Rechts staan altijd je T-rekeningen, zodat je die kan gebruiken terwijl je boekt. Bewaren kan pas als debet en credit gelijk zijn.</p>" +
     "<p>De app zegt niet of iets inhoudelijk juist is — dat kijkt je vakexpert na. Ze controleert wel of debet en credit kloppen.</p>" +
     "<p>Bij elke categorie staat in het menu een <strong>Controle</strong>. Doe die vóór je indient: daar vind je zelf de meeste fouten terug.</p>" +
     "<p>Met <strong>Indienen</strong> bovenaan stuur je een categorie door naar je vakexpert. Dien daarna diezelfde taak ook in " +
@@ -2609,7 +2615,7 @@
      iets beoordeeld heeft, neemt die kleur het over — anders zou een
      verrichting groen blijven staan terwijl ze niet in orde is. */
   /* Begonnen maar nog niet geboekt: er staat iets in het schema, maar de
-     leerling drukte (nog) niet op Boeken. Zo'n boeking telt niet mee in de
+     leerling drukte (nog) niet op Bewaren. Zo'n boeking telt niet mee in de
      T-rekeningen en gaat niet mee bij het indienen — daarom tonen het menu
      en het indienvenster ze apart. */
   function isBegonnenNietGeboekt(ref) {
@@ -2620,7 +2626,7 @@
     });
   }
 
-  var BOLLETJE_BEGONNEN = '<span class="status-bolletje begonnen" title="Begonnen, maar nog niet geboekt"></span>';
+  var BOLLETJE_BEGONNEN = '<span class="status-bolletje begonnen" title="Begonnen, maar nog niet op Bewaren gedrukt"></span>';
 
   function htmlNavBolletje(ref, geboekt) {
     // Eerst: moet de leerling hier nog op Boeken drukken? Dat is wat nu te
@@ -2718,6 +2724,7 @@
       { type: "resultaat", label: "Resultaatverwerking", ref: "RESULTAATVERWERKING" },
       { type: "eindbalans", label: "Eindbalans", ref: "EINDBALANS" },
     ];
+    if (!controlesAan()) slot = slot.filter(function (s) { return s.type !== "controles"; });
     slot.forEach(function (s) {
       html += '<div class="nav-top-item' + (uiState.huidigePagina.type === s.type ? " actief" : "") + '" data-page-type="' + s.type + '">' +
         "<span>" + s.label + "</span>" +
@@ -2751,8 +2758,8 @@
     else if (p.type === "saldibalans" && saldibalansZichtbaar()) html += renderSaldibalans();
     else if (p.type === "opdracht") html += renderOpdracht(p.ref);
     else if (p.type === "relaties" && relatiesZichtbaar()) html += renderRelaties();
-    else if (p.type === "controle") html += renderCategorieControle(p.cat);
-    else if (p.type === "controles") html += renderControles();
+    else if (p.type === "controle" && controlesAan()) html += renderCategorieControle(p.cat);
+    else if (p.type === "controles" && controlesAan()) html += renderControles();
     else if (p.type === "resultaat") html += renderResultaat();
     else if (p.type === "eindbalans") html += renderEindbalansPagina();
     // Het beheertabblad zit in js/beheer.js: het hoort niet bij het werk van
