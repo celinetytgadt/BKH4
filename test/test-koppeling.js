@@ -666,18 +666,27 @@ async function kiesJaar(win, jaar) {
   await wacht(20);
   const zc2 = doc.querySelector(".zc-melding").textContent;
   check("2e controle: welke lijn fout is", /lijn 1/.test(zc2) && !!doc.querySelector("tr.rij-zc-fout"), zc2);
+  check("fout rekeningnummer, juist aantal lijnen: geen 'er ontbreekt een lijn'", !/ontbreekt/.test(zc2), zc2);
+  doc.querySelector('[data-role="heropenen"]').click();
+  st4.boekingen.AK01.rows = JSON.parse(JSON.stringify(goed)).slice(0, -1);
+  st4.boekingen.AK01.geboekt = true;
+  w.APP.renderAlles();
+  doc.querySelector('[data-role="zelfcontrole"]').click();
+  await wacht(20);
+  const zcMin = doc.querySelector(".zc-melding").textContent;
+  check("een lijn te weinig: 'er ontbreekt nog een lijn'", /ontbreekt ook nog een lijn/.test(zcMin), zcMin);
   doc.querySelector('[data-role="heropenen"]').click();
   st4.boekingen.AK01.rows = goed;
   st4.boekingen.AK01.geboekt = true;
   w.APP.renderAlles();
   doc.querySelector('[data-role="zelfcontrole"]').click();
   await wacht(20);
-  check("3e controle juist: op slot", /Klopt ✓/.test(doc.getElementById("pagina-inhoud").textContent) && !doc.querySelector('[data-role="heropenen"]'));
-  check("drie pogingen in de lijst", w.APP.zelfcontroleLog().length === 3, w.APP.zelfcontroleLog());
+  check("4e controle juist: op slot", /Klopt ✓/.test(doc.getElementById("pagina-inhoud").textContent) && !doc.querySelector('[data-role="heropenen"]'));
+  check("vier pogingen in de lijst", w.APP.zelfcontroleLog().length === 4, w.APP.zelfcontroleLog());
   await w.KOPPELING_API.bewaarNu();
   const zcBlad = sheets["Zelfcontrole LEU"];
-  check("pogingen in het tabblad Zelfcontrole LEU", zcBlad.getLastRow() === 4 && zcBlad.cel(2, 3) === "20X4" && zcBlad.cel(2, 4) === "AK01" &&
-    zcBlad.cel(4, 7) === "JA", zcBlad.rijen);
+  check("pogingen in het tabblad Zelfcontrole LEU", zcBlad.getLastRow() === 5 && zcBlad.cel(2, 3) === "20X4" && zcBlad.cel(2, 4) === "AK01" &&
+    zcBlad.cel(5, 7) === "JA", zcBlad.rijen);
   check("na het bewaren leeg in de app", w.APP.zelfcontroleLog().length === 0, w.APP.zelfcontroleLog());
 
   console.log("\n12. Beperkte toegang (appsscript.json)");

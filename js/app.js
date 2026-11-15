@@ -1158,7 +1158,12 @@
     zc.ok = ok;
     zc.gewijzigd = false;
     zc.fouteRijen = fouteRijen;
-    zc.ontbreekt = ontbreekt.length > 0;
+    // "Er ontbreekt nog een lijn" enkel als de leerling echt minder lijnen
+    // heeft dan de oplossing. Staat er een fout rekeningnummer op een lijn,
+    // dan ontbreekt de juiste rekening wel, maar is die lijn gewoon fout.
+    var aantalLijnen = boeking.rows.filter(function (row) { return !!marBij(row.rekening); }).length;
+    var aantalNodig = Object.keys(sleutel).filter(function (nr) { return Math.abs(sleutel[nr]) >= 0.005; }).length;
+    zc.ontbreekt = ontbreekt.length > 0 && aantalLijnen < aantalNodig;
     state.zelfcontrole[ref] = zc;
     werk.zelfcontroleLog.push({
       tijd: new Date().toISOString(), jaar: huidigJaar, ref: ref, categorie: categorieVanRef(ref) || "Resultaatverwerking",
