@@ -26,8 +26,8 @@ const INFO_TEKSTEN = {
       { kop: "Voor je op Bewaren klikt" },
       "Totaal debet en totaal credit moeten gelijk zijn, en elke lijn moet volledig ingevuld zijn. Ontbreekt er iets, dan kleurt die lijn en zie je onderaan wat er nog moet.",
       "Na het bewaren verschijnen je bedragen rechts in de T-rekeningen. Wil je nog iets wijzigen, klik dan op Heropenen.",
-      { kop: "Controleer mijn boeking" },
-      "In het extra oefenmateriaal en de remediëring kan je vakexpert de zelfcontrole aanzetten. Na het bewaren klik je dan op Controleer mijn boeking. De eerste keer hoor je enkel of het klopt; klopt het niet, heropen dan, verbeter en controleer opnieuw. Vanaf dan zie je welke lijnen nog fout zijn.",
+      { kop: "Zelfcontrole" },
+      "In het extra oefenmateriaal en de remediëring kan je vakexpert de zelfcontrole aanzetten. Dan controleert de app je boeking meteen als je op Bewaren klikt. De eerste keer hoor je enkel of het klopt; klopt het niet, heropen dan, verbeter en bewaar opnieuw. Vanaf dan zie je welke lijnen nog fout zijn.",
     ],
   },
 

@@ -1057,11 +1057,8 @@
         "</div>";
     } else if (geboekt) {
       html += '<span class="status-geboekt">Geboekt ✓</span> ';
-      // Na een foute controle eerst heropenen en verbeteren: anders kon je
-      // twee keer na elkaar klikken en meteen zien welke lijn fout is.
-      if (zelfcontroleMogelijk(ref) && !(zc && zc.pogingen && !zc.ok && !zc.gewijzigd)) {
-        html += '<button type="button" class="btn-zelfcontrole" data-scope="' + escapeAttr(ref) + '" data-role="zelfcontrole">Controleer mijn boeking</button> ';
-      }
+      // De zelfcontrole loopt bij het bewaren zelf; een aparte knop is er
+      // niet meer. Opnieuw controleren = heropenen, verbeteren, bewaren.
       html += '<button type="button" class="btn-heropenen" data-scope="' + escapeAttr(ref) + '" data-role="heropenen">Heropenen om te wijzigen</button>';
       html += htmlZelfcontroleMelding(ref, zc);
     } else {
@@ -1176,8 +1173,8 @@
     if (!zc || zc.ok) return "";
     var html = '<div class="zc-melding">';
     if (zc.pogingen < 2) {
-      html += "<p><strong>Klopt nog niet.</strong> Kijk je boeking nog eens rustig na: heropen ze, verbeter en controleer opnieuw. " +
-        "Bij de volgende controle zie je welke lijnen nog fout zijn.</p>";
+      html += "<p><strong>Klopt nog niet.</strong> Kijk je boeking nog eens rustig na: heropen ze, verbeter en bewaar opnieuw. " +
+        "Bij de volgende keer zie je welke lijnen nog fout zijn.</p>";
     } else {
       var lijnen = (zc.fouteRijen || []).map(function (i) { return "lijn " + (i + 1); });
       html += "<p><strong>Klopt nog niet.</strong> " +
@@ -1299,7 +1296,7 @@
       remediering: "Remediëring: oefen de delen die nog moeilijk gaan. Je dient dit niet in.",
     }[J.soort] || "";
     if (zelfcontroleAan()) {
-      tekst += " Na het bewaren kan je met <strong>Controleer mijn boeking</strong> nagaan of je boeking klopt.";
+      tekst += " Bij het bewaren controleert de app meteen of je boeking klopt.";
     }
     var html = '<div class="paneel paneel-tip"><h2>' + huidigJaar + " · " + escapeAttr(J.titel) + "</h2><p>" + tekst + "</p>";
     if (soort.aanbevelen) {
@@ -3022,9 +3019,6 @@
         // dan, ook bij het indienen.
         delete state.controlesHerbekijken[knop.dataset.cat];
         saveState(); renderAlles();
-      } else if (role === "zelfcontrole") {
-        voerZelfcontroleUit(knop.dataset.scope);
-        saveState(); renderAlles();
       } else if (role === "rij-toevoegen") {
         boekingVoor(knop.dataset.scope).rows.push(maakLegeRij());
         saveState(); renderAlles();
@@ -3038,7 +3032,13 @@
       } else if (role === "boeken") {
         var bk = boekingVoor(knop.dataset.scope);
         if (!boekingKlaarOmTeBoeken(bk.rows)) return;
-        bk.geboekt = true; saveState(); renderAlles();
+        bk.geboekt = true;
+        // Staat de zelfcontrole aan, dan wordt meteen gecontroleerd en gaat
+        // de poging meteen naar de Sheet (niet pas bij het volgende bewaren).
+        var metZc = zelfcontroleMogelijk(knop.dataset.scope);
+        if (metZc) voerZelfcontroleUit(knop.dataset.scope);
+        saveState(); renderAlles();
+        if (metZc && window.KOPPELING_API && window.KOPPELING_API.bewaarNu) window.KOPPELING_API.bewaarNu();
       } else if (role === "heropenen") {
         var refH = knop.dataset.scope;
         boekingVoor(refH).geboekt = false;

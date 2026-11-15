@@ -647,42 +647,50 @@ async function kiesJaar(win, jaar) {
     !doc.querySelector('[data-page-type="relaties"]'));
   const sl4 = w.eval("SLEUTEL_OEFEN")["20X4"].AK01;
   const st4 = w.APP.getState();
-  st4.boekingen.AK01 = { geboekt: true, rows: Object.keys(sl4).map((nr) => ({
-    bedrag: String(Math.abs(sl4[nr])), rekening: nr, dc: sl4[nr] > 0 ? "D" : "C", relatie: "", redenering: "", apko: "", stijgtDaalt: "", klasse: "", rubriek: "" })) };
-  const goed = JSON.parse(JSON.stringify(st4.boekingen.AK01.rows));
-  st4.boekingen.AK01.rows[0].rekening = st4.boekingen.AK01.rows[0].rekening === "604000" ? "600000" : "604000";
+  const MAR4 = w.eval("MAR");
+  // Volledig ingevulde lijnen (zoals een leerling ze invult), zodat de knop
+  // Bewaren echt aan staat.
+  const lijn = (nr, bedrag, dc) => {
+    const m = MAR4.find((x) => String(x.nr) === String(nr));
+    return { bedrag: String(bedrag), rekening: String(nr), dc, relatie: nr === "440000" ? "FairFabrics nv" : "", redenering: "",
+      apko: m.apko, stijgtDaalt: "+", klasse: m.klasse, rubriek: m.rubriek };
+  };
+  const goed = Object.keys(sl4).map((nr) => lijn(nr, Math.abs(sl4[nr]), sl4[nr] > 0 ? "D" : "C"));
+  const fout = JSON.parse(JSON.stringify(goed));
+  const i411 = fout.findIndex((r) => r.rekening === "411000");
+  fout[i411] = lijn("418000", fout[i411].bedrag, fout[i411].dc);   // fout rekeningnummer, zelfde aantal lijnen
+  const bewaarAK01 = async (rows) => {
+    st4.boekingen.AK01 = { geboekt: false, rows: JSON.parse(JSON.stringify(rows)) };
+    w.APP.renderAlles();
+    const knopB = doc.querySelector('[data-role="boeken"][data-scope="AK01"]');
+    if (!knopB || knopB.disabled) return "knop Bewaren staat niet aan";
+    knopB.click();
+    await wacht(40);
+    const m = doc.querySelector(".zc-melding");
+    return m ? m.textContent : "";
+  };
   w.APP.saveState();
   doc.querySelector('.nav-link[data-page-ref="AK01"]').click();
   await wacht(20);
-  doc.querySelector('[data-role="zelfcontrole"]').click();
-  await wacht(20);
-  const zc1 = doc.querySelector(".zc-melding").textContent;
-  check("1e controle: enkel 'klopt nog niet'", /Klopt nog niet/.test(zc1) && !/lijn \d/.test(zc1), zc1);
-  check("geen tweede controle zonder te heropenen", !doc.querySelector('[data-role="zelfcontrole"]'));
-  doc.querySelector('[data-role="heropenen"]').click();
-  st4.boekingen.AK01.geboekt = true;
-  w.APP.renderAlles();
-  doc.querySelector('[data-role="zelfcontrole"]').click();
-  await wacht(20);
-  const zc2 = doc.querySelector(".zc-melding").textContent;
-  check("2e controle: welke lijn fout is", /lijn 1/.test(zc2) && !!doc.querySelector("tr.rij-zc-fout"), zc2);
+  const zc1 = await bewaarAK01(fout);
+  check("1e keer bewaren = 1e controle: enkel 'klopt nog niet'", /Klopt nog niet/.test(zc1) && !/lijn \d/.test(zc1), zc1);
+  check("geen aparte knop 'Controleer mijn boeking' meer", !doc.querySelector('[data-role="zelfcontrole"]'));
+  await wacht(80);
+  check("de poging staat meteen in de Sheet (zonder indienen)", sheets["Zelfcontrole LEU"] && sheets["Zelfcontrole LEU"].getLastRow() === 2,
+    sheets["Zelfcontrole LEU"] && sheets["Zelfcontrole LEU"].rijen);
+  const zc2 = await bewaarAK01(fout);
+  check("2e controle: welke lijn fout is", new RegExp("lijn " + (i411 + 1)).test(zc2) && !!doc.querySelector("tr.rij-zc-fout"), zc2);
   check("fout rekeningnummer, juist aantal lijnen: geen 'er ontbreekt een lijn'", !/ontbreekt/.test(zc2), zc2);
-  doc.querySelector('[data-role="heropenen"]').click();
-  st4.boekingen.AK01.rows = JSON.parse(JSON.stringify(goed)).slice(0, -1);
-  st4.boekingen.AK01.geboekt = true;
-  w.APP.renderAlles();
-  doc.querySelector('[data-role="zelfcontrole"]').click();
-  await wacht(20);
-  const zcMin = doc.querySelector(".zc-melding").textContent;
+  // Zonder de btw-lijn, en 440000 aangepast zodat debet = credit blijft.
+  const teWeinig = goed.filter((r, i) => i !== i411).map((r) =>
+    r.rekening === "440000" ? lijn("440000", Math.abs(sl4["440000"]) - Math.abs(sl4["411000"]), "C") : r);
+  const zcMin = await bewaarAK01(teWeinig);
   check("een lijn te weinig: 'er ontbreekt nog een lijn'", /ontbreekt ook nog een lijn/.test(zcMin), zcMin);
-  doc.querySelector('[data-role="heropenen"]').click();
-  st4.boekingen.AK01.rows = goed;
-  st4.boekingen.AK01.geboekt = true;
-  w.APP.renderAlles();
-  doc.querySelector('[data-role="zelfcontrole"]').click();
-  await wacht(20);
+  await bewaarAK01(goed);
   check("4e controle juist: op slot", /Klopt ✓/.test(doc.getElementById("pagina-inhoud").textContent) && !doc.querySelector('[data-role="heropenen"]'));
-  check("vier pogingen in de lijst", w.APP.zelfcontroleLog().length === 4, w.APP.zelfcontroleLog());
+  await wacht(80);
+  check("alle vier de pogingen al verstuurd bij het bewaren", w.APP.zelfcontroleLog().length === 0 && sheets["Zelfcontrole LEU"].getLastRow() === 5,
+    [w.APP.zelfcontroleLog(), sheets["Zelfcontrole LEU"].getLastRow()]);
   await w.KOPPELING_API.bewaarNu();
   const zcBlad = sheets["Zelfcontrole LEU"];
   check("pogingen in het tabblad Zelfcontrole LEU", zcBlad.getLastRow() === 5 && zcBlad.cel(2, 3) === "20X4" && zcBlad.cel(2, 4) === "AK01" &&

@@ -297,7 +297,7 @@
       "welke categorieën al open staan. <em>Eindejaar</em> opent ook de resultaatverwerking en de eindbalans van dat jaar.</p>" +
       '<table class="beheer-tabel beheer-zicht"><thead><tr><th>boekjaar</th><th></th><th>categorieën</th><th>controle</th><th>extra</th></tr></thead>' +
       "<tbody>" + rijen + "</tbody></table>" +
-      '<p class="keuze-nota">Met <em>zelfcontrole aan</em> kan de leerling een geboekt document laten controleren tegen de oplossing. ' +
+      '<p class="keuze-nota">Met <em>zelfcontrole aan</em> controleert de app elke boeking tegen de oplossing zodra de leerling op Bewaren klikt. ' +
       "De eerste keer zegt de app enkel of het klopt; vanaf de tweede keer welke lijnen nog fout zijn. Dat kan enkel in het extra oefenmateriaal " +
       "en de remediëring: van de taak en de consolidaties staat de oplossing niet in de app.</p>" +
       '<p class="keuze-nota">De T-rekeningen tonen standaard enkel wat de leerling zelf boekt, zonder de beginbalans. Vink ' +
@@ -390,7 +390,7 @@
         }).join(" · ") + "</p>" : "") +
         '<table class="beheer-tabel beheer-zc"><thead><tr><th>document</th><th>categorie</th><th>leerlingen</th><th>pogingen</th>' +
         "<th>1e keer juist</th><th>nog niet juist</th></tr></thead><tbody>" + rijen + "</tbody></table></details>";
-    }).join("") : "<p>Nog geen zelfcontroles. Ze verschijnen hier zodra leerlingen in het extra oefenmateriaal of de remediëring op <em>Controleer mijn boeking</em> klikken.</p>";
+    }).join("") : "<p>Nog geen zelfcontroles. Ze verschijnen hier zodra leerlingen in het extra oefenmateriaal of de remediëring een boeking bewaren.</p>";
 
     return '<div class="paneel">' +
       "<h2>Hoe ging de zelfcontrole?</h2>" +
