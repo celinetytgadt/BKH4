@@ -2079,3 +2079,7 @@ table.redeneerschema tr.rij-zc-fout td.kol-bedrag { box-shadow: inset 3px 0 0 va
 details.beheer-zc-jaar { margin: 10px 0; }
 details.beheer-zc-jaar > summary { cursor: pointer; font-weight: 600; color: var(--kleur-primair-donker); }
 .beheer-zc tr.beheer-zc-zwak th, .beheer-zc tr.beheer-zc-zwak td { background: #fff1ef; }
+
+/* De T-rekening zoals ze moet staan, bij de controles per taak. */
+.controle-t-verwacht { max-width: 340px; margin: 8px 0 4px 26px; }
+.controle-t-verwacht .trek-blok { margin: 0; }

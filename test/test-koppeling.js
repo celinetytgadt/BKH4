@@ -278,12 +278,18 @@ function boekingVolgensSleutel(sleutelRef) {
 
 // Wat Leuven openzet: de cursus, de taak (zonder btw), de consolidatie, het
 // extra oefenmateriaal met zelfcontrole en de remediëring.
+// De taken van aankopen en verkopen (zie js/data-opdrachten.js).
+const AK1 = "Aankopen taak 1: eenvoudige facturen";
+const AK2 = "Aankopen taak 2: handelskorting & transportkosten";
+const VK1 = "Verkopen taak 1: eenvoudige facturen";
+const VK2 = "Verkopen taak 2: handelskorting & extra kosten";
 const ZICHT_LEU = {
   "20X1": { open: true, cats: { Aankopen: true } },
-  "20X2": { open: true, cats: { Aankopen: true, Verkopen: true, "Financiële verrichtingen": true, Eindejaar: true } },
-  "20X3": { open: true },
-  "20X4": { open: true, cats: { Aankopen: true }, zelfcontrole: true },
-  "20X5": { open: true, cats: { Aankopen: true, Verkopen: true } },
+  "20X2": { open: true, cats: { [AK1]: true, [AK2]: true, [VK1]: true, [VK2]: true, "Financiële verrichtingen": true, Eindejaar: true },
+    saldibalans: true, relaties: true },
+  "20X3": { open: true, relaties: true },
+  "20X4": { open: true, cats: { [AK1]: true }, zelfcontrole: true },
+  "20X5": { open: true, cats: { [AK1]: true, [VK1]: true } },
 };
 
 async function kiesJaar(win, jaar) {
@@ -305,7 +311,7 @@ async function kiesJaar(win, jaar) {
   check("Klas: naam | code | opmerking", sheets["Klas LEU"].cel(1, 1) === "naam", sheets["Klas LEU"].rijen[0]);
   check("Inzendingen zonder kolom vestiging", sheets["Inzendingen LEU"].cel(1, 2) === "leerling", sheets["Inzendingen LEU"].rijen[0]);
   check("Taken: per categorie van de taak, de consolidaties als geheel",
-    ["20X2 · Aankopen", "20X2 · Eindejaar", "20X3 · Consolidatie", "20X6 · Consolidatie 2"].every((t) => sheets["Taken TW"].rijen.some((r) => r[0] === t)) &&
+    ["20X2 · " + AK1, "20X2 · Eindejaar", "20X3 · Consolidatie", "20X6 · Consolidatie 2"].every((t) => sheets["Taken TW"].rijen.some((r) => r[0] === t)) &&
     !sheets["Taken TW"].rijen.some((r) => /^20X[145]/.test(r[0])), sheets["Taken TW"].rijen.map((r) => r[0]));
   check("Instellingen: zichtbaarheid en aanbevolen", ["zichtbaarheid", "aanbevolen"].every((k) => sheets["Instellingen LEU"].rijen.some((x) => x[0] === k)));
   check("sleutel van de case ingevuld", sheets.Sleutel.getLastRow() - 1 === SLEUTEL.length, [sheets.Sleutel.getLastRow(), SLEUTEL.length]);
@@ -321,14 +327,14 @@ async function kiesJaar(win, jaar) {
   console.log("\n2. Beheer per vestiging");
   let r = await post({ actie: "beheerBewaren", vestiging: "LEU", expertcode: "1111",
     klas: [{ naam: "Lotte V." }, { naam: "Youssef B." }],
-    taken: [{ categorie: "20X2 · Aankopen", link: "https://classroom.google.com/c/LEU/a/1/details" }],
-    instellingen: { zichtbaarheid: JSON.stringify(ZICHT_LEU), aanbevolen: JSON.stringify({ lottev: ["Verkopen"], youssefb: ["Eindejaar"] }) } });
+    taken: [{ categorie: "20X2 · " + AK1, link: "https://classroom.google.com/c/LEU/a/1/details" }],
+    instellingen: { zichtbaarheid: JSON.stringify(ZICHT_LEU), aanbevolen: JSON.stringify({ lottev: [VK1], youssefb: ["Eindejaar"] }) } });
   check("bewaren voor Leuven lukt", r.ok === true, r);
   check("antwoord van beheer geeft geen aanbevelingen mee in de instellingen", !("aanbevolen" in r.instellingen), r.instellingen);
   r = await post({ actie: "beheerBewaren", vestiging: "TW", expertcode: "1111", klas: [] });
   check("code van Leuven geeft geen toegang tot Tielt-Winge", !r.ok, r);
   r = await post({ actie: "beheerBewaren", vestiging: "TW", expertcode: "3333",
-    klas: [{ naam: "Lotte V." }], taken: [{ categorie: "20X2 · Aankopen", link: "https://classroom.google.com/c/TW/a/9/details" }],
+    klas: [{ naam: "Lotte V." }], taken: [{ categorie: "20X2 · " + AK1, link: "https://classroom.google.com/c/TW/a/9/details" }],
     instellingen: { mededeling: "Indienen tot vrijdag (TW)" } });
   check("bewaren voor Tielt-Winge lukt", r.ok === true, r);
   const klasLeu = sheets["Klas LEU"].rijen.slice(1).filter((x) => x[0]);
@@ -337,8 +343,8 @@ async function kiesJaar(win, jaar) {
   const codeLeu = String(klasLeu.find((x) => x[0] === "Lotte V.")[1]);
   const codeTw = String(klasTw[0][1]);
   check("codes aangemaakt", /^\d{4}$/.test(codeLeu) && /^\d{4}$/.test(codeTw), [codeLeu, codeTw]);
-  check("taken in het eigen tabblad", sheets["Taken LEU"].rijen.some((x) => x[0] === "20X2 · Aankopen" && /LEU/.test(x[1])) &&
-    sheets["Taken TW"].rijen.some((x) => x[0] === "20X2 · Aankopen" && /TW/.test(x[1])));
+  check("taken in het eigen tabblad", sheets["Taken LEU"].rijen.some((x) => x[0] === "20X2 · " + AK1 && /LEU/.test(x[1])) &&
+    sheets["Taken TW"].rijen.some((x) => x[0] === "20X2 · " + AK1 && /TW/.test(x[1])));
   check("mededeling enkel bij Tielt-Winge",
     sheets["Instellingen TW"].rijen.some((x) => x[0] === "mededeling" && /TW/.test(x[1])) &&
     !sheets["Instellingen LEU"].rijen.some((x) => x[0] === "mededeling" && x[1]));
@@ -358,7 +364,7 @@ async function kiesJaar(win, jaar) {
   check("Leuven ziet enkel haar leerlingen", JSON.stringify(iLeu.klas) === JSON.stringify(["Lotte V.", "Youssef B."]), iLeu.klas);
   check("Tielt-Winge ziet enkel haar leerling", JSON.stringify(iTw.klas) === JSON.stringify(["Lotte V."]), iTw.klas);
   check("Katelijne heeft nog niemand", iSkw.klas.length === 0, iSkw.klas);
-  check("taaklink per vestiging", /LEU/.test(iLeu.taken["20X2 · Aankopen"]) && /TW/.test(iTw.taken["20X2 · Aankopen"]), [iLeu.taken, iTw.taken]);
+  check("taaklink per vestiging", /LEU/.test(iLeu.taken["20X2 · " + AK1]) && /TW/.test(iTw.taken["20X2 · " + AK1]), [iLeu.taken, iTw.taken]);
   check("geen codes naar buiten", !JSON.stringify(iLeu).includes(codeLeu));
   check("zichtbaarheid publiek, per vestiging", JSON.parse(iLeu.instellingen.zichtbaarheid)["20X4"].zelfcontrole === true &&
     JSON.stringify(JSON.parse(iTw.instellingen.zichtbaarheid)) === "{}", [iLeu.instellingen.zichtbaarheid, iTw.instellingen.zichtbaarheid]);
@@ -409,7 +415,7 @@ async function kiesJaar(win, jaar) {
 
   console.log("\n5. De cursus (20X1)");
   await kiesJaar(w, "20X1");
-  check("20X1: enkel de opengezette categorie", w.eval("CATEGORIE_VOLGORDE").join("|") === "Beginbalans|Aankopen", w.eval("CATEGORIE_VOLGORDE"));
+  check("20X1: enkel de opengezette categorie", w.eval("CATEGORIE_VOLGORDE").join("|") === "Aankopen", w.eval("CATEGORIE_VOLGORDE"));
   check("20X1: alles staat al geboekt", w.eval("OPDRACHTEN").every((o) => w.APP.getState().boekingen[o.ref] && w.APP.getState().boekingen[o.ref].geboekt));
   doc.querySelector('.nav-link[data-page-ref="AK01"]').click();
   await wacht(20);
@@ -422,6 +428,26 @@ async function kiesJaar(win, jaar) {
   check("20X2: beginbalans staat al geboekt", w.APP.getState().boekingen.BB && w.APP.getState().boekingen.BB.geboekt === true);
   check("20X2: btw-verrekening nog niet opengezet", w.eval("CATEGORIE_VOLGORDE").indexOf("Btw-verrekening") === -1, w.eval("CATEGORIE_VOLGORDE"));
   check("20X2: indienknop zichtbaar", doc.getElementById("btn-indienen").hidden === false);
+  check("20X2: geen beginbalans meer in het menu", w.eval("CATEGORIE_VOLGORDE").indexOf("Beginbalans") === -1 &&
+    !doc.querySelector('.nav-link[data-page-ref="BB"]'), w.eval("CATEGORIE_VOLGORDE"));
+  check("20X2: taken in het menu onder de kop Aankopen", [...doc.querySelectorAll(".nav-groep")].map((x) => x.textContent).join("|") === "Aankopen|Verkopen" &&
+    [...doc.querySelectorAll(".nav-categorie")].some((x) => /^Taak 1: eenvoudige facturen/.test(x.textContent)),
+    [...doc.querySelectorAll(".nav-groep, .nav-categorie")].map((x) => x.textContent));
+  check("20X2: proef- en saldibalans en klanten & leveranciers opengezet", !!doc.querySelector('[data-page-type="saldibalans"]') &&
+    !!doc.querySelector('[data-page-type="relaties"]'));
+  const tRefs = () => [...doc.querySelectorAll("#tpanel-lijst .trek-regel .ref")].map((x) => x.textContent);
+  w.APP.renderAlles();
+  check("T-rekeningen standaard zonder beginbalans", !tRefs().includes("BB"), tRefs().slice(0, 10));
+  doc.querySelector('.nav-link[data-page-type="controle"][data-page-cat="' + AK1 + '"]').click();
+  await wacht(20);
+  const vragenAK1 = [...doc.querySelectorAll(".controle-vraag label span")].map((x) => x.textContent);
+  check("controles AK taak 1: één vraag per T-rekening", vragenAK1.join("|") ===
+    "Staat elke aankoopfactuur op de rekening 440000 Leveranciers?|Staat de btw van elke aankoopfactuur op de rekening 411000 Aftrekbare btw?|" +
+    "Staan de aangekochte handelsgoederen op de rekening 604000 Aankopen handelsgoederen?", vragenAK1);
+  const tV = doc.querySelectorAll(".controle-t-verwacht");
+  check("controles AK taak 1: de T-rekening zoals ze moet staan", tV.length === 3 && /440000/.test(tV[0].textContent) &&
+    /AK01/.test(tV[0].querySelector(".trek-kant.credit").textContent) && /AK02/.test(tV[0].querySelector(".trek-kant.credit").textContent) &&
+    !/BB/.test(tV[0].textContent), tV.length && tV[0].textContent);
   doc.querySelector('.nav-link[data-page-ref="AK01"]').click();
   await wacht(20);
   const koppen = [...doc.querySelectorAll("table.redeneerschema thead th")].map((t) => t.textContent.trim().toLowerCase());
@@ -454,13 +480,14 @@ async function kiesJaar(win, jaar) {
   check("leveranciersregel wordt niet automatisch toegevoegd", w.APP.getState().boekingen.AK01.rows.length === 2);
   check("zonder leverancier nog niet volledig", !!doc.querySelector("tr.rij-onvolledig"));
 
-  console.log("\n7. Boeken en indienen van 20X2 · Aankopen");
+  console.log("\n7. Boeken en indienen van 20X2 · Aankopen taak 1");
   const st = w.APP.getState();
-  const akRefs = w.eval("OPDRACHTEN").filter((o) => o.categorie === "Aankopen").map((o) => o.ref);
+  const akRefs = w.eval("OPDRACHTEN").filter((o) => o.categorie === AK1).map((o) => o.ref);
+  check("aankopen taak 1: AK01 en AK02", akRefs.join(",") === "AK01,AK02", akRefs);
   akRefs.forEach((ref) => { st.boekingen[ref] = boekingVolgensSleutel("20X2 " + ref); });
-  // AK03 met een fout: de eerste rekening vervangen.
-  const foutRek = st.boekingen.AK03.rows[0].rekening;
-  st.boekingen.AK03.rows[0].rekening = foutRek === "604000" ? "600000" : "604000";
+  // AK02 met een fout: de eerste rekening vervangen.
+  const foutRek = st.boekingen.AK02.rows[0].rekening;
+  st.boekingen.AK02.rows[0].rekening = foutRek === "604000" ? "600000" : "604000";
   w.APP.saveState();
   doc.getElementById("btn-indienen").click();
   await wacht(40);
@@ -468,9 +495,9 @@ async function kiesJaar(win, jaar) {
   const cats = [...venster.querySelectorAll("[data-cat]")].map((v) => v.dataset.cat);
   check("Beginbalans staat niet in het indienvenster", cats.indexOf("Beginbalans") === -1, cats);
   check("de opengezette categorieën en de afsluiting in het indienvenster",
-    ["Aankopen", "Verkopen", "Financiële verrichtingen", "Eindejaar", "Resultaatverwerking", "Eindbalans"].every((c) => cats.includes(c)) &&
+    [AK1, AK2, VK1, VK2, "Financiële verrichtingen", "Eindejaar", "Resultaatverwerking", "Eindbalans"].every((c) => cats.includes(c)) &&
     !cats.includes("Btw-verrekening"), cats);
-  const vink = venster.querySelector('[data-cat="Aankopen"]');
+  const vink = [...venster.querySelectorAll("[data-cat]")].find((v) => v.dataset.cat === AK1);
   vink.checked = true;
   vink.dispatchEvent(new w.Event("change"));
   venster.querySelector("#btn-indienen-bevestig").click();
@@ -478,18 +505,18 @@ async function kiesJaar(win, jaar) {
   venster.querySelector('[data-role="bevestig-ja"]').click();
   await wacht(150);
   check("ingediend", !!venster.querySelector(".melding-ok"), venster.textContent.slice(0, 120));
-  check("Classroom-knop met de link van Leuven en de naam van de taak", /c\/LEU\//.test(venster.innerHTML) && /20X2 · Aankopen in Classroom/.test(venster.textContent),
+  check("Classroom-knop met de link van Leuven en de naam van de taak", /c\/LEU\//.test(venster.innerHTML) && venster.textContent.includes("20X2 · " + AK1 + " in Classroom"),
     venster.textContent.slice(0, 300));
   const inz = sheets["Inzendingen LEU"];
   const inzTw = sheets["Inzendingen TW"];
   const rij = (ref) => inz.rijen.find((x) => x[3] === ref);
   check("één rij per document in Inzendingen LEU", inz.getLastRow() === akRefs.length + 1, inz.getLastRow());
-  check("ref en categorie met het jaar ervoor", rij("20X2 AK01") && rij("20X2 AK01")[2] === "20X2 · Aankopen", inz.rijen[1]);
+  check("ref en categorie met het jaar ervoor", rij("20X2 AK01") && rij("20X2 AK01")[2] === "20X2 · " + AK1, inz.rijen[1]);
   check("Inzendingen TW is nog leeg", inzTw.getLastRow() === 1, inzTw.getLastRow());
   check("AK01 automatisch In orde", rij("20X2 AK01")[6] === "In orde", rij("20X2 AK01")[11]);
-  check("alle andere aankopen ook In orde", akRefs.filter((x) => x !== "AK03").every((x) => rij("20X2 " + x)[6] === "In orde"),
+  check("alle andere aankopen ook In orde", akRefs.filter((x) => x !== "AK02").every((x) => rij("20X2 " + x)[6] === "In orde"),
     akRefs.filter((x) => rij("20X2 " + x)[6] !== "In orde").map((x) => [x, rij("20X2 " + x)[11]]));
-  check("AK03 automatisch Te remediëren", rij("20X2 AK03")[6] === "Te remediëren" && new RegExp(foutRek).test(rij("20X2 AK03")[11]), rij("20X2 AK03")[11]);
+  check("AK02 automatisch Te remediëren", rij("20X2 AK02")[6] === "Te remediëren" && new RegExp(foutRek).test(rij("20X2 AK02")[11]), rij("20X2 AK02")[11]);
   check("Detail LEU gevuld, Detail TW leeg", sheets["Detail LEU"].getLastRow() > 1 && sheets["Detail TW"].getLastRow() === 1);
   check("Detail: kolommen klasse en rubriek", sheets["Detail LEU"].cel(1, 14) === "klasse" && sheets["Detail LEU"].cel(1, 15) === "rubriek", sheets["Detail LEU"].rijen[0]);
   check("controles leerling: kolom in Inzendingen", inz.cel(1, 13) === "controles leerling", inz.rijen[0]);
@@ -497,19 +524,19 @@ async function kiesJaar(win, jaar) {
   const klasL = sheets["Klas LEU"];
   const kolom = (kop) => klasL.rijen[0].indexOf(kop) + 1;
   const klasRij = (naam) => klasL.rijen.findIndex((x) => x[0] === naam) + 1;
-  check("Klas LEU: kolommen per categorie na opmerking", klasL.cel(1, 4) === "X2 AK" && kolom("X2 VK") === 5 && kolom("X2 EB") > 5, klasL.rijen[0]);
-  check("Klas LEU: volle naam van de categorie als notitie", klasL.notities && klasL.notities["1,4"] === "20X2 · Aankopen", klasL.notities);
+  check("Klas LEU: kolommen per categorie na opmerking", klasL.cel(1, 4) === "X2 AK1" && kolom("X2 VK1") === 6 && kolom("X2 EB") > 5, klasL.rijen[0]);
+  check("Klas LEU: volle naam van de categorie als notitie", klasL.notities && klasL.notities["1,4"] === "20X2 · " + AK1, klasL.notities);
   check("Klas TW: nog geen kolommen (geen inzending)", !sheets["Klas TW"].cel(1, 4), sheets["Klas TW"].rijen[0]);
-  check("X2 AK nog niet OK (AK03 te remediëren)", klasL.cel(klasRij("Lotte V."), kolom("X2 AK")) === "", klasL.rijen);
-  const rijAk03 = inz.rijen.findIndex((x) => x[3] === "20X2 AK03") + 1;
-  inz.zet(rijAk03, 7, "In orde");
-  omgeving.onEdit({ range: inz.getRange(rijAk03, 7) });
-  check("na In orde voor AK03: OK bij X2 AK", klasL.cel(klasRij("Lotte V."), kolom("X2 AK")) === "OK", klasL.rijen[klasRij("Lotte V.") - 1]);
-  check("X2 VK blijft leeg", klasL.cel(klasRij("Lotte V."), kolom("X2 VK")) === "");
+  check("X2 AK1 nog niet OK (AK02 te remediëren)", klasL.cel(klasRij("Lotte V."), kolom("X2 AK1")) === "", klasL.rijen);
+  const rijAk02 = inz.rijen.findIndex((x) => x[3] === "20X2 AK02") + 1;
+  inz.zet(rijAk02, 7, "In orde");
+  omgeving.onEdit({ range: inz.getRange(rijAk02, 7) });
+  check("na In orde voor AK02: OK bij X2 AK1", klasL.cel(klasRij("Lotte V."), kolom("X2 AK1")) === "OK", klasL.rijen[klasRij("Lotte V.") - 1]);
+  check("X2 VK blijft leeg", klasL.cel(klasRij("Lotte V."), kolom("X2 VK1")) === "");
   check("andere leerling geen OK", klasL.rijen.slice(1).filter((x) => x[0] && x[0] !== "Lotte V.").every((x) => !x[3]), klasL.rijen);
-  inz.zet(rijAk03, 7, "Te remediëren");
-  omgeving.onEdit({ range: inz.getRange(rijAk03, 1, 1, 9) });
-  check("terug op Te remediëren: OK verdwijnt", klasL.cel(klasRij("Lotte V."), kolom("X2 AK")) === "");
+  inz.zet(rijAk02, 7, "Te remediëren");
+  omgeving.onEdit({ range: inz.getRange(rijAk02, 1, 1, 9) });
+  check("terug op Te remediëren: OK verdwijnt", klasL.cel(klasRij("Lotte V."), kolom("X2 AK1")) === "");
   check("controles-tekst: alles afgevinkt = ja", omgeving.controlesTekst_({ totaal: 3, af: 3 }) === "ja" &&
     /heropend/.test(omgeving.controlesTekst_({ totaal: 3, af: 3, herbekijken: true })) &&
     omgeving.controlesTekst_({ totaal: 0, af: 0 }) === "" && omgeving.controlesTekst_(undefined) === "");
@@ -529,7 +556,7 @@ async function kiesJaar(win, jaar) {
   check("lezen enkel via het toegelaten Drive-adres",
     opgehaald.length > 0 && opgehaald.every((u) => u.indexOf("https://www.googleapis.com/drive/v3/files/") === 0), opgehaald);
   a = await post({ actie: "indienen", vestiging: "TW", naam: "Lotte V.", code: codeTw,
-    items: [{ ref: "20X2 AK01", categorie: "20X2 · Aankopen", status: "niet begonnen", boeking: "", lijnen: [] }] });
+    items: [{ ref: "20X2 AK01", categorie: "20X2 · " + AK1, status: "niet begonnen", boeking: "", lijnen: [] }] });
   check("inzending Tielt-Winge aanvaard", a.ok === true, a);
   check("inzending van Tielt-Winge in Inzendingen TW", inzTw.getLastRow() === 2 && inzTw.cel(2, 4) === "20X2 AK01", inzTw.rijen);
   check("Leuven-rij AK01 blijft de laatste van Leuven", rij("20X2 AK01")[9] === "JA", rij("20X2 AK01"));
@@ -548,7 +575,7 @@ async function kiesJaar(win, jaar) {
   check("Leuven krijgt een beoordeling per aankoop", fbLeu.ok && fbLeu.feedback.length === akRefs.length, fbLeu.feedback && fbLeu.feedback.length);
   check("Tielt-Winge krijgt niets", fbTw.ok && fbTw.feedback.length === 0, fbTw);
   check("aanbevolen: eigen keuze van de expert + automatisch uit de taak",
-    JSON.stringify((fbLeu.aanbevolen || []).slice().sort()) === JSON.stringify(["Aankopen", "Verkopen"]), fbLeu.aanbevolen);
+    JSON.stringify((fbLeu.aanbevolen || []).slice().sort()) === JSON.stringify([AK1, VK1]), fbLeu.aanbevolen);
   check("aanbevolen bevat geen namen of gegevens van anderen", !/youssef|Eindejaar/i.test(JSON.stringify(fbLeu.aanbevolen)), fbLeu.aanbevolen);
 
   doc.getElementById("btn-feedback").click();
@@ -558,8 +585,8 @@ async function kiesJaar(win, jaar) {
   doc.querySelector('[data-page-ref="AK01"]').click();
   await wacht(30);
   check("AK01 op slot in de app", /In orde ✓/.test(doc.getElementById("pagina-inhoud").textContent));
-  doc.querySelector('[data-page-ref="AK03"]').click();
-  check("AK03 toont de feedback", /Te remediëren/.test(doc.getElementById("pagina-inhoud").textContent));
+  doc.querySelector('[data-page-ref="AK02"]').click();
+  check("AK02 toont de feedback", /Te remediëren/.test(doc.getElementById("pagina-inhoud").textContent));
   await kiesJaar(w, "20X5");
   const navTekst = doc.getElementById("nav-links") ? doc.getElementById("nav-links").textContent : doc.getElementById("sidebar").textContent;
   check("remediëring: ★ bij Aankopen en Verkopen", (navTekst.match(/aanbevolen/g) || []).length === 2, navTekst.slice(0, 400));
@@ -573,7 +600,7 @@ async function kiesJaar(win, jaar) {
   check("geen vennootschapsbelasting op de pagina", !/BELASTING —|vennootschapsbelasting \(20/.test(pag), (pag.match(/.{40}belasting.{40}/i) || [""])[0]);
   check("drie stappen", doc.querySelectorAll('[data-role="stap-veld"]').length === 3);
   const st2 = w.APP.getState();
-  st2.resultaat.stap = { opbrengsten: "26.510", kosten: "20.375", winst: "6.135" };
+  st2.resultaat.stap = { opbrengsten: "26.510", kosten: "16.225", winst: "10.285" };
   st2.boekingen.RESULTAAT = boekingVolgensSleutel("20X2 RESULTAAT");
   w.APP.saveState();
   doc.getElementById("btn-indienen").click();
@@ -596,6 +623,8 @@ async function kiesJaar(win, jaar) {
   console.log("\n11. Zelfcontrole in het extra oefenmateriaal (20X4)");
   await kiesJaar(w, "20X4");
   check("20X4: geen indienknop", doc.getElementById("btn-indienen").hidden === true);
+  check("20X4: proef- en saldibalans en klanten & leveranciers niet opengezet", !doc.querySelector('[data-page-type="saldibalans"]') &&
+    !doc.querySelector('[data-page-type="relaties"]'));
   const sl4 = w.eval("SLEUTEL_OEFEN")["20X4"].AK01;
   const st4 = w.APP.getState();
   st4.boekingen.AK01 = { geboekt: true, rows: Object.keys(sl4).map((nr) => ({
@@ -687,9 +716,15 @@ async function kiesJaar(win, jaar) {
     pagina().textContent.slice(0, 300));
   check("zichtbaarheid: 20X4 zelfcontrole aangevinkt", pagina().querySelector('[data-role="zicht-zc"][data-jaar="20X4"]').checked === true &&
     pagina().querySelector('[data-role="zicht-cat"][data-jaar="20X2"][data-cat="Btw-verrekening"]').checked === false);
+  check("zichtbaarheid: extra pagina's per jaar", pagina().querySelector('[data-role="zicht-extra"][data-jaar="20X2"][data-cat="saldibalans"]').checked === true &&
+    pagina().querySelector('[data-role="zicht-extra"][data-jaar="20X2"][data-cat="bbInT"]').checked === false &&
+    pagina().querySelector('[data-role="zicht-extra"][data-jaar="20X4"][data-cat="relaties"]').checked === false);
+  const bbVink = pagina().querySelector('[data-role="zicht-extra"][data-jaar="20X2"][data-cat="bbInT"]');
+  bbVink.checked = true;
+  bbVink.dispatchEvent(new w.Event("change", { bubbles: true }));
   check("zichtbaarheid: geen categorieën bij een consolidatie", !pagina().querySelector('[data-role="zicht-cat"][data-jaar="20X3"]'));
-  check("aanbevolen: eigen vinkje en automatisch", pagina().querySelector('[data-role="aanbevolen"][data-naam="lottev"][data-cat="Verkopen"]').checked === true &&
-    /auto/.test(pagina().querySelector('[data-role="aanbevolen"][data-naam="lottev"][data-cat="Aankopen"]').parentNode.textContent));
+  check("aanbevolen: eigen vinkje en automatisch", pagina().querySelector('[data-role="aanbevolen"][data-naam="lottev"][data-cat="' + VK1 + '"]').checked === true &&
+    /auto/.test(pagina().querySelector('[data-role="aanbevolen"][data-naam="lottev"][data-cat="' + AK1 + '"]').parentNode.textContent));
   check("overzicht zelfcontrole: 20X4 AK01 met Lotte", /20X4/.test(pagina().textContent) && /AK01/.test(pagina().querySelector(".beheer-zc").textContent) &&
     /0%/.test(pagina().querySelector(".beheer-zc").textContent), pagina().querySelector(".beheer-zc") && pagina().querySelector(".beheer-zc").textContent);
   check("taken: de nieuwe namen", !!pagina().querySelector('[data-role="taak"][data-cat="20X3 · Consolidatie"]') &&
@@ -698,7 +733,7 @@ async function kiesJaar(win, jaar) {
   const btw = pagina().querySelector('[data-role="zicht-cat"][data-jaar="20X2"][data-cat="Btw-verrekening"]');
   btw.checked = true;
   btw.dispatchEvent(new w.Event("change", { bubbles: true }));
-  const aanb = pagina().querySelector('[data-role="aanbevolen"][data-naam="lottev"][data-cat="Verkopen"]');
+  const aanb = pagina().querySelector('[data-role="aanbevolen"][data-naam="lottev"][data-cat="' + VK1 + '"]');
   aanb.checked = false;
   aanb.dispatchEvent(new w.Event("change", { bubbles: true }));
   pagina().querySelector('[data-role="bewaren"]').click();
@@ -708,6 +743,9 @@ async function kiesJaar(win, jaar) {
   check("aanbevolen bewaard in de Sheet", !JSON.parse(instL("aanbevolen")).lottev && JSON.parse(instL("aanbevolen")).youssefb.length === 1, instL("aanbevolen"));
   await kiesJaar(w, "20X2");
   check("de app volgt meteen: btw-verrekening nu zichtbaar", w.eval("CATEGORIE_VOLGORDE").indexOf("Btw-verrekening") !== -1, w.eval("CATEGORIE_VOLGORDE"));
+  w.APP.renderAlles();
+  check("beginbalans in T-rekeningen aangezet: BB staat erin",
+    [...doc.querySelectorAll("#tpanel-lijst .trek-regel .ref")].some((x) => x.textContent === "BB"));
   doc.querySelector('[data-page-type="beheer"]').click();
   await wacht(30);
   vestSel.value = "TW";
@@ -782,7 +820,7 @@ async function kiesJaar(win, jaar) {
   const vI = wi.document.querySelector(".koppeling-overlay");
   check("een categorie zonder iets afgerond kan je niet aanvinken",
     vI.querySelector('[data-cat="Financiële verrichtingen"]').disabled === true);
-  const vinkI = vI.querySelector('[data-cat="Verkopen"]');
+  const vinkI = [...vI.querySelectorAll("[data-cat]")].find((v) => v.dataset.cat === VK1);
   vinkI.checked = true;
   vinkI.dispatchEvent(new wi.Event("change"));
   vI.querySelector("#btn-indienen-bevestig").click();
@@ -795,7 +833,7 @@ async function kiesJaar(win, jaar) {
 
   console.log("\n18. Voortgang per categorie");
   const vtekst = wi.document.getElementById("voortgang-tekst").textContent;
-  check("de balk toont de categorie waar de leerling mee bezig is", /^20X2 · Verkopen: \d+ van \d+ geboekt · jaar: \d+ van \d+$/.test(vtekst), vtekst);
+  check("de balk toont de categorie waar de leerling mee bezig is", /^20X2 · (Aankopen|Verkopen) taak \d: [^:]+: \d+ van \d+ geboekt · jaar: \d+ van \d+$/.test(vtekst), vtekst);
 
   console.log("\n19. Typen terwijl het werk nog geladen wordt");
   werkVertraging = 150;
@@ -835,19 +873,22 @@ async function kiesJaar(win, jaar) {
     wi.document.getElementById("btn-indienen").click();
     await wacht(30);
     const v = wi.document.querySelector(".koppeling-overlay");
-    const vk = v.querySelector('[data-cat="' + cat + '"]');
+    const vk = [...v.querySelectorAll("[data-cat]")].find((x) => x.dataset.cat === cat);
     vk.checked = true;
     vk.dispatchEvent(new wi.Event("change"));
     v.querySelector("#btn-indienen-bevestig").click();
     await wacht(30);
     return v;
   };
-  let vV = await indienV("Aankopen");
+  let vV = await indienV(AK1);
   check("Aankopen indienen: geen melding over VK01", !/Nog niet geboekt/.test(vV.textContent));
   vV.remove();
-  vV = await indienV("Verkopen");
-  check("Verkopen indienen: melding met VK01 en VK03",
-    !!vV.querySelector('[data-ref="VK01"]') && !!vV.querySelector('[data-ref="VK03"]'), vV.textContent.slice(0, 300));
+  vV = await indienV(VK2);
+  check("Verkopen taak 2 indienen: melding met VK03", !!vV.querySelector('[data-ref="VK03"]') && !vV.querySelector('[data-ref="VK01"]'),
+    vV.textContent.slice(0, 300));
+  vV.remove();
+  vV = await indienV(VK1);
+  check("Verkopen taak 1 indienen: melding met VK01", !!vV.querySelector('[data-ref="VK01"]'), vV.textContent.slice(0, 300));
   vV.querySelector('[data-ref="VK01"]').click();
   await wacht(30);
   check("klik: naar VK01", !wi.document.querySelector(".koppeling-overlay") &&

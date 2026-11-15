@@ -34,10 +34,33 @@ var JAAR_SOORTEN = {
   remediering: { indienen: false, zelfcontrole: true,  vooraf: false, perCategorie: true,  taakPer: null, aanbevelen: true },
 };
 
+// De taken (lessen) van aankopen en verkopen in de taak, het extra
+// oefenmateriaal en de remediëring. Dezelfde namen staan in het indienvenster
+// en horen ook zo in Classroom te staan. Ze komen uit js/data-jaren.js.
+var TAKEN_AK_VK = [
+  "Aankopen taak 1: eenvoudige facturen",
+  "Aankopen taak 2: handelskorting & transportkosten",
+  "Aankopen taak 3: diensten, diverse goederen & vaste activa",
+  "Aankopen taak 4: creditnota's",
+  "Verkopen taak 1: eenvoudige facturen",
+  "Verkopen taak 2: handelskorting & extra kosten",
+  "Verkopen taak 3: creditnota's",
+  "Verkopen taak 4: terugstuurbare verpakking",
+];
+
 // De categorieën waarop zichtbaarheid en aanbeveling werken. "Eindejaar"
-// opent ook de resultaatverwerking en de eindbalans van dat jaar.
-var ZICHTBAAR_CATEGORIEEN = ["Aankopen", "Verkopen", "Btw-verrekening", "Financiële verrichtingen", "Eindejaar"];
+// opent ook de resultaatverwerking en de eindbalans van dat jaar. Elk jaar
+// gebruikt enkel de categorieën die in zijn menu staan.
+var ZICHTBAAR_CATEGORIEEN = TAKEN_AK_VK.concat(["Aankopen", "Verkopen", "Btw-verrekening", "Financiële verrichtingen", "Eindejaar"]);
 var CATEGORIE_AFKORTING = {
+  "Aankopen taak 1: eenvoudige facturen": "AK1",
+  "Aankopen taak 2: handelskorting & transportkosten": "AK2",
+  "Aankopen taak 3: diensten, diverse goederen & vaste activa": "AK3",
+  "Aankopen taak 4: creditnota's": "AK4",
+  "Verkopen taak 1: eenvoudige facturen": "VK1",
+  "Verkopen taak 2: handelskorting & extra kosten": "VK2",
+  "Verkopen taak 3: creditnota's": "VK3",
+  "Verkopen taak 4: terugstuurbare verpakking": "VK4",
   "Beginbalans": "BB", "Aankopen": "AK", "Verkopen": "VK", "Btw-verrekening": "BTW",
   "Financiële verrichtingen": "FIN", "Eindejaar": "EJ", "Alle documenten": "DOC",
   "Resultaatverwerking": "RES", "Eindbalans": "EB",

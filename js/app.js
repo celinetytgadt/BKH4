@@ -239,6 +239,23 @@
     return !!(z && z.cats && z.cats[cat]);
   }
 
+  /* Wat er per jaar extra open staat (tabblad Beheer). Zonder koppeling
+     staat alles open, behalve de beginbalans in de T-rekeningen: die staat
+     er standaard niet in, zodat de leerling enkel ziet wat er van hem is.
+       saldibalans  de pagina Proef- en saldibalans
+       relaties     de pagina Klanten & leveranciers (met de vragen en controles)
+       bbInT        de beginbalans mee in de T-rekeningen */
+  function jaarExtra(sleutel, jaar) {
+    jaar = jaar || huidigJaar;
+    if (!jaar) return false;
+    if (alleOpen()) return sleutel !== "bbInT";
+    var z = leesZichtbaarheid()[jaar];
+    return !!(z && z[sleutel]);
+  }
+  function saldibalansZichtbaar() { return jaarExtra("saldibalans"); }
+  function relatiesZichtbaar() { return jaarExtra("relaties"); }
+  function beginbalansInT() { return jaarExtra("bbInT"); }
+
   function zelfcontroleAan(jaar) {
     jaar = jaar || huidigJaar;
     if (!jaarSoort(jaar).zelfcontrole) return false;
@@ -276,15 +293,27 @@
     var J = JAREN[jaar];
     var cats = J.categorieVolgorde.filter(function (c) { return categorieZichtbaar(jaar, c); });
     CATEGORIE_VOLGORDE = cats;
-    OPDRACHTEN = J.opdrachten.filter(function (o) { return cats.indexOf(o.categorie) !== -1; });
-    CATEGORIE_RELATIES = cats.indexOf("Alle documenten") !== -1 ? "Alle documenten" : "Financiële verrichtingen";
+    // De beginbalans staat niet in het menu, maar ze is wel geboekt: ze hoort
+    // in de saldibalans, de eindbalans en (als dat aanstaat) de T-rekeningen.
+    OPDRACHTEN = J.opdrachten.filter(function (o) { return cats.indexOf(o.categorie) !== -1 || o.ref === "BB"; });
+    CATEGORIE_RELATIES = !relatiesZichtbaar() ? ""
+      : cats.indexOf("Alle documenten") !== -1 ? "Alle documenten" : "Financiële verrichtingen";
     CATEGORIE_KOPPEN = {};
+    // Een tussentitel boven de taken van aankopen en van verkopen.
+    var kopGezet = {};
+    cats.forEach(function (c) {
+      var m = /^(Aankopen|Verkopen) taak /.exec(c);
+      if (m && !kopGezet[m[1]]) { CATEGORIE_KOPPEN[c] = m[1]; kopGezet[m[1]] = true; }
+    });
     CATEGORIE_KORT = {};
     cats.concat(["Resultaatverwerking", "Eindbalans"]).forEach(function (c) {
       CATEGORIE_KORT[c] = J.kort + " " + (CATEGORIE_AFKORTING[c] || c);
     });
     var c = maakControles(J);
-    HANDMATIGE_CONTROLES = c.lijst.filter(function (x) { return cats.indexOf(x.categorie) !== -1; });
+    HANDMATIGE_CONTROLES = c.lijst.filter(function (x) {
+      if (x.relatieSoort && !relatiesZichtbaar()) return false;
+      return cats.indexOf(x.categorie) !== -1;
+    });
     CATEGORIE_CONTROLES = {};
     Object.keys(c.perCategorie).forEach(function (k) {
       if (cats.indexOf(k) !== -1) CATEGORIE_CONTROLES[k] = c.perCategorie[k];
@@ -491,10 +520,11 @@
   // alleenRefs (optioneel): beperk het grootboek tot deze verrichtingen.
   // De invulbalans bij de beginbalans gebruikt dat, zodat die pagina altijd
   // de openingsbalans toont — ook nadat er al aankopen geboekt zijn.
-  function berekenGrootboek(alleenRefs) {
+  function berekenGrootboek(alleenRefs, zonderBB) {
     var gb = {};
     OPDRACHTEN.forEach(function (o) {
       if (alleenRefs && alleenRefs.indexOf(o.ref) === -1) return;
+      if (zonderBB && o.ref === "BB") return;
       var b = state.boekingen[o.ref];
       if (!b || !b.geboekt) return;
       b.rows.forEach(function (row) {
@@ -1426,6 +1456,21 @@
       "<tfoot><tr><td>Totaal nog open</td><td>" + formatBedrag(totaal) + "</td></tr></tfoot></table>";
   }
 
+  // De T-rekening zoals ze moet staan na een taak (zonder beginbalans), bij
+  // de controles van aankopen en verkopen. Altijd met de documentnummers.
+  function htmlTVerwacht(t) {
+    var mar = marBij(t.nr) || { nr: t.nr, naam: "", apko: "" };
+    var entry = {
+      D: (t.D || []).map(function (x) { return { ref: x[0], bedrag: x[1] }; }),
+      C: (t.C || []).map(function (x) { return { ref: x[0], bedrag: x[1] }; }),
+    };
+    var detail = uiState.tpanelDetail;
+    uiState.tpanelDetail = true;
+    var html = htmlTrekBlok(String(t.nr), mar, entry).replace(' id="trek-' + t.nr + '"', "");
+    uiState.tpanelDetail = detail;
+    return '<div class="controle-t-verwacht">' + html + "</div>";
+  }
+
   // Eén afvinkbare controle. Wordt zowel op de controlepagina van een
   // categorie als op de eindcontrole gebruikt.
   function htmlControleRij(c) {
@@ -1443,6 +1488,7 @@
     // 400000/440000 in het T-paneel kan leggen zonder van scherm te
     // wisselen. Deze cijfers komen uit hun eigen boekingen.
     if (c.relatieSoort) html += htmlControleRelatieTabel(c.relatieSoort);
+    if (c.tVerwacht) html += htmlTVerwacht(c.tVerwacht);
     html += "</div>";
     if (c.docs && c.docs.length) {
       html += '<div class="controle-docs">' + c.docs.map(function (d) {
@@ -2450,7 +2496,9 @@
   function renderTpanel() {
     var lijst = document.getElementById("tpanel-lijst");
     if (!lijst) return;
-    var gb = berekenGrootboek();
+    // Standaard zonder de beginbalans: zo ziet de leerling enkel wat hij
+    // zelf boekte. De vakexpert kan ze per jaar aanzetten (tabblad Beheer).
+    var gb = berekenGrootboek(null, !beginbalansInT());
     var filter = {
       zoek: uiState.tpanelZoek,
       apko: uiState.tpanelApko,
@@ -2595,11 +2643,13 @@
     // Nog geen jaar open: enkel Start en Beheer. Beheer moet er altijd
     // staan, anders kan de vakexpert niets openzetten.
     if (!huidigJaar) { el.innerHTML = html + htmlNavBeheer(); return; }
-    html += '<div class="nav-top-item' + (uiState.huidigePagina.type === "saldibalans" ? " actief" : "") + '" data-page-type="saldibalans">Proef- en saldibalans</div>';
+    if (saldibalansZichtbaar()) {
+      html += '<div class="nav-top-item' + (uiState.huidigePagina.type === "saldibalans" ? " actief" : "") + '" data-page-type="saldibalans">Proef- en saldibalans</div>';
+    }
     // Openstaande facturen volg je het hele jaar op, dus de pagina staat
     // bovenaan en niet pas bij één categorie (zie RELATIES_BOVENAAN).
     var relatiesBovenaan = typeof RELATIES_BOVENAAN !== "undefined" && RELATIES_BOVENAAN;
-    if (relatiesBovenaan) {
+    if (relatiesBovenaan && relatiesZichtbaar()) {
       html += '<div class="nav-top-item' + (uiState.huidigePagina.type === "relaties" ? " actief" : "") + '" data-page-type="relaties">' +
         "<span>Klanten &amp; leveranciers</span>" +
         (laatsteBeoordeling("RELATIES") ? htmlNavBolletje("RELATIES", true) : "") + "</div>";
@@ -2616,7 +2666,7 @@
         html += '<div class="nav-groep">' + escapeAttr(koppen[cat]) + "</div>";
         onderKop = true;
       }
-      var label = onderKop ? String(cat).replace(/^K\d\s*·\s*/, "") : cat;
+      var label = onderKop ? String(cat).replace(/^K\d\s*·\s*/, "").replace(/^(Aankopen|Verkopen) taak/, "Taak") : cat;
       html += '<div class="nav-categorie">' + escapeAttr(label) +
         (isAanbevolen(cat) ? ' <span class="nav-aanbevolen" title="Je vakexpert raadt je aan dit deel te oefenen">★ aanbevolen</span>' : "") + "</div>";
       items.forEach(function (o) {
@@ -2685,9 +2735,9 @@
     var p = uiState.huidigePagina;
     var html = htmlMededeling();
     if (p.type === "start") html += renderStart();
-    else if (p.type === "saldibalans") html += renderSaldibalans();
+    else if (p.type === "saldibalans" && saldibalansZichtbaar()) html += renderSaldibalans();
     else if (p.type === "opdracht") html += renderOpdracht(p.ref);
-    else if (p.type === "relaties") html += renderRelaties();
+    else if (p.type === "relaties" && relatiesZichtbaar()) html += renderRelaties();
     else if (p.type === "controle") html += renderCategorieControle(p.cat);
     else if (p.type === "controles") html += renderControles();
     else if (p.type === "resultaat") html += renderResultaat();
