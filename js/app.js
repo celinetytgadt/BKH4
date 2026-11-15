@@ -1043,7 +1043,10 @@
     } else if (zc && zc.ok) {
       html += '<div class="boeking-vergrendeld zc-ok">' +
         '<span class="status-in-orde">Klopt ✓</span>' +
-        "<p>Je zelfcontrole klopt met de oplossing. Deze boeking staat nu op slot.</p>" +
+        (jaarSoort().opnieuwMaken
+          ? "<p>Je boeking klopt met de oplossing. Wil je ze nog eens oefenen? Maak ze dan opnieuw.</p>" +
+            '<button type="button" class="btn-heropenen" data-scope="' + escapeAttr(ref) + '" data-role="opnieuw-maken">Opnieuw maken</button>'
+          : "<p>Je zelfcontrole klopt met de oplossing. Deze boeking staat nu op slot.</p>") +
         "</div>";
     } else if (inOrde) {
       // Goedgekeurd werk gaat op slot: het hoeft niet meer gewijzigd te
@@ -3039,6 +3042,15 @@
         if (metZc) voerZelfcontroleUit(knop.dataset.scope);
         saveState(); renderAlles();
         if (metZc && window.KOPPELING_API && window.KOPPELING_API.bewaarNu) window.KOPPELING_API.bewaarNu();
+      } else if (role === "opnieuw-maken") {
+        // Extra oefenmateriaal: een juiste boeking mag de leerling opnieuw
+        // maken. Het schema wordt leeg en de zelfcontrole begint opnieuw; de
+        // vorige pogingen blijven in de Sheet staan.
+        var refO = knop.dataset.scope;
+        if (!window.confirm("Deze boeking opnieuw maken? Je lijnen worden gewist en je begint opnieuw.")) return;
+        state.boekingen[refO] = { geboekt: false, rows: [maakLegeRij()] };
+        delete state.zelfcontrole[refO];
+        saveState(); renderAlles();
       } else if (role === "heropenen") {
         var refH = knop.dataset.scope;
         boekingVoor(refH).geboekt = false;

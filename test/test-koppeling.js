@@ -687,7 +687,16 @@ async function kiesJaar(win, jaar) {
   const zcMin = await bewaarAK01(teWeinig);
   check("een lijn te weinig: 'er ontbreekt nog een lijn'", /ontbreekt ook nog een lijn/.test(zcMin), zcMin);
   await bewaarAK01(goed);
-  check("4e controle juist: op slot", /Klopt ✓/.test(doc.getElementById("pagina-inhoud").textContent) && !doc.querySelector('[data-role="heropenen"]'));
+  check("4e controle juist: Klopt ✓, niet meer te heropenen", /Klopt ✓/.test(doc.getElementById("pagina-inhoud").textContent) && !doc.querySelector('[data-role="heropenen"]'));
+  const knopOpnieuw = doc.querySelector('[data-role="opnieuw-maken"][data-scope="AK01"]');
+  check("20X4: juiste boeking niet op slot, knop 'Opnieuw maken'", !!knopOpnieuw && /Opnieuw maken/.test(knopOpnieuw.textContent));
+  w.confirm = () => true;
+  if (knopOpnieuw) knopOpnieuw.click();
+  await wacht(20);
+  const stNa = w.APP.getState();
+  check("opnieuw maken: leeg schema, Bewaren terug en de zelfcontrole begint opnieuw",
+    stNa.boekingen.AK01.geboekt === false && stNa.boekingen.AK01.rows.length === 1 && !stNa.boekingen.AK01.rows[0].rekening &&
+    !stNa.zelfcontrole.AK01 && !!doc.querySelector('[data-role="boeken"][data-scope="AK01"]'), [stNa.boekingen.AK01, stNa.zelfcontrole.AK01]);
   await wacht(80);
   check("alle vier de pogingen al verstuurd bij het bewaren", w.APP.zelfcontroleLog().length === 0 && sheets["Zelfcontrole LEU"].getLastRow() === 5,
     [w.APP.zelfcontroleLog(), sheets["Zelfcontrole LEU"].getLastRow()]);
