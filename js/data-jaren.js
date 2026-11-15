@@ -83,7 +83,7 @@ var JAREN = {
     "titel": "Aankoop AK07",
     "vasteBoeking": true,
     "doc": "20X1/AK07",
-    "relatie": "FairFabrics nv"
+    "relatie": "Connecto nv"
    },
    {
     "ref": "AK08",
@@ -91,7 +91,7 @@ var JAREN = {
     "titel": "Aankoop AK08",
     "vasteBoeking": true,
     "doc": "20X1/AK08",
-    "relatie": "GreenThread bv"
+    "relatie": "Stroomkracht nv"
    },
    {
     "ref": "AK09",
@@ -99,7 +99,7 @@ var JAREN = {
     "titel": "Aankoop AK09",
     "vasteBoeking": true,
     "doc": "20X1/AK09",
-    "relatie": "Connecto nv"
+    "relatie": "Lichtpunt bv"
    },
    {
     "ref": "AK10",
@@ -107,7 +107,7 @@ var JAREN = {
     "titel": "Aankoop AK10",
     "vasteBoeking": true,
     "doc": "20X1/AK10",
-    "relatie": "Stroomkracht nv"
+    "relatie": "KassaTech bv"
    },
    {
     "ref": "AK11",
@@ -115,7 +115,7 @@ var JAREN = {
     "titel": "Aankoop AK11",
     "vasteBoeking": true,
     "doc": "20X1/AK11",
-    "relatie": "Lichtpunt bv"
+    "relatie": "EthiKnit nv"
    },
    {
     "ref": "AK12",
@@ -123,30 +123,6 @@ var JAREN = {
     "titel": "Aankoop AK12",
     "vasteBoeking": true,
     "doc": "20X1/AK12",
-    "relatie": "KassaTech bv"
-   },
-   {
-    "ref": "AK13",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK13",
-    "vasteBoeking": true,
-    "doc": "20X1/AK13",
-    "relatie": "FairFabrics nv"
-   },
-   {
-    "ref": "AK14",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK14",
-    "vasteBoeking": true,
-    "doc": "20X1/AK14",
-    "relatie": "FairFabrics nv"
-   },
-   {
-    "ref": "AK15",
-    "categorie": "Aankopen",
-    "titel": "Aankoop AK15",
-    "vasteBoeking": true,
-    "doc": "20X1/AK15",
     "relatie": "Connecto nv"
    },
    {
@@ -268,7 +244,7 @@ var JAREN = {
     "vasteBoeking": true,
     "doc": "20X1/FIN01",
     "betaalstuk": true,
-    "relatie": "FairFabrics nv"
+    "relatie": "GreenThread bv"
    },
    {
     "ref": "FIN02",
@@ -286,7 +262,7 @@ var JAREN = {
     "vasteBoeking": true,
     "doc": "20X1/FIN03",
     "betaalstuk": true,
-    "relatie": "FairFabrics nv"
+    "relatie": "Connecto nv"
    },
    {
     "ref": "FIN04",
@@ -295,7 +271,7 @@ var JAREN = {
     "vasteBoeking": true,
     "doc": "20X1/FIN04",
     "betaalstuk": true,
-    "relatie": "FairFabrics nv"
+    "relatie": "EthiKnit nv"
    },
    {
     "ref": "FIN05",
@@ -820,98 +796,6 @@ var JAREN = {
    ],
    "AK07": [
     {
-     "bedrag": "1.310",
-     "redenering": "",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "FairFabrics nv"
-    },
-    {
-     "bedrag": "210",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "411000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "1.000",
-     "redenering": "",
-     "apko": "K",
-     "stijgtDaalt": "+",
-     "klasse": "6",
-     "rubriek": "60",
-     "rekening": "604000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "100",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    }
-   ],
-   "AK08": [
-    {
-     "bedrag": "2.720",
-     "redenering": "",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "GreenThread bv"
-    },
-    {
-     "bedrag": "420",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "411000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "2.000",
-     "redenering": "",
-     "apko": "K",
-     "stijgtDaalt": "+",
-     "klasse": "6",
-     "rubriek": "60",
-     "rekening": "604000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
-     "bedrag": "300",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    }
-   ],
-   "AK09": [
-    {
      "bedrag": "121",
      "redenering": "",
      "apko": "P",
@@ -945,7 +829,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK10": [
+   "AK08": [
     {
      "bedrag": "315",
      "redenering": "",
@@ -980,7 +864,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK11": [
+   "AK09": [
     {
      "bedrag": "6.050",
      "redenering": "",
@@ -1015,7 +899,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK12": [
+   "AK10": [
     {
      "bedrag": "2.178",
      "redenering": "",
@@ -1050,7 +934,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK13": [
+   "AK11": [
     {
      "bedrag": "121",
      "redenering": "",
@@ -1060,7 +944,7 @@ var JAREN = {
      "rubriek": "44",
      "rekening": "440000",
      "dc": "D",
-     "relatie": "FairFabrics nv"
+     "relatie": "EthiKnit nv"
     },
     {
      "bedrag": "21",
@@ -1085,31 +969,7 @@ var JAREN = {
      "relatie": ""
     }
    ],
-   "AK14": [
-    {
-     "bedrag": "100",
-     "redenering": "",
-     "apko": "P",
-     "stijgtDaalt": "-",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "D",
-     "relatie": "FairFabrics nv"
-    },
-    {
-     "bedrag": "100",
-     "redenering": "",
-     "apko": "A",
-     "stijgtDaalt": "-",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "C",
-     "relatie": ""
-    }
-   ],
-   "AK15": [
+   "AK12": [
     {
      "bedrag": "12",
      "redenering": "",
@@ -1632,7 +1492,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "4.618",
+     "bedrag": "4.429",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -1643,7 +1503,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "305",
+     "bedrag": "494",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -1667,7 +1527,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "2.065",
+     "bedrag": "1.624",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -1678,7 +1538,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "320",
+     "bedrag": "761",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -1691,7 +1551,7 @@ var JAREN = {
    ],
    "FIN01": [
     {
-     "bedrag": "1.310",
+     "bedrag": "4.840",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -1702,7 +1562,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "1.310",
+     "bedrag": "4.840",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "-",
@@ -1710,7 +1570,7 @@ var JAREN = {
      "rubriek": "44",
      "rekening": "440000",
      "dc": "D",
-     "relatie": "FairFabrics nv"
+     "relatie": "GreenThread bv"
     }
    ],
    "FIN02": [
@@ -1739,7 +1599,7 @@ var JAREN = {
    ],
    "FIN03": [
     {
-     "bedrag": "1.210",
+     "bedrag": "109",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -1750,7 +1610,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "1.210",
+     "bedrag": "109",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "-",
@@ -1758,7 +1618,7 @@ var JAREN = {
      "rubriek": "44",
      "rekening": "440000",
      "dc": "D",
-     "relatie": "FairFabrics nv"
+     "relatie": "Connecto nv"
     }
    ],
    "FIN04": [
@@ -1782,7 +1642,7 @@ var JAREN = {
      "rubriek": "44",
      "rekening": "440000",
      "dc": "C",
-     "relatie": "FairFabrics nv"
+     "relatie": "EthiKnit nv"
     }
    ],
    "FIN05": [
@@ -2134,7 +1994,7 @@ var JAREN = {
    ],
    "FIN15": [
     {
-     "bedrag": "305",
+     "bedrag": "494",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -2145,7 +2005,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "305",
+     "bedrag": "494",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "-",
@@ -2158,7 +2018,7 @@ var JAREN = {
    ],
    "FIN16": [
     {
-     "bedrag": "320",
+     "bedrag": "761",
      "redenering": "",
      "apko": "A",
      "stijgtDaalt": "-",
@@ -2169,7 +2029,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "320",
+     "bedrag": "761",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "-",
@@ -2287,7 +2147,7 @@ var JAREN = {
    ],
    "RESULTAAT": [
     {
-     "bedrag": "9.280",
+     "bedrag": "12.280",
      "redenering": "",
      "apko": "K",
      "stijgtDaalt": "+",
@@ -2298,7 +2158,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "9.280",
+     "bedrag": "12.280",
      "redenering": "",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -2321,14 +2181,11 @@ var JAREN = {
     "AK07",
     "AK08",
     "AK09",
-    "AK10",
-    "AK11",
-    "AK12"
+    "AK10"
    ],
    "aankoopCN": [
-    "AK13",
-    "AK14",
-    "AK15"
+    "AK11",
+    "AK12"
    ],
    "verkoopfacturen": [
     "VK01",
@@ -2377,21 +2234,18 @@ var JAREN = {
     "VK06"
    ],
    "verpakking": [
-    "AK07",
-    "AK08",
-    "AK14",
     "VK07",
     "VK08",
     "VK10"
    ],
    "vasteActiva": [
-    "AK11",
-    "AK12"
+    "AK09",
+    "AK10"
    ],
    "diensten": [
-    "AK09",
-    "AK10",
-    "AK15"
+    "AK07",
+    "AK08",
+    "AK12"
    ],
    "btw": [
     {
@@ -2883,7 +2737,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "17.880",
+     "bedrag": "20.880",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -3037,17 +2891,6 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "4.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -3057,17 +2900,6 @@ var JAREN = {
      "rekening": "423000",
      "dc": "C",
      "relatie": ""
-    },
-    {
-     "bedrag": "109",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "Connecto nv"
     },
     {
      "bedrag": "2.541",
@@ -3081,7 +2913,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "971",
+     "bedrag": "339",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -3090,17 +2922,6 @@ var JAREN = {
      "rekening": "440000",
      "dc": "C",
      "relatie": "FairFabrics nv"
-    },
-    {
-     "bedrag": "7.560",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "GreenThread bv"
     },
     {
      "bedrag": "2.178",
@@ -3158,7 +2979,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "62.151",
+     "bedrag": "59.092",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -3890,7 +3711,7 @@ var JAREN = {
     "titel": "Document DOC_10",
     "doc": "20X3/DOC_10",
     "betaalstuk": true,
-    "relatie": "Yogastudio Lotus bv"
+    "relatie": "Hotel De Linde bv"
    },
    {
     "ref": "DOC_11",
@@ -3948,28 +3769,22 @@ var JAREN = {
     "categorie": "Alle documenten",
     "titel": "Document DOC_17",
     "doc": "20X3/DOC_17",
-    "relatie": "EthiKnit nv"
+    "relatie": "GreenThread bv"
    },
    {
     "ref": "DOC_18",
     "categorie": "Alle documenten",
     "titel": "Document DOC_18",
     "doc": "20X3/DOC_18",
-    "relatie": "GreenThread bv"
+    "relatie": "Digistore bv"
    },
    {
     "ref": "DOC_19",
     "categorie": "Alle documenten",
     "titel": "Document DOC_19",
     "doc": "20X3/DOC_19",
-    "relatie": "EthiKnit nv"
-   },
-   {
-    "ref": "DOC_20",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_20",
-    "doc": "20X3/DOC_20",
-    "relatie": "Digistore bv"
+    "betaalstuk": true,
+    "relatie": "Yogastudio Lotus bv"
    },
    {
     "ref": "DOC_21",
@@ -3977,34 +3792,26 @@ var JAREN = {
     "titel": "Document DOC_21",
     "doc": "20X3/DOC_21",
     "betaalstuk": true,
-    "relatie": "Yogastudio Lotus bv"
-   },
-   {
-    "ref": "DOC_23",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_23",
-    "doc": "20X3/DOC_23",
-    "betaalstuk": true,
     "hulpdocs": [
      {
-      "doc": "20X3/DOC_22",
+      "doc": "20X3/DOC_20",
       "titel": "Aflossingstabel lening KR-20X3-0388"
      }
     ],
     "relatie": "NovaBank - kredieten"
    },
    {
-    "ref": "DOC_24",
+    "ref": "DOC_22",
     "categorie": "Alle documenten",
-    "titel": "Document DOC_24",
-    "doc": "20X3/DOC_24",
+    "titel": "Document DOC_22",
+    "doc": "20X3/DOC_22",
     "relatie": "FOD Financiën"
    },
    {
-    "ref": "DOC_25",
+    "ref": "DOC_23",
     "categorie": "Alle documenten",
-    "titel": "Document DOC_25",
-    "doc": "20X3/DOC_25",
+    "titel": "Document DOC_23",
+    "doc": "20X3/DOC_23",
     "betaalstuk": true,
     "hulpdocs": [
      {
@@ -4015,12 +3822,28 @@ var JAREN = {
     "relatie": "NovaBank - kredieten"
    },
    {
+    "ref": "DOC_24",
+    "categorie": "Alle documenten",
+    "titel": "Document DOC_24",
+    "doc": "20X3/DOC_24",
+    "betaalstuk": true,
+    "relatie": "Pixelpunt bv"
+   },
+   {
+    "ref": "DOC_25",
+    "categorie": "Alle documenten",
+    "titel": "Document DOC_25",
+    "doc": "20X3/DOC_25",
+    "betaalstuk": true,
+    "relatie": "FOD Financiën - btw"
+   },
+   {
     "ref": "DOC_26",
     "categorie": "Alle documenten",
     "titel": "Document DOC_26",
     "doc": "20X3/DOC_26",
     "betaalstuk": true,
-    "relatie": "Pixelpunt bv"
+    "relatie": "Yogastudio Lotus bv"
    },
    {
     "ref": "DOC_27",
@@ -4028,7 +3851,7 @@ var JAREN = {
     "titel": "Document DOC_27",
     "doc": "20X3/DOC_27",
     "betaalstuk": true,
-    "relatie": "FOD Financiën - btw"
+    "relatie": "Dagontvangsten (particulieren)"
    },
    {
     "ref": "DOC_28",
@@ -4036,7 +3859,7 @@ var JAREN = {
     "titel": "Document DOC_28",
     "doc": "20X3/DOC_28",
     "betaalstuk": true,
-    "relatie": "Yogastudio Lotus bv"
+    "relatie": "Dagontvangsten (particulieren)"
    },
    {
     "ref": "DOC_29",
@@ -4044,7 +3867,13 @@ var JAREN = {
     "titel": "Document DOC_29",
     "doc": "20X3/DOC_29",
     "betaalstuk": true,
-    "relatie": "Dagontvangsten (particulieren)"
+    "hulpdocs": [
+     {
+      "doc": "20X1/LEN01",
+      "titel": "Aflossingstabel lening KR-20X1-0147"
+     }
+    ],
+    "relatie": "NovaBank - kredieten"
    },
    {
     "ref": "DOC_30",
@@ -4052,7 +3881,7 @@ var JAREN = {
     "titel": "Document DOC_30",
     "doc": "20X3/DOC_30",
     "betaalstuk": true,
-    "relatie": "Dagontvangsten (particulieren)"
+    "relatie": "Pixelpunt bv"
    },
    {
     "ref": "DOC_31",
@@ -4062,8 +3891,8 @@ var JAREN = {
     "betaalstuk": true,
     "hulpdocs": [
      {
-      "doc": "20X1/LEN01",
-      "titel": "Aflossingstabel lening KR-20X1-0147"
+      "doc": "20X3/DOC_20",
+      "titel": "Aflossingstabel lening KR-20X3-0388"
      }
     ],
     "relatie": "NovaBank - kredieten"
@@ -4074,7 +3903,7 @@ var JAREN = {
     "titel": "Document DOC_32",
     "doc": "20X3/DOC_32",
     "betaalstuk": true,
-    "relatie": "Pixelpunt bv"
+    "relatie": "Terra Outdoor bv"
    },
    {
     "ref": "DOC_33",
@@ -4084,8 +3913,8 @@ var JAREN = {
     "betaalstuk": true,
     "hulpdocs": [
      {
-      "doc": "20X3/DOC_22",
-      "titel": "Aflossingstabel lening KR-20X3-0388"
+      "doc": "20X2/LEN01",
+      "titel": "Aflossingstabel lening KR-20X2-0263"
      }
     ],
     "relatie": "NovaBank - kredieten"
@@ -4096,7 +3925,7 @@ var JAREN = {
     "titel": "Document DOC_34",
     "doc": "20X3/DOC_34",
     "betaalstuk": true,
-    "relatie": "EthiKnit nv"
+    "relatie": "Stortingsautomaat NovaBank Leuven"
    },
    {
     "ref": "DOC_35",
@@ -4104,28 +3933,20 @@ var JAREN = {
     "titel": "Document DOC_35",
     "doc": "20X3/DOC_35",
     "betaalstuk": true,
-    "hulpdocs": [
-     {
-      "doc": "20X2/LEN01",
-      "titel": "Aflossingstabel lening KR-20X2-0263"
-     }
-    ],
-    "relatie": "NovaBank - kredieten"
+    "relatie": "MetWear bv"
    },
    {
     "ref": "DOC_36",
     "categorie": "Alle documenten",
     "titel": "Document DOC_36",
     "doc": "20X3/DOC_36",
-    "betaalstuk": true,
-    "relatie": "Stortingsautomaat NovaBank Leuven"
+    "relatie": "MetWear bv"
    },
    {
     "ref": "DOC_37",
     "categorie": "Alle documenten",
     "titel": "Document DOC_37",
     "doc": "20X3/DOC_37",
-    "betaalstuk": true,
     "relatie": "MetWear bv"
    },
    {
@@ -4133,20 +3954,6 @@ var JAREN = {
     "categorie": "Alle documenten",
     "titel": "Document DOC_38",
     "doc": "20X3/DOC_38",
-    "relatie": "MetWear bv"
-   },
-   {
-    "ref": "DOC_39",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_39",
-    "doc": "20X3/DOC_39",
-    "relatie": "MetWear bv"
-   },
-   {
-    "ref": "DOC_40",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_40",
-    "doc": "20X3/DOC_40",
     "hulpdocs": [
      {
       "doc": "20X1/LEN01",
@@ -4157,7 +3964,7 @@ var JAREN = {
       "titel": "Aflossingstabel lening KR-20X2-0263"
      },
      {
-      "doc": "20X3/DOC_22",
+      "doc": "20X3/DOC_20",
       "titel": "Aflossingstabel lening KR-20X3-0388"
      }
     ],
@@ -4178,7 +3985,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "28.165",
+     "bedrag": "31.165",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4365,17 +4172,6 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "8.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -4385,17 +4181,6 @@ var JAREN = {
      "rekening": "423000",
      "dc": "C",
      "relatie": ""
-    },
-    {
-     "bedrag": "109",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "Connecto nv"
     },
     {
      "bedrag": "1.452",
@@ -4420,7 +4205,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "3.300",
+     "bedrag": "4.610",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4431,7 +4216,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "8.722",
+     "bedrag": "1.162",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -4508,7 +4293,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "80.806",
+     "bedrag": "77.747",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -5021,7 +4806,7 @@ var JAREN = {
     "betaalstuk": true,
     "hulpdocs": [
      {
-      "doc": "20X3/DOC_22",
+      "doc": "20X3/DOC_20",
       "titel": "Aflossingstabel lening KR-20X3-0388"
      }
     ],
@@ -5063,7 +4848,7 @@ var JAREN = {
     "betaalstuk": true,
     "hulpdocs": [
      {
-      "doc": "20X3/DOC_22",
+      "doc": "20X3/DOC_20",
       "titel": "Aflossingstabel lening KR-20X3-0388"
      }
     ],
@@ -5136,7 +4921,7 @@ var JAREN = {
       "titel": "Aflossingstabel lening KR-20X2-0263"
      },
      {
-      "doc": "20X3/DOC_22",
+      "doc": "20X3/DOC_20",
       "titel": "Aflossingstabel lening KR-20X3-0388"
      }
     ],
@@ -5157,7 +4942,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "31.216",
+     "bedrag": "35.016",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5289,7 +5074,7 @@ var JAREN = {
      "relatie": "Fietsclub De Trappers vzw"
     },
     {
-     "bedrag": "3.159",
+     "bedrag": "2.614",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -5344,28 +5129,6 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "1.008",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "40",
-     "rekening": "400000",
-     "dc": "D",
-     "relatie": "Yogastudio Lotus bv"
-    },
-    {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "11.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -5375,17 +5138,6 @@ var JAREN = {
      "rekening": "423000",
      "dc": "C",
      "relatie": ""
-    },
-    {
-     "bedrag": "109",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "Connecto nv"
     },
     {
      "bedrag": "2.541",
@@ -5410,7 +5162,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "4.909",
+     "bedrag": "6.219",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5421,7 +5173,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "11.892",
+     "bedrag": "4.332",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5465,7 +5217,7 @@ var JAREN = {
      "relatie": "Stroomkracht nv"
     },
     {
-     "bedrag": "26.814",
+     "bedrag": "25.362",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -5498,7 +5250,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "81.387",
+     "bedrag": "77.213",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -6621,7 +6373,7 @@ var JAREN = {
     "betaalstuk": true,
     "hulpdocs": [
      {
-      "doc": "20X3/DOC_22",
+      "doc": "20X3/DOC_20",
       "titel": "Aflossingstabel lening KR-20X3-0388"
      }
     ],
@@ -6705,7 +6457,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "43.711",
+     "bedrag": "47.511",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -6881,7 +6633,7 @@ var JAREN = {
      "relatie": "Fietsclub De Trappers vzw"
     },
     {
-     "bedrag": "5.410",
+     "bedrag": "4.865",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -6936,28 +6688,6 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "1.008",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "40",
-     "rekening": "400000",
-     "dc": "D",
-     "relatie": "Yogastudio Lotus bv"
-    },
-    {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "7.500",
      "redenering": "beginbalans",
      "apko": "P",
@@ -6978,17 +6708,6 @@ var JAREN = {
      "rekening": "440000",
      "dc": "C",
      "relatie": "Bureau & Co bv"
-    },
-    {
-     "bedrag": "109",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "Connecto nv"
     },
     {
      "bedrag": "2.541",
@@ -7013,7 +6732,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "6.627",
+     "bedrag": "7.937",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -7024,7 +6743,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "13.150",
+     "bedrag": "5.590",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -7068,7 +6787,7 @@ var JAREN = {
      "relatie": "Stroomkracht nv"
     },
     {
-     "bedrag": "40.100",
+     "bedrag": "38.648",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -7101,7 +6820,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "80.112",
+     "bedrag": "75.938",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -7651,7 +7370,7 @@ var JAREN = {
     "titel": "Document DOC_10",
     "doc": "20X6/DOC_10",
     "betaalstuk": true,
-    "relatie": "Architectenbureau Lindqvist bv"
+    "relatie": "Geldautomaat NovaBank Leuven"
    },
    {
     "ref": "DOC_11",
@@ -7659,21 +7378,13 @@ var JAREN = {
     "titel": "Document DOC_11",
     "doc": "20X6/DOC_11",
     "betaalstuk": true,
-    "relatie": "Geldautomaat NovaBank Leuven"
+    "relatie": "MetWear bv"
    },
    {
     "ref": "DOC_12",
     "categorie": "Alle documenten",
     "titel": "Document DOC_12",
     "doc": "20X6/DOC_12",
-    "betaalstuk": true,
-    "relatie": "MetWear bv"
-   },
-   {
-    "ref": "DOC_13",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_13",
-    "doc": "20X6/DOC_13",
     "betaalstuk": true,
     "hulpdocs": [
      {
@@ -7684,39 +7395,54 @@ var JAREN = {
     "relatie": "NovaBank - kredieten"
    },
    {
+    "ref": "DOC_13",
+    "categorie": "Alle documenten",
+    "titel": "Document DOC_13",
+    "doc": "20X6/DOC_13",
+    "relatie": "Terra Outdoor bv"
+   },
+   {
     "ref": "DOC_14",
     "categorie": "Alle documenten",
     "titel": "Document DOC_14",
     "doc": "20X6/DOC_14",
-    "relatie": "Terra Outdoor bv"
+    "relatie": "Bakkerij Vandenbroeck bv"
    },
    {
     "ref": "DOC_15",
     "categorie": "Alle documenten",
     "titel": "Document DOC_15",
     "doc": "20X6/DOC_15",
-    "relatie": "Bakkerij Vandenbroeck bv"
+    "relatie": "Restaurant Da Rossi bv"
    },
    {
     "ref": "DOC_16",
     "categorie": "Alle documenten",
     "titel": "Document DOC_16",
     "doc": "20X6/DOC_16",
-    "relatie": "Restaurant Da Rossi bv"
-   },
-   {
-    "ref": "DOC_17",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_17",
-    "doc": "20X6/DOC_17",
-    "relatie": "GreenThread bv"
+    "relatie": "WebNest bv"
    },
    {
     "ref": "DOC_18",
     "categorie": "Alle documenten",
     "titel": "Document DOC_18",
     "doc": "20X6/DOC_18",
-    "relatie": "WebNest bv"
+    "betaalstuk": true,
+    "hulpdocs": [
+     {
+      "doc": "20X6/DOC_17",
+      "titel": "Aflossingstabel lening KR-20X6-0412"
+     }
+    ],
+    "relatie": "NovaBank - kredieten"
+   },
+   {
+    "ref": "DOC_19",
+    "categorie": "Alle documenten",
+    "titel": "Document DOC_19",
+    "doc": "20X6/DOC_19",
+    "betaalstuk": true,
+    "relatie": "Jeugdtheater Applaus vzw"
    },
    {
     "ref": "DOC_20",
@@ -7724,42 +7450,37 @@ var JAREN = {
     "titel": "Document DOC_20",
     "doc": "20X6/DOC_20",
     "betaalstuk": true,
-    "hulpdocs": [
-     {
-      "doc": "20X6/DOC_19",
-      "titel": "Aflossingstabel lening KR-20X6-0412"
-     }
-    ],
-    "relatie": "NovaBank - kredieten"
+    "relatie": "FairFabrics nv"
    },
    {
     "ref": "DOC_21",
     "categorie": "Alle documenten",
     "titel": "Document DOC_21",
     "doc": "20X6/DOC_21",
-    "relatie": "GreenThread bv"
+    "relatie": "WebNest bv"
    },
    {
     "ref": "DOC_22",
     "categorie": "Alle documenten",
     "titel": "Document DOC_22",
     "doc": "20X6/DOC_22",
-    "betaalstuk": true,
-    "relatie": "FairFabrics nv"
+    "relatie": "FOD Financiën"
    },
    {
     "ref": "DOC_23",
     "categorie": "Alle documenten",
     "titel": "Document DOC_23",
     "doc": "20X6/DOC_23",
-    "relatie": "WebNest bv"
+    "betaalstuk": true,
+    "relatie": "Architectenbureau Lindqvist bv"
    },
    {
     "ref": "DOC_24",
     "categorie": "Alle documenten",
     "titel": "Document DOC_24",
     "doc": "20X6/DOC_24",
-    "relatie": "FOD Financiën"
+    "betaalstuk": true,
+    "relatie": "FOD Financiën - btw"
    },
    {
     "ref": "DOC_25",
@@ -7767,7 +7488,7 @@ var JAREN = {
     "titel": "Document DOC_25",
     "doc": "20X6/DOC_25",
     "betaalstuk": true,
-    "relatie": "Architectenbureau Lindqvist bv"
+    "relatie": "Dagontvangsten (particulieren)"
    },
    {
     "ref": "DOC_26",
@@ -7775,7 +7496,7 @@ var JAREN = {
     "titel": "Document DOC_26",
     "doc": "20X6/DOC_26",
     "betaalstuk": true,
-    "relatie": "FOD Financiën - btw"
+    "relatie": "Dagontvangsten (particulieren)"
    },
    {
     "ref": "DOC_27",
@@ -7783,7 +7504,7 @@ var JAREN = {
     "titel": "Document DOC_27",
     "doc": "20X6/DOC_27",
     "betaalstuk": true,
-    "relatie": "Dagontvangsten (particulieren)"
+    "relatie": "Architectenbureau Lindqvist bv"
    },
    {
     "ref": "DOC_28",
@@ -7791,7 +7512,7 @@ var JAREN = {
     "titel": "Document DOC_28",
     "doc": "20X6/DOC_28",
     "betaalstuk": true,
-    "relatie": "Dagontvangsten (particulieren)"
+    "relatie": "FairFabrics nv"
    },
    {
     "ref": "DOC_29",
@@ -7799,7 +7520,13 @@ var JAREN = {
     "titel": "Document DOC_29",
     "doc": "20X6/DOC_29",
     "betaalstuk": true,
-    "relatie": "Architectenbureau Lindqvist bv"
+    "hulpdocs": [
+     {
+      "doc": "20X6/DOC_17",
+      "titel": "Aflossingstabel lening KR-20X6-0412"
+     }
+    ],
+    "relatie": "NovaBank - kredieten"
    },
    {
     "ref": "DOC_30",
@@ -7807,7 +7534,7 @@ var JAREN = {
     "titel": "Document DOC_30",
     "doc": "20X6/DOC_30",
     "betaalstuk": true,
-    "relatie": "FairFabrics nv"
+    "relatie": "WebNest bv"
    },
    {
     "ref": "DOC_31",
@@ -7815,13 +7542,7 @@ var JAREN = {
     "titel": "Document DOC_31",
     "doc": "20X6/DOC_31",
     "betaalstuk": true,
-    "hulpdocs": [
-     {
-      "doc": "20X6/DOC_19",
-      "titel": "Aflossingstabel lening KR-20X6-0412"
-     }
-    ],
-    "relatie": "NovaBank - kredieten"
+    "relatie": "Stortingsautomaat NovaBank Leuven"
    },
    {
     "ref": "DOC_32",
@@ -7829,22 +7550,20 @@ var JAREN = {
     "titel": "Document DOC_32",
     "doc": "20X6/DOC_32",
     "betaalstuk": true,
-    "relatie": "WebNest bv"
+    "relatie": "MetWear bv"
    },
    {
     "ref": "DOC_33",
     "categorie": "Alle documenten",
     "titel": "Document DOC_33",
     "doc": "20X6/DOC_33",
-    "betaalstuk": true,
-    "relatie": "Stortingsautomaat NovaBank Leuven"
+    "relatie": "MetWear bv"
    },
    {
     "ref": "DOC_34",
     "categorie": "Alle documenten",
     "titel": "Document DOC_34",
     "doc": "20X6/DOC_34",
-    "betaalstuk": true,
     "relatie": "MetWear bv"
    },
    {
@@ -7852,20 +7571,6 @@ var JAREN = {
     "categorie": "Alle documenten",
     "titel": "Document DOC_35",
     "doc": "20X6/DOC_35",
-    "relatie": "MetWear bv"
-   },
-   {
-    "ref": "DOC_36",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_36",
-    "doc": "20X6/DOC_36",
-    "relatie": "MetWear bv"
-   },
-   {
-    "ref": "DOC_37",
-    "categorie": "Alle documenten",
-    "titel": "Document DOC_37",
-    "doc": "20X6/DOC_37",
     "relatie": "MetWear bv"
    }
   ],
@@ -7883,7 +7588,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "47.510",
+     "bedrag": "51.310",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8048,7 +7753,7 @@ var JAREN = {
      "relatie": "Fietsclub De Trappers vzw"
     },
     {
-     "bedrag": "6.172",
+     "bedrag": "5.627",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",
@@ -8103,28 +7808,6 @@ var JAREN = {
      "relatie": "Scouts Sint-Jan Wilsele"
     },
     {
-     "bedrag": "1.008",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "40",
-     "rekening": "400000",
-     "dc": "D",
-     "relatie": "Yogastudio Lotus bv"
-    },
-    {
-     "bedrag": "300",
-     "redenering": "beginbalans",
-     "apko": "A",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "41",
-     "rekening": "418000",
-     "dc": "D",
-     "relatie": ""
-    },
-    {
      "bedrag": "2.000",
      "redenering": "beginbalans",
      "apko": "P",
@@ -8145,17 +7828,6 @@ var JAREN = {
      "rekening": "440000",
      "dc": "C",
      "relatie": "Bureau & Co bv"
-    },
-    {
-     "bedrag": "109",
-     "redenering": "beginbalans",
-     "apko": "P",
-     "stijgtDaalt": "+",
-     "klasse": "4",
-     "rubriek": "44",
-     "rekening": "440000",
-     "dc": "C",
-     "relatie": "Connecto nv"
     },
     {
      "bedrag": "2.541",
@@ -8180,7 +7852,7 @@ var JAREN = {
      "relatie": "EthiKnit nv"
     },
     {
-     "bedrag": "6.627",
+     "bedrag": "7.937",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8191,7 +7863,7 @@ var JAREN = {
      "relatie": "FairFabrics nv"
     },
     {
-     "bedrag": "14.118",
+     "bedrag": "6.558",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8235,7 +7907,7 @@ var JAREN = {
      "relatie": "Stroomkracht nv"
     },
     {
-     "bedrag": "40.100",
+     "bedrag": "38.648",
      "redenering": "beginbalans",
      "apko": "P",
      "stijgtDaalt": "+",
@@ -8268,7 +7940,7 @@ var JAREN = {
      "relatie": ""
     },
     {
-     "bedrag": "77.931",
+     "bedrag": "73.757",
      "redenering": "beginbalans",
      "apko": "A",
      "stijgtDaalt": "+",

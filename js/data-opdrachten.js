@@ -27,11 +27,12 @@ var CATEGORIE_BETALINGEN = [];
 //   taakPer         één Classroom-taak per categorie, of één voor het hele jaar
 //   aanbevelen      de app duidt aan welke delen aanbevolen zijn per leerling
 //   controles       false = geen controlepagina's en geen eindcontrole
+//   opnieuwMaken    een juiste zelfcontrole gaat niet op slot: de leerling mag ze opnieuw maken
 var JAAR_SOORTEN = {
   cursus:      { indienen: false, zelfcontrole: false, vooraf: true,  perCategorie: true,  taakPer: null },
   taak:        { indienen: true,  zelfcontrole: false, vooraf: false, perCategorie: true,  taakPer: "categorie" },
   conso:       { indienen: true,  zelfcontrole: false, vooraf: false, perCategorie: false, taakPer: "jaar" },
-  extra:       { indienen: false, zelfcontrole: true,  vooraf: false, perCategorie: true,  taakPer: null, controles: false },
+  extra:       { indienen: false, zelfcontrole: true,  vooraf: false, perCategorie: true,  taakPer: null, controles: false, opnieuwMaken: true },
   remediering: { indienen: false, zelfcontrole: true,  vooraf: false, perCategorie: true,  taakPer: null, aanbevelen: true },
 };
 
