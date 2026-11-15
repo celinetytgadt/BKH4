@@ -26,11 +26,12 @@ var CATEGORIE_BETALINGEN = [];
 //   perCategorie    in Beheer per categorie zichtbaar te maken (anders per jaar)
 //   taakPer         één Classroom-taak per categorie, of één voor het hele jaar
 //   aanbevelen      de app duidt aan welke delen aanbevolen zijn per leerling
+//   controles       false = geen controlepagina's en geen eindcontrole
 var JAAR_SOORTEN = {
   cursus:      { indienen: false, zelfcontrole: false, vooraf: true,  perCategorie: true,  taakPer: null },
   taak:        { indienen: true,  zelfcontrole: false, vooraf: false, perCategorie: true,  taakPer: "categorie" },
   conso:       { indienen: true,  zelfcontrole: false, vooraf: false, perCategorie: false, taakPer: "jaar" },
-  extra:       { indienen: false, zelfcontrole: true,  vooraf: false, perCategorie: true,  taakPer: null },
+  extra:       { indienen: false, zelfcontrole: true,  vooraf: false, perCategorie: true,  taakPer: null, controles: false },
   remediering: { indienen: false, zelfcontrole: true,  vooraf: false, perCategorie: true,  taakPer: null, aanbevelen: true },
 };
 
