@@ -32,10 +32,11 @@
   "use strict";
 
   var ontgrendeld = false;
-  // Voor welke vestiging het tabblad open staat. Een expertcode geldt maar
-  // voor één vestiging: wordt bovenaan een andere school gekozen, dan gaat
-  // het tabblad weer op slot (zie opSlotAlsAndereVestiging).
-  var ontgrendeldVoor = "";
+  // De school waarvoor het tabblad werkt. Die kiest de vakexpert hier in
+  // het tabblad zelf, los van de schoolkeuze bovenaan (die is voor de
+  // leerlingen). Een expertcode geldt maar voor één vestiging: een andere
+  // school kiezen zet het tabblad weer op slot.
+  var school = "";
   var expertcode = "";
   var bezig = false;
   var melding = null;     // { soort: "ok" | "fout" | "info", tekst: "…" (platte tekst) }
@@ -60,6 +61,37 @@
   }
 
   function api() { return window.KOPPELING_API || null; }
+
+  function schoolLabel() { var a = api(); return a && school ? a.labelVan(school) : ""; }
+
+  // Eén vestiging? Dan valt er niets te kiezen.
+  function kiesStandaardSchool() {
+    var a = api();
+    if (school || !a || !a.vestigingen) return;
+    var lijst = a.vestigingen();
+    if (lijst.length === 1) school = lijst[0].code;
+  }
+
+  function wisselSchool(code) {
+    if (code === school) return;
+    school = code;
+    ontgrendeld = false;
+    expertcode = "";
+    model = leegModel();
+    melding = null;
+    herteken();
+  }
+
+  function htmlSchoolKeuze() {
+    var a = api();
+    var lijst = a && a.vestigingen ? a.vestigingen() : [];
+    if (lijst.length < 2) return "";
+    return '<p class="beheer-rij"><label>School: <select data-role="beheer-school"' + (bezig ? " disabled" : "") + ">" +
+      '<option value="">— kies je school —</option>' +
+      lijst.map(function (v) {
+        return '<option value="' + esc(v.code) + '"' + (v.code === school ? " selected" : "") + ">" + esc(v.naam) + "</option>";
+      }).join("") + "</select></label></p>";
+  }
 
   // De luisteraars blijven liggen als de leerling naar een ander tabblad
   // gaat. Ze mogen dan niets doen.
@@ -128,17 +160,21 @@
 
   function htmlSlot() {
     var a = api();
-    var label = a ? a.vestigingLabel() : "";
+    var label = schoolLabel();
     var html = '<h1 class="pagina-titel">Beheer</h1>' +
       '<p class="pagina-subtitel">' + (label ? esc(label) + " — " : "") + "voor vakexperten</p>" +
       '<div class="paneel beheer-slot">' +
       "<p>Hier stel je in wat de leerlingen van jouw vestiging te zien krijgen: " +
-      "de namenlijst, de taken in Classroom, de welkomsttekst en de links naar de cursus en de handleiding.</p>";
+      "de namenlijst, de taken in Classroom, de welkomsttekst en de links naar de cursus en de handleiding.</p>" +
+      htmlSchoolKeuze();
 
     // Alles staat per vestiging apart. Zolang er geen school gekozen is,
     // weet de app niet welke ze moet openen.
-    if (!a || !a.actief()) {
-      return html + "<p><strong>Kies eerst bovenaan je school.</strong> Elke vestiging heeft haar eigen instellingen en haar eigen expertcode.</p></div>";
+    if (!a || !school) {
+      return html + "<p><strong>Kies eerst je school.</strong> Elke vestiging heeft haar eigen instellingen en haar eigen expertcode.</p>" + htmlMelding() + "</div>";
+    }
+    if (!a.actiefVoor(school)) {
+      return html + "<p>Voor " + esc(label) + " is de koppeling met Google Sheets nog niet ingesteld.</p></div>";
     }
 
     return html +
@@ -348,7 +384,7 @@
       "<p>Per document: hoeveel leerlingen het controleerden, hoe vaak, hoeveel procent het de eerste keer juist had, en wie het nog niet juist heeft. " +
       "Bij <em>vaakst fout</em> staan de rekeningen die het vaakst verkeerd stonden (of ontbraken). Documenten waar minder dan de helft het meteen juist had, staan in het rood.</p>" +
       inhoud +
-      '<p class="keuze-nota">Alle pogingen staan ook in de Google Sheet, in het tabblad <em>Zelfcontrole ' + esc(api() ? api().vestigingCode() : "") + "</em>.</p>" +
+      '<p class="keuze-nota">Alle pogingen staan ook in de Google Sheet, in het tabblad <em>Zelfcontrole ' + esc(school) + "</em>.</p>" +
       "</div>";
   }
 
@@ -385,10 +421,12 @@
   }
 
   function htmlOpen() {
-    var a = api();
     return '<h1 class="pagina-titel">Beheer</h1>' +
-      '<p class="pagina-subtitel">' + esc(a ? a.vestigingLabel() : "") +
+      '<p class="pagina-subtitel">' + esc(schoolLabel()) +
       " — deze instellingen gelden enkel voor deze vestiging</p>" +
+      '<div class="paneel">' + htmlSchoolKeuze() +
+      '<p class="keuze-nota">Een andere school kiezen zet dit tabblad op slot; je geeft dan de expertcode van die vestiging in. ' +
+      "Wat niet bewaard is, gaat verloren.</p></div>" +
       htmlZichtbaarheid() + htmlKlas() + htmlAanbevolen() + htmlTaken() + htmlTeksten() + htmlZelfcontrole() +
       '<div class="paneel beheer-voet">' +
       '<button type="button" class="btn-primair" data-role="bewaren"' + (bezig ? " disabled" : "") + ">" +
@@ -396,7 +434,7 @@
       '<button type="button" data-role="opnieuw"' + (bezig ? " disabled" : "") + ">Wijzigingen ongedaan maken</button>" +
       htmlMelding() +
       '<p class="keuze-nota">Alles komt in de Google Sheet terecht, in de tabbladen Klas, Taken en Instellingen ' +
-      "van deze vestiging (bv. <em>Klas " + esc(a ? a.vestigingCode() : "") + "</em>). Je kan het daar ook rechtstreeks " +
+      "van deze vestiging (bv. <em>Klas " + esc(school) + "</em>). Je kan het daar ook rechtstreeks " +
       "aanpassen. De leerlingen zien de wijziging zodra ze de app opnieuw openen.</p>" +
       "</div>";
   }
@@ -408,7 +446,8 @@
   function ontgrendel(code) {
     var a = api();
     if (bezig) return;                       // dubbelklik of Enter erbovenop
-    if (!a || !a.actief()) {
+    if (!a || !school) { zegFout("Kies eerst je school."); herteken(); return; }
+    if (!a.actiefVoor(school)) {
       zegFout("Voor deze vestiging is de koppeling met Google Sheets nog niet ingesteld.");
       herteken();
       return;
@@ -416,8 +455,8 @@
     bezig = true;
     zegBezig("Even geduld — het script van Google moet eerst wakker worden. De eerste keer duurt dat vlot tien seconden.");
     herteken();
-    var voorVestiging = a.vestigingCode();
-    a.haal({ actie: "beheer", sleutel: a.sleutel(), expertcode: code })
+    var voorVestiging = school;
+    a.haalVoor(voorVestiging, { actie: "beheer", sleutel: a.sleutelVoor(voorVestiging), expertcode: code })
       .then(function (r) {
         bezig = false;
         if (!r || !r.ok) {
@@ -426,11 +465,10 @@
           return;
         }
         // Intussen een andere school gekozen? Dan hoort dit antwoord niet
-        // meer bij wat er bovenaan staat.
-        if (a.vestigingCode() !== voorVestiging) { herteken(); return; }
+        // meer bij wat er gekozen is.
+        if (school !== voorVestiging) { herteken(); return; }
         expertcode = code;
         ontgrendeld = true;
-        ontgrendeldVoor = voorVestiging;
         melding = null;
         neemOver(r);
         herteken();
@@ -464,24 +502,11 @@
     });
   }
 
-  // Wordt bovenaan een andere school gekozen, dan gaat het tabblad op slot
-  // en wordt alles vergeten: anders zou de lijst van Leuven bewaard worden
-  // in de tabbladen van Tielt-Winge.
-  function opSlotAlsAndereVestiging() {
-    var a = api();
-    if (!ontgrendeld || !a || a.vestigingCode() === ontgrendeldVoor) return;
-    ontgrendeld = false;
-    ontgrendeldVoor = "";
-    expertcode = "";
-    model = leegModel();
-    zegBezig("Je koos een andere school. Geef de expertcode van die vestiging in.");
-  }
-
   function bewaar() {
     var a = api();
     if (!a || bezig) return;                 // één keer tegelijk, nooit meer
-    opSlotAlsAndereVestiging();
-    if (!ontgrendeld) { herteken(); return; }
+    if (!ontgrendeld || !school) { herteken(); return; }
+    var voorVestiging = school;
     bezig = true;
     zegBezig("Bezig met bewaren…");
     herteken();
@@ -500,9 +525,9 @@
     instellingen.zichtbaarheid = JSON.stringify(model.zicht);
     instellingen.aanbevolen = JSON.stringify(model.aanbevolen);
 
-    a.stuur({
+    a.stuurVoor(voorVestiging, {
       actie: "beheerBewaren",
-      sleutel: a.sleutel(),
+      sleutel: a.sleutelVoor(voorVestiging),
       expertcode: expertcode,
       instellingen: instellingen,
       taken: taken,
@@ -523,13 +548,14 @@
         // aangemaakt heeft, zodat de expert ze meteen kan doorgeven. De
         // ingetikte teksten en taken blijven staan zoals ze hier staan: wie
         // tijdens het bewaren nog iets wijzigde, mag dat niet kwijtspelen.
+        a.neemBeheerOver(r, voorVestiging);
+        if (school !== voorVestiging) { herteken(); return; }
         model.klas = (r.klas || klas).map(function (l) {
           return { naam: l.naam, code: l.code || "", opmerking: l.opmerking || "", weg: false };
         });
         // De app zelf (welkomsttekst, knoppen, namenlijst) meteen bijwerken
         // met wat de server terugstuurde. Vroeger werd daarvoor nóg eens
         // opgehaald, en dat verdubbelde de wachttijd bij elke bewaarbeurt.
-        a.neemBeheerOver(r);
         zegOk("Bewaard. De leerlingen zien dit zodra ze de app opnieuw openen.");
         herteken();
       })
@@ -540,22 +566,22 @@
         console.error(err);
         zegBezig("De verbinding viel weg. Even nakijken of het toch bewaard is…");
         herteken();
-        kijkNaOfHetBewaardIs(klas, taken);
+        kijkNaOfHetBewaardIs(klas, taken, voorVestiging);
       });
   }
 
   /* Haalt opnieuw op wat er in de Sheet staat en vergelijkt dat met wat we
      net probeerden te bewaren. Staat het er, dan is er niets aan de hand. */
-  function kijkNaOfHetBewaardIs(klas, taken) {
+  function kijkNaOfHetBewaardIs(klas, taken, voorVestiging) {
     var a = api();
     if (!a) { bezig = false; return; }
     setTimeout(function () {
-      a.haal({ actie: "beheer", sleutel: a.sleutel(), expertcode: expertcode })
+      a.haalVoor(voorVestiging, { actie: "beheer", sleutel: a.sleutelVoor(voorVestiging), expertcode: expertcode })
         .then(function (r) {
           bezig = false;
           if (r && r.ok && komtOvereen(r, klas, taken)) {
-            neemOver(r);
-            a.neemBeheerOver(r);
+            if (school === voorVestiging) neemOver(r);
+            a.neemBeheerOver(r, voorVestiging);
             zegOk("Toch bewaard. Het antwoord van de server bleef onderweg steken, maar alles staat in de Sheet.");
           } else {
             zegFout("Bewaren is niet gelukt. Probeer het opnieuw — wat je hier ingevuld hebt, blijft staan.");
@@ -603,7 +629,7 @@
     },
 
     html: function () {
-      opSlotAlsAndereVestiging();
+      kiesStandaardSchool();
       return ontgrendeld ? htmlOpen() : htmlSlot();
     },
 
@@ -633,6 +659,7 @@
         if (!opBeheerpagina()) return;
         var t = e.target;
         var rol = t.dataset && t.dataset.role;
+        if (rol === "beheer-school") { wisselSchool(t.value); return; }
         if (rol === "zicht-jaar") { zichtVoor(t.dataset.jaar).open = t.checked; herteken(); return; }
         if (rol === "zicht-cat") { zichtVoor(t.dataset.jaar).cats[t.dataset.cat] = t.checked; return; }
         if (rol === "zicht-zc") { zichtVoor(t.dataset.jaar).zelfcontrole = t.checked; return; }

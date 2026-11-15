@@ -666,6 +666,12 @@ async function kiesJaar(win, jaar) {
   doc.querySelector('[data-page-type="beheer"]').click();
   await wacht(30);
   const pagina = () => doc.getElementById("pagina-inhoud");
+  const beheerSchool = () => pagina().querySelector('[data-role="beheer-school"]');
+  check("beheer heeft een eigen schoolkeuze, nog leeg", !!beheerSchool() && beheerSchool().value === "" &&
+    /Kies eerst je school/.test(pagina().textContent) && !pagina().querySelector('[data-role="expertcode"]'), pagina().textContent.slice(0, 300));
+  beheerSchool().value = "LEU";
+  beheerSchool().dispatchEvent(new w.Event("change", { bubbles: true }));
+  await wacht(30);
   check("beheer vraagt de expertcode van Leuven", /expertcode van Leuven/.test(pagina().textContent), pagina().textContent.slice(0, 200));
   const veld = () => pagina().querySelector('[data-role="expertcode"]');
   veld().value = "3333";
@@ -703,12 +709,22 @@ async function kiesJaar(win, jaar) {
   await kiesJaar(w, "20X2");
   check("de app volgt meteen: btw-verrekening nu zichtbaar", w.eval("CATEGORIE_VOLGORDE").indexOf("Btw-verrekening") !== -1, w.eval("CATEGORIE_VOLGORDE"));
   doc.querySelector('[data-page-type="beheer"]').click();
+  await wacht(30);
   vestSel.value = "TW";
   vestSel.dispatchEvent(new w.Event("change"));
   await wacht(80);
   w.APP.renderAlles();
-  check("andere school gekozen: beheer weer op slot", !!veld() && /expertcode van Tielt-Winge/.test(pagina().textContent) &&
+  check("schoolkeuze bovenaan verandert niets aan beheer", !veld() && /Youssef/.test(pagina().innerHTML), pagina().textContent.slice(0, 300));
+  beheerSchool().value = "TW";
+  beheerSchool().dispatchEvent(new w.Event("change", { bubbles: true }));
+  await wacht(30);
+  check("andere school gekozen in beheer: weer op slot", !!veld() && /expertcode van Tielt-Winge/.test(pagina().textContent) &&
     !/Youssef/.test(pagina().innerHTML), pagina().textContent.slice(0, 300));
+  veld().value = "3333";
+  veld().dispatchEvent(new w.Event("input", { bubbles: true }));
+  pagina().querySelector('[data-role="ontgrendel"]').click();
+  await wacht(80);
+  check("Tielt-Winge open in beheer", !veld() && /Tielt-Winge/.test(pagina().querySelector(".pagina-subtitel").textContent), pagina().textContent.slice(0, 300));
 
   console.log("\n15. Afmelden");
   const domA = await start({
